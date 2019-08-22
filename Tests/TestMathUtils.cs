@@ -17,7 +17,9 @@ namespace SharpAlgosTests
             var result = Utils.FactorialsModulo(n, modulo);
             Assert.AreEqual(1 + n, result.Length);
             for (int i = 0; i <= n; ++i)
+            {
                 Assert.AreEqual(Utils.Factorial(i) % modulo, result[i]);
+            }
         }
 
 
@@ -31,13 +33,18 @@ namespace SharpAlgosTests
             var result = Utils.FactorialsModularMultiplicativeInverse(Utils.FactorialsModulo(n, primeModulo), primeModulo);
             Assert.AreEqual(1 + n, result.Length);
             for (int i = 0; i <= n; ++i)
+            {
                 Assert.AreEqual(Utils.ModularMultiplicativeInverse(FactorialModulo(i, primeModulo), primeModulo), result[i]);
+            }
+
             n = 1000;
             primeModulo = (int)(1e9 + 7);
             result = Utils.FactorialsModularMultiplicativeInverse(Utils.FactorialsModulo(n, primeModulo), primeModulo);
             Assert.AreEqual(1 + n, result.Length);
             for (int i = n; i >= 0; --i)
+            {
                 Assert.AreEqual(Utils.ModularMultiplicativeInverse(FactorialModulo(i, primeModulo), primeModulo), result[i]);
+            }
 
             n = 1000000;
             primeModulo = (int)(1e9 + 7);
@@ -45,14 +52,19 @@ namespace SharpAlgosTests
             var factorialsModularMultiplicativeInverse = Utils.FactorialsModularMultiplicativeInverse(factorialsWithPrimeModulo, primeModulo);
             Assert.AreEqual(1 + n, factorialsModularMultiplicativeInverse.Length);
             for (int i = n; i >= 0; --i)
+            {
                 Assert.AreEqual(1, (factorialsWithPrimeModulo[i] * ((long)factorialsModularMultiplicativeInverse[i])) % primeModulo);
+            }
         }
 
         private static int FactorialModulo(int n, int modulo)
         {
             long factorialModulo = 1;
             for (int i = 1; i <= n; ++i)
+            {
                 factorialModulo = (i * factorialModulo) % modulo;
+            }
+
             return (int)factorialModulo;
         }
 
@@ -133,7 +145,9 @@ namespace SharpAlgosTests
         {
             var primes = Utils.AllPrimes(10000);
             for (int i = 0; i < primes.Length; ++i)
+            {
                 Assert.AreEqual(Utils.IsPrime(i), primes[i]);
+            }
         }
 
 

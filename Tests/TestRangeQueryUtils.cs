@@ -8,98 +8,14 @@ namespace SharpAlgosTests
     [TestFixture]
     public partial class TestUtils
     {
-        [Test]
-        public void TestTrieNode()
-        {
-            var root = new TrieNode();
-            Assert.AreEqual(1, root.NodeCount);
-            Assert.AreEqual(0, root.WordCount);
-            Assert.IsFalse(root.Contains(""));
-            Assert.IsFalse(root.Contains("a"));
-            root.Add("");
-            Assert.AreEqual(1, root.NodeCount);
-            Assert.AreEqual(1, root.WordCount);
-            Assert.IsTrue(root.Contains(""));
-            Assert.IsFalse(root.Contains("a"));
-            root.Add("ab");
-            Assert.AreEqual(3, root.NodeCount);
-            Assert.AreEqual(2, root.WordCount);
-            Assert.IsTrue(root.Contains(""));
-            Assert.IsFalse(root.Contains("a"));
-            Assert.IsFalse(root.Contains("ba"));
-            Assert.IsTrue(root.Contains("ab"));
-            root.Add("ac");
-            Assert.AreEqual(4, root.NodeCount);
-            Assert.AreEqual(3, root.WordCount);
-            Assert.IsTrue(root.Contains(""));
-            Assert.IsFalse(root.Contains("a"));
-            Assert.IsTrue(root.Contains("ab"));
-            Assert.IsTrue(root.Contains("ac"));
-            root.Delete("ab");
-            Assert.AreEqual(3, root.NodeCount);
-            Assert.AreEqual(2, root.WordCount);
-            Assert.IsTrue(root.Contains(""));
-            Assert.IsFalse(root.Contains("a"));
-            Assert.IsFalse(root.Contains("ab"));
-            Assert.IsTrue(root.Contains("ac"));
-            root.Delete("ac");
-            Assert.AreEqual(1, root.NodeCount);
-            Assert.AreEqual(1, root.WordCount);
-            root.Delete("");
-            Assert.AreEqual(1, root.NodeCount);
-            Assert.AreEqual(0, root.WordCount);
-        }
-
-        [Test]
-        public void TestTernarySearchTreeNode()
-        {
-            var root = new TernarySearchTreeNode();
-            Assert.AreEqual(1, root.NodeCount);
-            Assert.AreEqual(0, root.WordCount);
-            Assert.IsFalse(root.Contains(""));
-            Assert.IsFalse(root.Contains("a"));
-            root.Add("a");
-            Assert.AreEqual(1, root.NodeCount);
-            Assert.AreEqual(1, root.WordCount);
-            Assert.IsFalse(root.Contains(""));
-            Assert.IsTrue(root.Contains("a"));
-            root.Add("ab");
-            Assert.AreEqual(2, root.NodeCount);
-            Assert.AreEqual(2, root.WordCount);
-            Assert.IsFalse(root.Contains(""));
-            Assert.IsTrue(root.Contains("a"));
-            Assert.IsFalse(root.Contains("ba"));
-            Assert.IsTrue(root.Contains("ab"));
-            root.Add("ac");
-            Assert.AreEqual(3, root.NodeCount);
-            Assert.AreEqual(3, root.WordCount);
-            Assert.IsFalse(root.Contains(""));
-            Assert.IsTrue(root.Contains("a"));
-            Assert.IsTrue(root.Contains("ab"));
-            Assert.IsTrue(root.Contains("ac"));
-            root.Add("fgh");
-            Assert.AreEqual(6, root.NodeCount);
-            Assert.AreEqual(4, root.WordCount);
-            Assert.IsTrue(root.Contains("a"));
-            Assert.IsTrue(root.Contains("ab"));
-            Assert.IsTrue(root.Contains("fgh"));
-            root.Delete("fgh");
-            Assert.AreEqual(3, root.NodeCount);
-            Assert.AreEqual(3, root.WordCount);
-            root.Delete("ab");
-            //Assert.AreEqual(2, root.NodeCount);
-            Assert.AreEqual(2, root.WordCount);
-            root.Delete("a");
-            //Assert.AreEqual(3, root.NodeCount);
-            Assert.AreEqual(1, root.WordCount);
-        }
-
-
         private static int[] CreateRandomIntArray(int length, int minValue, int maxValue, Random r)
         {
             var result = new int[length];
             for (int i = 0; i < length; ++i)
+            {
                 result[i] = r.Next(minValue, maxValue + 1);
+            }
+
             return result;
         }
 
@@ -155,7 +71,10 @@ namespace SharpAlgosTests
                         if (useSetValue)
                         {
                             for (int i = start; i <= end; ++i)
+                            {
                                 ints[i] = newValue;
+                            }
+
                             min.SetValueInInterval(newValue, start, end);
                             max.SetValueInInterval(newValue, start, end);
                             sum.SetValueInInterval(newValue, start, end);
@@ -165,7 +84,10 @@ namespace SharpAlgosTests
                         if (useAddValue)
                         {
                             for (int i = start; i <= end; ++i)
+                            {
                                 ints[i] += newValue;
+                            }
+
                             min.AddValueInInterval(newValue, start, end);
                             max.AddValueInInterval(newValue, start, end);
                             sum.AddValueInInterval(newValue, start, end);
@@ -188,8 +110,12 @@ namespace SharpAlgosTests
                 var st = new SegmentTreeCountInferiorToK((int[])ints.Clone());
                 for (int startIndex = 0; startIndex < ints.Length; ++startIndex)
                     for (int endIndex = startIndex; endIndex < ints.Length; ++endIndex)
+                    {
                         foreach (var K in new[] { r.Next(-2000, 2000), ints[startIndex], ints[endIndex], ints[(startIndex + endIndex) / 2], ints[startIndex] - 1, ints[endIndex] - 1, ints[startIndex] + 1, ints[endIndex] + 1 })
+                        {
                             Assert.AreEqual(SlowCountInferiorToKInInterval(ints, startIndex, endIndex, K), st.Query(startIndex, endIndex, K));
+                        }
+                    }
             }
         }
 
@@ -218,16 +144,26 @@ namespace SharpAlgosTests
         {
             int result = startIndex;
             for (int i = startIndex; i <= endIndex; ++i)
+            {
                 if (data[i] < data[result])
+                {
                     result = i;
+                }
+            }
+
             return result;
         }
         private static int SlowMaxIndexInInterval(int[] data, int startIndex, int endIndex)
         {
             int result = startIndex;
             for (int i = startIndex; i <= endIndex; ++i)
+            {
                 if (data[i] > data[result])
+                {
                     result = i;
+                }
+            }
+
             return result;
         }
         private static int SlowMinInInterval(int[] data, int startIndex, int endIndex)

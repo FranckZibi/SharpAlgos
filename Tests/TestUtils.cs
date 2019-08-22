@@ -5,6 +5,7 @@ using System.Linq;
 using SharpAlgos;
 using NUnit.Framework;
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace SharpAlgosTests
 {
@@ -13,7 +14,7 @@ namespace SharpAlgosTests
     {
         
 
-        //[Test]
+        [Test, Explicit]
         public void TestArtOptimal()
         {
             //ArtOptimal.Process(@"C:\download\input_0.txt");
@@ -103,7 +104,7 @@ namespace SharpAlgosTests
       //public static Dictionary<T, T> StableMariageMatching<T>(Dictionary<T, List<T>> menPreference, Dictionary<T, List<T>> womenPreference)
 
 
-      [Test]
+        [Test]
         public void TestUnionFind()
         {
             var uf = new UnionFind<int>();
@@ -111,10 +112,12 @@ namespace SharpAlgosTests
             {
                 Assert.AreEqual(i, uf.Find(i));
                 Assert.AreEqual(i + 1, uf.Count);
-                Assert.AreEqual(i + 1, uf.FamilyCount);
+                Assert.AreEqual(i + 1, uf.DistinctFamilyCount);
             }
             for (int i = 0; i <= 10; ++i)
+            {
                 Assert.AreEqual(false, uf.Union(i, i));
+            }
 
             //we join all even values
             for (int i = 2; i <= 10; i += 2)
@@ -124,8 +127,11 @@ namespace SharpAlgosTests
                 Assert.AreEqual(uf.Find(0), uf.Find(i));
             }
             for (int i = 0; i <= 10; i += 2)
+            {
                 Assert.AreEqual(false, uf.Union(0, i));
-            Assert.AreEqual(1 + 5, uf.FamilyCount);
+            }
+
+            Assert.AreEqual(1 + 5, uf.DistinctFamilyCount);
 
             //we join all odd values
             for (int i = 3; i <= 9; i += 2)
@@ -135,24 +141,38 @@ namespace SharpAlgosTests
                 Assert.AreEqual(uf.Find(1), uf.Find(i));
             }
             for (int i = 1; i <= 9; i += 2)
+            {
                 Assert.AreEqual(false, uf.Union(1, i));
-            Assert.AreEqual(2, uf.FamilyCount);
+            }
+
+            Assert.AreEqual(2, uf.DistinctFamilyCount);
 
             //we join all values
             Assert.AreEqual(true, uf.Union(9, 10));
             Assert.AreEqual(11, uf.Count);
-            Assert.AreEqual(1, uf.FamilyCount);
+            Assert.AreEqual(1, uf.DistinctFamilyCount);
             for (int i = 0; i <= 10; ++i)
+            {
                 for (int j = 0; j <= 10; ++j)
                 {
                     Assert.AreEqual(false, uf.Union(i, j));
                     Assert.AreEqual(uf.Find(i), uf.Find(j));
                 }
+            }
 
-
+            uf = new UnionFind<int>();
+            Assert.IsTrue(uf.Add(1));
+            Assert.IsTrue(uf.Add(2));
+            Assert.IsTrue(uf.Add(3));
+            Assert.IsFalse(uf.Add(2));
+            Assert.AreEqual(3, uf.Count);
+            Assert.AreEqual(3, uf.DistinctFamilyCount);
+            uf.Union(1, 2);
+            Assert.AreEqual(3, uf.Count);
+            Assert.AreEqual(2, uf.DistinctFamilyCount);
         }
 
-      
+
 
         [Test]
         public void TestMatrixChainMultiplication()
@@ -184,7 +204,10 @@ namespace SharpAlgosTests
             int?[,] cache = new int?[10,1+length];
             int result = 0;
             foreach (var p in Utils.AllPoints(keyboard))
+            {
                 result += NBTotalCombinaisonsInKeyboard_Helper(length, p, keyboard, cache);
+            }
+
             return result;
         }
 
@@ -192,16 +215,28 @@ namespace SharpAlgosTests
         {
             var keyValue = keyboard[start.X, start.Y];
             if (keyValue < 0)
+            {
                 return 0;
+            }
             if (length <= 0)
+            {
                 return 0;
+            }
             if (length == 1)
+            {
                 return 1;
+            }
             if (cache[keyValue, length].HasValue)
+            {
                 return cache[keyValue, length].Value;
+            }
+
             int result = 0;
             foreach (var p in Utils.AllPointsHorizontalVertical(keyboard, start.X, start.Y))
+            {
                 result += NBTotalCombinaisonsInKeyboard_Helper(length - 1, p, keyboard, cache);
+            }
+
             result += NBTotalCombinaisonsInKeyboard_Helper(length - 1, start, keyboard, cache);
             cache[keyValue, length] = result;
             return result;
@@ -246,16 +281,22 @@ namespace SharpAlgosTests
 
         public static bool WordBreakProblem(string word, string[] dico)
         {
-            bool?[] cache = new bool?[1+word.Length];
+            var cache = new bool?[1+word.Length];
             return WordBreakProblem_Helper(word, dico, cache);
         }
 
         public static bool WordBreakProblem_Helper(string word, string[] dico, bool?[] cache)
         {
             if (word.Length == 0)
+            {
                 return true;
+            }
+
             if (cache[word.Length].HasValue)
+            {
                 return cache[word.Length].Value;
+            }
+
             foreach (var d in dico)
             {
                 if (word.StartsWith(d)&& WordBreakProblem_Helper(word.Substring(d.Length), dico, cache))
@@ -283,13 +324,22 @@ namespace SharpAlgosTests
         public static bool WildcardPatternMatching_Helper(string word, string pattern, bool?[,] cache)
         {
             if (pattern.Length == 0)
+            {
                 return word.Length == 0;
+            }
+
             if (cache[word.Length, pattern.Length].HasValue)
+            {
                 return cache[word.Length, pattern.Length].Value;
+            }
+
             if (pattern[0] != '*')
             {
                 if ((word.Length == 0) || (pattern[0] != '?' && pattern[0] != word[0]) )
+                {
                     return false;
+                }
+
                 cache[word.Length, pattern.Length] = WildcardPatternMatching_Helper(word.Substring(1), pattern.Substring(1), cache);
                 return cache[word.Length, pattern.Length].Value;
             }
@@ -322,14 +372,23 @@ namespace SharpAlgosTests
         private static double ProbabilityAliveAfterTakingNstepsIsland_Helper(int matrixWidth, int nbSteps, int row, int col, double?[,,] cache)
         {
             if (row < 0 || col < 0 || row >= matrixWidth || col >= matrixWidth)
+            {
                 return 0;
+            }
+
             if (nbSteps <= 0)
+            {
                 return 1;
+            }
+
             if (!cache[row, col, nbSteps].HasValue)
+            {
                 cache[row, col, nbSteps] = (ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row - 1, col, cache)
-                                 + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row, col-1, cache)
-                                 + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row + 1, col, cache)
-                                 + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row, col+1, cache)) / 4.0;
+                                            + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row, col-1, cache)
+                                            + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row + 1, col, cache)
+                                            + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row, col+1, cache)) / 4.0;
+            }
+
             return cache[row, col, nbSteps].Value;
         }
 
@@ -427,7 +486,10 @@ namespace SharpAlgosTests
         {
             var result = new List<string>();
             foreach(var e in tmp)
+            {
                 result.Add(string.Join("|", e.Select(x=>x.ToString()).ToArray()));
+            }
+
             result.Sort();
             return result;
         }
@@ -452,7 +514,9 @@ namespace SharpAlgosTests
             int[,] rotatedExpected = {{4, 1}, {5, 2}, {6, 3}};
             for (int row = 0; row < rotatedExpected.GetLength(0); ++row)
                 for (int col = 0; col < rotatedExpected.GetLength(1); ++col)
+                {
                     Assert.AreEqual(rotatedExpected[row, col], rotated[row, col]);
+                }
         }
 
         [Test]
@@ -500,14 +564,19 @@ namespace SharpAlgosTests
         public static int MaximumProdRodCutting(int rodLength)
         {
             if (rodLength <= 1)
+            {
                 return rodLength;
+            }
+
             int[] result = new int[1+rodLength];
             result[0] = result[1] = 1;
             for (int i = 2; i <= rodLength; ++i)
             {
                 result[i] = i;
                 for (int j = 1; j < i; ++j)
+                {
                     result[i] = Math.Max(result[i], result[j] * result[i - j]);
+                }
             }
             return result[rodLength];
         }
@@ -525,10 +594,15 @@ namespace SharpAlgosTests
                 for (int j = 0; j < length.Length; ++j)
                 {
                     if (length[j] > currentRodLength)
+                    {
                         continue;
+                    }
+
                     int jScore = price[j] + maxPrices[currentRodLength - length[j]];
                     if (jScore > maxPrices[currentRodLength])
+                    {
                         maxPrices[currentRodLength] = jScore;
+                    }
                 }
             }
             return maxPrices.Max();
@@ -544,15 +618,29 @@ namespace SharpAlgosTests
         public static int NumberOfTimesPatternAppearsInStringSubsequence_Helper(string s, string pattern, int idxS, int idxPattern, int?[,] cache)
         {
             if (idxPattern >= pattern.Length)
+            {
                 return 1;
+            }
+
             if (idxS >= s.Length)
+            {
                 return 0;
+            }
+
             if (cache[idxS, idxPattern].HasValue)
+            {
                 return cache[idxS, idxPattern].Value;
+            }
+
             int result = 0;
             for (int j = idxS; j < s.Length; ++j)
+            {
                 if (pattern[idxPattern] == s[j])
+                {
                     result += NumberOfTimesPatternAppearsInStringSubsequence_Helper(s, pattern, j+1, idxPattern+1, cache);
+                }
+            }
+
             cache[idxS, idxPattern] = result;
             return result;
         }
@@ -572,15 +660,27 @@ namespace SharpAlgosTests
         private static int CountNDigitsWithoutConsecutiveOne_Helper(int nbDigits, bool mustStartWith0, int?[,] cache)
         {
             if (nbDigits == 0)
+            {
                 return 0;
+            }
+
             if (nbDigits == 1)
+            {
                 return mustStartWith0?1:2;
+            }
 
             if (cache[nbDigits, mustStartWith0 ? 1 : 0].HasValue)
+            {
+                // ReSharper disable once PossibleInvalidOperationException
                 return cache[nbDigits, mustStartWith0 ? 1 : 0].Value;
+            }
+
             int count = CountNDigitsWithoutConsecutiveOne_Helper(nbDigits - 1, false, cache);
             if (!mustStartWith0)
+            {
                 count += CountNDigitsWithoutConsecutiveOne_Helper(nbDigits - 1, true, cache);
+            }
+
             cache[nbDigits, mustStartWith0 ? 1 : 0] = count;
             return count;
         }

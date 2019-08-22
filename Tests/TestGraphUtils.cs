@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SharpAlgos;
 using NUnit.Framework;
@@ -73,7 +72,9 @@ namespace SharpAlgosTests
 
             Assert.AreEqual(expected.Count, observed.Count);
             for (int i = 0; i < expected.Count; ++i)
+            {
                 Assert.AreEqual(expected[i], observed[i]);
+            }
         }
 
         [Test]
@@ -83,7 +84,10 @@ namespace SharpAlgosTests
             var edgeCosts = edgeCostsStr.Split('/').Select(x => x.Split().Select(double.Parse).ToArray()).ToArray();
             var observedPath = Graph<string>.BitonicTour(edgeCosts);
             if (observedPath[1] > observedPath[observedPath.Count - 2])
+            {
                 observedPath.Reverse();
+            }
+
             var expectedPath = new[] { 0, 1, 4, 7, 10, 11, 17, 19, 18, 16, 15, 14, 13, 12, 9, 8, 6, 5, 3, 2, 0 };
             Assert.IsTrue(expectedPath.SequenceEqual(observedPath));
         }
@@ -276,7 +280,9 @@ namespace SharpAlgosTests
 
             Assert.AreEqual(expected.Count, observed.Count);
             for (int i = 0; i < expected.Count; ++i)
+            {
                 Assert.AreEqual(expected[i], observed[i]);
+            }
         }
 
         private static List<string> NormalizeCycle(IList<string> cycle)
@@ -286,7 +292,9 @@ namespace SharpAlgosTests
             var end = cycle.Take(indexMin).ToList();
             begin.AddRange(end);
             if (begin.Count <= 2)
+            {
                 return begin;
+            }
 
             if (string.CompareOrdinal(begin[1], begin.Last()) > 0)
             {
@@ -447,7 +455,10 @@ namespace SharpAlgosTests
             int cost = 1;
             for (int i = 0; i < 5; ++i)
                 for (int j = i+1; j < 5; ++j)
+                {
                     g.Add(i, j, cost);
+                }
+
             return g;
         }
 
@@ -463,10 +474,18 @@ namespace SharpAlgosTests
 
             //longest path in TREE: both by BFS (always in o(V)) & DFS (in o(V) because it is a TREE)
             path = g.LongestPathInConnectedGraph_BFS();
-            if (path[0] == 2) path.Reverse();
+            if (path[0] == 2)
+            {
+                path.Reverse();
+            }
+
             Assert.IsTrue(path.SequenceEqual(new[] {1211, 121, 12, 1, 0, 2}));
             path = g.LongestPathInConnectedGraph_DFS();
-            if (path[0] == 2) path.Reverse();
+            if (path[0] == 2)
+            {
+                path.Reverse();
+            }
+
             Assert.IsTrue(path.SequenceEqual(new[] {1211, 121, 12, 1, 0, 2}));
             //longest path starting at a specific vertex: both by BFS (always in o(V)) & DFS (in o(V) because it is a TREE)
             path = g.LongestPath_BFS(11);
@@ -543,7 +562,9 @@ namespace SharpAlgosTests
             {
                 var split = s.Split();
                 for (int i = 1; i < split.Length; ++i)
+                {
                     g.Add(split[0], split[i], 1);
+                }
             }
             Assert.AreEqual(7, g.LongestPathInNotConnectedGraph_DFS().Count);
         }
@@ -647,7 +668,10 @@ namespace SharpAlgosTests
             var edges = edgesString.Split('|').Select(x => x.Split(',').Select(int.Parse).ToArray()).ToList();
             var g =  new Graph<int>(true);
             foreach (var e in edges)
+            {
                 g.Add(e[0], e[1], e[2]);
+            }
+
             var observedResult = (int)g.BestPathBellmanFordWithMaxDepth(start, end, maxDepth);
             Assert.AreEqual(expectedResult, observedResult);
 }
@@ -792,9 +816,15 @@ namespace SharpAlgosTests
                 for (int j = 0; j < nbVertices; ++j)
                 {
                     if (i == j)
+                    {
                         continue;
+                    }
+
                     if (!isDirected && (j > i))
+                    {
                         continue;
+                    }
+
                     g.Add(i, j, r.Next(minEdgeCost, maxEdgeCost));
                 }
             return g;
@@ -1191,24 +1221,38 @@ namespace SharpAlgosTests
             var g = new Graph<int>(isDirectedGraph);
             var allVertices = Enumerable.Range(0, nbVertices).ToList();
             foreach (var v in allVertices)
+            {
                 g.AddVertex(v);
+            }
+
             foreach (int i in allVertices)
             {
                 var allNeighbours = GetFromRandom(allVertices.Count, allVertices, rand);
 
                 if ((i > 0) && isConnectedGraph)
+                {
                     allNeighbours = GetFromRandom(i, allVertices.GetRange(0, i), rand);
+                }
 
 
                 int nbEdgedsAdded = 0;
                 for (int j = 0; j < allNeighbours.Count; ++j)
                 {
                     if (nbEdgedsAdded >= nbEdgesByVertex)
+                    {
                         break;
+                    }
+
                     if (i == j)
+                    {
                         continue;
+                    }
+
                     if (AreNeighbours(g, i, j))
+                    {
                         continue;
+                    }
+
                     int cost = rand.Next(minCost, maxCost+1);
                     g.Add(i, j, cost);
                     ++nbEdgedsAdded;
@@ -1234,9 +1278,15 @@ namespace SharpAlgosTests
         {
             var dataList = new List<T>(data);
             if (nbToRetrieve >= dataList.Count)
+            {
                 return dataList;
+            }
+
             for (var i = 0; i < nbToRetrieve; ++i)
+            {
                 Utils.Swap(dataList, i, rand.Next(i, dataList.Count - 1));
+            }
+
             return dataList.GetRange(0, nbToRetrieve);
         }
 
@@ -1247,8 +1297,10 @@ namespace SharpAlgosTests
             Assert.AreEqual(0, connections.Length % 2);
             Assert.AreEqual(connections.Length / 2, g.EdgeCount);
             for (int i = 0; i < connections.Length; i += 2)
+            {
                 Assert.IsTrue(AreNeighbours(g, connections[i], connections[i + 1]),
                     "should be neighbours:" + connections[i] + " => " + connections[i + 1]);
+            }
         }
         public static bool AreNeighbours<T>(Graph<T> g, T a, T b)
         {

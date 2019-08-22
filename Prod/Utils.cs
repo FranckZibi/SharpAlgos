@@ -5,284 +5,6 @@ using System.Linq;
 
 namespace SharpAlgos
 {
-    public class PriorityQueue<T>
-    {
-        private readonly bool isMinPriorityQueue;
-        private int count;
-        private readonly SortedDictionary<double, HashSet<T>> q = new SortedDictionary<double, HashSet<T>>();
-
-        public PriorityQueue(bool isMinPriorityQueue)
-        {
-            this.isMinPriorityQueue = isMinPriorityQueue;
-        }
-        public int Count {get {return count;}}
-        public void Enqueue(T t, double priority)
-        {
-            if (!isMinPriorityQueue)
-            {
-                priority = InvertPriority(priority);
-            }
-            if (!q.ContainsKey(priority))
-            {
-                q.Add(priority, new HashSet<T>());
-            }
-            q[priority].Add(t);
-            ++count;
-        }
-        public void UpdatePriority(T t, double oldPriority, double newPriority)
-        {
-            if (!isMinPriorityQueue)
-            {
-                oldPriority = InvertPriority (oldPriority);
-            }
-            q[oldPriority].Remove(t);
-            --count;
-            Enqueue(t, newPriority);
-        }
-        private static double InvertPriority(double priority)
-        {
-            if (priority == double.MaxValue)
-            {
-                return double.MinValue;
-            }
-            if (priority == double.MinValue)
-            {
-                return double.MaxValue;
-            }
-            return -priority;
-        }
-        public T Dequeue()
-        {
-            foreach (var e in q.Values)
-            {
-                if (e.Count != 0)
-                {
-                    var result = e.First();
-                    e.Remove(result);
-                    --count;
-                    return result;
-                }
-            }
-            return default(T);
-        }
-    }
-
-
-
-
-
-    #region Union Find
-    public class UnionFind<T>
-    {
-        private readonly IDictionary<T, int> ranks = new Dictionary<T, int>();
-        private readonly IDictionary<T, T> parents = new Dictionary<T, T>();
-        private readonly HashSet<T> roots = new HashSet<T>();
-        public int Count { get { return parents.Count; } }
-        public int FamilyCount { get { return roots.Count; } }
-
-        //returns the root of the set containing 't' in o(1) time (so it will be 't' itself if 't' is alone in the set)
-        public T Find(T t) 
-        {
-            if (!parents.ContainsKey(t))
-            {
-                ranks[t] = 0;
-                parents[t] = t;
-                roots.Add(t);
-                return t;
-            }
-            var current = t;
-            var path = new List<T>();
-            while (!Equals(parents[current], current))
-            {
-                path.Add(current);
-                current = parents[current];
-            }
-            var root = current;
-            foreach(var child in path) //path compression
-            {
-                parents[child] = root;
-            }
-            return root;
-        }
-
-        //join the set containing 'a' with the one containing 'b' in o(1) time. returns false if they were already in the same set
-        public bool Union(T a, T b) 
-        {
-            var rootA = Find(a);
-            var rootB = Find(b);
-            if (Equals(rootA, rootB))
-            {
-                return false; //already connected before
-            }
-            var deltaRank = ranks[rootA] - ranks[rootB];
-            if (deltaRank >= 0)
-            {
-                parents[rootB] = rootA;
-                roots.Remove(rootB);
-                if (deltaRank == 0)
-                {
-                    ++ranks[rootA];
-                }
-            }
-            else
-            {
-                parents[rootA] = rootB;
-                roots.Remove(rootA);
-            }
-            return true; //newly connected
-        }
-    }
-    #endregion
-
-
-    #region Ternary search tree
-    //search/add/remove a word in a dico of 'n' words in o(n log(n) ) time
-    public class TernarySearchTreeNode
-    {
-        private char C { get; set; }
-        private bool IsLeaf { get; set; }
-        private readonly TernarySearchTreeNode[] Children =  new TernarySearchTreeNode[3];
-        //Children[0]: Left / Children[1]: Center / Children[2]: Right
-
-        public TernarySearchTreeNode(char c = (char)0) {C = c;}
-        public void Add(string key)
-        {
-            if (C == 0 && key.Length > 0)
-            {
-                C = key[0];
-            }
-            var current = this;
-            for (var index = 0; index < key.Length; )
-            {
-                var childIndex = current.ChildrenIndex(key[index]);
-                if ((childIndex == 1)&&(++index == key.Length))
-                {
-                    break;
-                }
-                if (current.Children[childIndex] == null)
-                {
-                    current.Children[childIndex] = new TernarySearchTreeNode(key[index]);
-                }
-                current = current.Children[childIndex];
-            }
-            current.IsLeaf = true;
-        }
-        public bool Contains(string key)
-        {
-            var node = GetNode(key);
-            return node != null && node.IsLeaf;
-        }
-        public void Delete(string key) { DeleteHelper(key, 0); }
-        public int NodeCount => 1 + Children.Sum(x => x == null ? 0 : x.NodeCount);
-        public int WordCount => (IsLeaf ? 1 : 0) + Children.Sum(x => x == null ? 0 : x.WordCount);
-
-        //return true if we can safely delete the node (it has no interesting info)
-        private bool DeleteHelper(string key, int index)
-        {
-            var childIndex = ChildrenIndex(key[index]);
-            if (childIndex == 1 && ++index >= key.Length) // Base case
-            {
-                IsLeaf = false; // Unmark leaf node
-            }
-            else // Recursive case
-            {
-                if (Children[childIndex].DeleteHelper(key, index))
-                {
-                    Children[childIndex] = null;
-                }
-            }
-            return !IsLeaf && Children.All(x => x == null);
-        }
-        private TernarySearchTreeNode GetNode(string key)
-        {
-            var current = this;
-            var index = 0;
-            while ((current != null)&&index<key.Length)
-            {
-                var childIndex = current.ChildrenIndex(key[index]);
-                if ((childIndex == 1) && (++index == key.Length))
-                {
-                    return current; //found
-                }
-                current = current.Children[childIndex];
-            }
-            return null; //not found
-        }
-        private int ChildrenIndex(char c) { return c < C ? 0 : (c > C ? 2 : 1); }
-    }
-    #endregion
-
-    #region TRIE Structure
-    //search/add/remove a word in a dico of 'n' words in o(W) time (W = length of the longest word in the dico)
-    public class TrieNode
-    {
-        private const int ALPHABET_SIZE = 256; private const int FIRST_CHAR = 0;
-        //private const int ALPHABET_SIZE = 26; private const int FIRST_CHAR = 'a';
-        private TrieNode[] Children;
-        private bool IsLeaf { get; set; }
-
-        public void Add(string key)
-        {
-            var current = this;
-            foreach (var c in key)
-            {
-                var idx = c-FIRST_CHAR;
-                if (current.Children == null)
-                {
-                    current.Children = new TrieNode[ALPHABET_SIZE];
-                }
-                if (current.Children[idx] == null)
-                {
-                    current.Children[idx] = new TrieNode();
-                }
-                current = current.Children[idx];
-            }
-            current.IsLeaf = true;
-        }
-        public bool Contains(string key)
-        {
-            var node = GetNode(key);
-            return node!=null&&node.IsLeaf;
-        }
-        public int NodeCount => 1+ (Children?.Sum(x => x == null ? 0 : x.NodeCount)??0);
-        public int WordCount => (IsLeaf?1:0) + (Children?.Sum(x => x == null ? 0 : x.WordCount)??0);
-        public void Delete(string key) { DeleteHelper(key, 0); }
-        //return true if we can safely delete the node (it has no interesting info)
-        private bool DeleteHelper(string key, int depth)
-        {
-            if (depth == key.Length) // Base case
-            {
-                IsLeaf = false; // Unmark leaf node
-            }
-            else // Recursive case
-            {
-                var index = key[depth]- FIRST_CHAR;
-                if (Children[index].DeleteHelper(key, depth + 1))
-                {
-                    Children[index] = null;
-                }
-            }
-            return !IsLeaf && (Children ==null || Children.All(x => x == null));
-        }
-        private TrieNode GetNode(string key)
-        {
-            var current = this;
-            foreach (var c in key)
-            {
-                var child = current.Children?[c - FIRST_CHAR];
-                if (child == null)
-                {
-                    return null;
-                }
-                current = child;
-            }
-            return current;
-        }
-    }
-    #endregion
-
-    
-
     public static partial class Utils
     {
         public static void Swap<T>(IList<T> list, int i, int j)
@@ -292,7 +14,12 @@ namespace SharpAlgos
             list[j] = tmp;
         }
 
-        //compute all combinations of 'IList<List<T>> allItems' contaning exactly one element of each sub list
+        /// <summary>
+        /// compute all combinations of 'IList<List<T>> allItems' containing exactly one element of each sub list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="allItems"></param>
+        /// <returns></returns>
         public static IEnumerable<List<T>> AllCombinations<T>(IList<List<T>> allItems)
         {
             var result = new List<List<T>>();
@@ -348,7 +75,7 @@ namespace SharpAlgos
         #region Matrix Chain Multiplication
 
         //compute the optimal cost to multiply 'n' matrix together in o(n^3) time and o(n^2) memory
-        // For 2 consecutives matrixes (row1,col1) & (row2,col2) we always have col1=row2
+        // For 2 consecutive matrices (row1,col1) & (row2,col2) we always have col1=row2
         public static int MatrixChainMultiplicationMinimalCost(IList<KeyValuePair<int, int>> matrixDimensions)
         {
             return MatrixChainMultiplicationMinimalCost_Helper(matrixDimensions, new int?[matrixDimensions.Count, matrixDimensions.Count], null, 0, matrixDimensions.Count-1);
@@ -460,7 +187,7 @@ namespace SharpAlgos
         /// </summary>
         /// <param name="mPreference">for each m, the preferred w</param>
         /// <param name="wPreference">foreach w, the preferred m</param>
-        /// <returns>a dictionay with, for each each w (.Key), the preferred m (.Value) </returns>
+        /// <returns>a dictionary with, for each each w (.Key), the preferred m (.Value) </returns>
         public static Dictionary<T, T> StableMatching<T>(Dictionary<T, List<T>> mPreference, Dictionary<T, List<T>> wPreference)
         {
             var currentMatching = new Dictionary<T, T>();

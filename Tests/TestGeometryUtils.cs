@@ -170,7 +170,10 @@ namespace SharpAlgosTests
                 int testLength = r.Next(0, 200); //size of each test is between 0 and 200 points
                 var p = new List<Point>();
                 while (p.Count < testLength)
+                {
                     p.Add(new Point(r.Next(-100000, +100000), r.Next(-100000, +100000)));
+                }
+
                 var minDistance = Utils.MinDistance(p);
                 var minDistanceBruteForce = MinDistanceBruteForce(p);
                 Assert.AreEqual(minDistanceBruteForce, minDistance, 1e-9);
@@ -182,7 +185,10 @@ namespace SharpAlgosTests
             double minDistance = double.MaxValue;
             for (int i = 0; i < points.Count; ++i)
                 for (int j = i + 1; j < points.Count; ++j)
+                {
                     minDistance = Math.Min(minDistance, Utils.Distance(points[i], points[j]));
+                }
+
             return minDistance;
         }
 
@@ -199,7 +205,10 @@ namespace SharpAlgosTests
                 int testLength = r.Next(0, 500); //size of each test is between 0 and 500 points
                 var p = new List<Point>();
                 while (p.Count < testLength)
+                {
                     p.Add(new Point(r.Next(-100000, +100000), r.Next(-100000, +100000)));
+                }
+
                 var maxDistance = Utils.MaxDistance(p);
                 var maxDistanceBruteForce = MaxDistanceBruteForce(p);
                 Assert.AreEqual(maxDistanceBruteForce, maxDistance, 1e-9);
@@ -211,7 +220,10 @@ namespace SharpAlgosTests
             double minDistance = 0;
             for (int i = 0; i < points.Count; ++i)
                 for (int j = i + 1; j < points.Count; ++j)
+                {
                     minDistance = Math.Max(minDistance, Utils.Distance(points[i], points[j]));
+                }
+
             return minDistance;
         }
 
