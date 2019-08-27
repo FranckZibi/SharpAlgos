@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlgos", "Prod\SharpAlg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlgosTests", "Tests\SharpAlgosTests.csproj", "{3294C9CF-679A-48DB-97F3-1481F81FE06E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpContestProject", "CSharpContestProject\CSharpContestProject.csproj", "{5C6C0429-ECDC-4A3E-9DE0-0746764EA6D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3294C9CF-679A-48DB-97F3-1481F81FE06E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3294C9CF-679A-48DB-97F3-1481F81FE06E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3294C9CF-679A-48DB-97F3-1481F81FE06E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C6C0429-ECDC-4A3E-9DE0-0746764EA6D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C6C0429-ECDC-4A3E-9DE0-0746764EA6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C6C0429-ECDC-4A3E-9DE0-0746764EA6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C6C0429-ECDC-4A3E-9DE0-0746764EA6D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

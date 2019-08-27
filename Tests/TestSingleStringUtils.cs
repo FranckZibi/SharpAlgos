@@ -42,7 +42,7 @@ namespace SharpAlgosTests
             {
                 for (int test = 0; test < 10; ++test)
                 {
-                    var s = RandomString(length, rand);
+                    var s = RandomString(length, rand,3);
                     var expected = MaxPalindrome(s);
                     var observed = Utils.LongestPalindromeWithHash(s);
                     var observedManacher = Utils.LongestPalindromeManacher(s);
@@ -57,12 +57,12 @@ namespace SharpAlgosTests
         }
 
 
-        private static string RandomString(int length, Random rand)
+        private static string RandomString(int length, Random rand, int nbDistinctCharacters)
         {
             var sb = new StringBuilder();
             while (sb.Length < length)
             {
-                sb.Append((char) ('A' + rand.Next(3)));
+                sb.Append((char) ('A' + rand.Next(nbDistinctCharacters)));
             }
             return sb.ToString();
         }

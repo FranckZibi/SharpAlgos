@@ -90,7 +90,7 @@ namespace SharpAlgos
             //a is the longest sequence
             var prevLine = new int[1 + b.Count];
             var currentLine = new int[1 + b.Count];
-            for (var aLength = 1; aLength <= a.Count; ++aLength) //for each sub sequence of 'a' (starting from 1st to 'aLength' caracter)
+            for (var aLength = 1; aLength <= a.Count; ++aLength) //for each sub sequence of 'a' (starting from 1st to 'aLength' character)
             {
                 var tmp = currentLine; currentLine = prevLine; prevLine = tmp; //We swap previous and current line
                 for (var bLength = 1; bLength <= b.Count; ++bLength)
@@ -155,7 +155,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// given 2 strings, finds a smaller string that is the longest substring they have in common
-        /// in o (length(a) * length(b) ) time using dynamic programming
+        /// in o (a.Length * b.Length) time using Dynamic Programming
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>

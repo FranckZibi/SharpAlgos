@@ -8,8 +8,15 @@ namespace SharpAlgos
 {
     public static partial class Utils
     {
-        //Compute the max subsum from 'T' in o(N) time and o(1) memory
-        //the sub array indexes are stored in [startIndexMasSubSum,endIndexMaxSubSum]
+        /// <summary>
+        /// Compute the max sub sum from 'T' in o(N) time and o(1) memory
+        /// the sub array indexes are stored in [startIndexMasSubSum,endIndexMaxSubSum]
+        /// </summary>
+        /// <param name="T"></param>
+        /// <param name="allowEmptyElement"></param>
+        /// <param name="startIndexMasSubSum"></param>
+        /// <param name="endIndexMaxSubSum"></param>
+        /// <returns></returns>
         public static int MaxSubSum(int[] T, bool allowEmptyElement, out int startIndexMasSubSum, out int endIndexMaxSubSum)
         {
             endIndexMaxSubSum = 0;
@@ -41,7 +48,11 @@ namespace SharpAlgos
 
 
 
-        //Compute max subsequence without using adjacent item in o(N) time (and o(N) memory)
+        /// <summary>
+        /// Compute max subsequence without using adjacent item in o(N) time (and o(N) memory)
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
         public static int MaximumSubsequenceSumWithNoAdjacentElement(int[] m)
         {
             var res = new int[m.Length];
@@ -54,8 +65,14 @@ namespace SharpAlgos
             return res.Last();
         }
 
-        //Compute largest rectangle inside an histogram in o(N) time (and o(N) memory)
-        //the start & end indexes are stores in [startIndex,endIndex]
+        /// <summary>
+        /// Compute the largest rectangle inside an histogram in o(N) time (and o(N) memory)
+        /// the start & end indexes are stored in [startIndex,endIndex]
+        /// </summary>
+        /// <param name="heights">list height in the histogram</param>
+        /// <param name="startIndex">start index of the largest rectangle</param>
+        /// <param name="endIndex">end index of the largest rectangle</param>
+        /// <returns></returns>
         public static int LargestRectangleArea(int[] heights, out int startIndex, out int endIndex)
         {
             startIndex = endIndex = 0;
@@ -263,6 +280,7 @@ namespace SharpAlgos
         {
             var prevIndexes = new List<int>();
             var indexMinValueEndingAt = new List<int>();
+            // minValueEndingAt[l] , the minimal value for the last element of an increasing sub sequence of length 'l'
             var minValueEndingAt = new List<int>();
             if (data.Count <= 1)
             {
