@@ -38,15 +38,25 @@ namespace SharpAlgos
         }
 
         #region Longest Common Subsequence (LCS)
-        //given 2 strings, finds a smaller string that is the longest sub sequence of both strings in o (length(a) * length(b) ) time
+        /// <summary>
+        /// given 2 strings,
+        /// finds a smaller string that is the longest sub sequence of both strings
+        /// in: o (a.Length * b.Length ) time
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static List<T> LongestCommonSubsequence<T>(List<T> a, List<T> b)
         {
             var m = new int[1 + a.Count + 1, 1 + b.Count];
             for (var aLength = 1; aLength <= a.Count; ++aLength) //for each line of the matrix
+            { 
                 for (var bLength = 1; bLength <= b.Count; ++bLength)
                 {
                     m[aLength, bLength] = Equals(a[aLength - 1], b[bLength - 1]) ? (1 + m[aLength - 1, bLength - 1]) : Math.Max(m[aLength - 1, bLength], m[aLength, bLength - 1]);
                 }
+            }
             var x = a.Count;
             var y = b.Count;
             var result = new List<T>();
@@ -131,13 +141,27 @@ namespace SharpAlgos
         #endregion
 
         #region Longest Common Substring
-        //given 2 strings, finds the longest sub strings they have in common in o ( (a.Length * log(a.Length)  ) time using hash
-        public static string LongestCommonSubstringWithHash(string a, string b)
+        /// <summary>
+        /// given 2 strings, finds a smaller string that is the longest substring they have in common
+        /// in o (a.Length * log(a.Length)) ) time using hash
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static string LongestCommonSubstring_With_Hash(string a, string b)
         {
-            return new string(LongestCommonSubArrayWithHash(a.ToList(), b.ToList(), x => x).ToArray());
+            return new string(ArrayHashComputer<char>.LongestCommonSubArrayWithHash(a.ToList(), b.ToList(), x => x).ToArray());
         }
-       //given 2 strings, finds a smaller string that is the longest substring they have in common in o (length(a) * length(b) ) time using dynamic programming
-        public static List<T> LongestCommonSubstring<T>(List<T> a, List<T> b)
+
+        /// <summary>
+        /// given 2 strings, finds a smaller string that is the longest substring they have in common
+        /// in o (length(a) * length(b) ) time using dynamic programming
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static List<T> LongestCommonSubstring_With_DP<T>(List<T> a, List<T> b)
         {
             var m = new int[1 + a.Count, 1 + b.Count];
             var xMax = 0;
@@ -179,7 +203,15 @@ namespace SharpAlgos
         #endregion
 
         #region Shortest Common Supersequence (SCS)
-        //given 2 strings 'a'&'b', find (the smallest) bigger string 'scs' so that 'a'&'b' are subsequence of 'scs' in o (length(a) * length(b) ) time
+        /// <summary>
+        /// given 2 strings 'a'&'b', find (the smallest) bigger string 'scs'
+        /// so that 'a'&'b' are subsequence of 'scs'
+        /// in: o (a.Length * b.Length ) time
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static List<T> ShortestCommonSupersequence<T>(List<T> a, List<T> b)
         {
             return LCS_to_SCS(a, b, LongestCommonSubsequence(a, b));

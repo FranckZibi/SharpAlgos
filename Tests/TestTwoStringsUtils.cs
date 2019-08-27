@@ -58,8 +58,8 @@ namespace SharpAlgosTests
         {
             Assert.AreEqual(expected.Length, Utils.LengthOfLongestCommonSubstring(a.ToList(), b.ToList()));
             Assert.AreEqual(expected.Length, Utils.LengthOfLongestCommonSubstring(b.ToList(), a.ToList()));
-            Assert.AreEqual(expected, new string(Utils.LongestCommonSubstring(a.ToList(), b.ToList()).ToArray()));
-            Assert.AreEqual(expected, new string(Utils.LongestCommonSubstring(b.ToList(), a.ToList()).ToArray()));
+            Assert.AreEqual(expected, new string(Utils.LongestCommonSubstring_With_DP(a.ToList(), b.ToList()).ToArray()));
+            Assert.AreEqual(expected, new string(Utils.LongestCommonSubstring_With_DP(b.ToList(), a.ToList()).ToArray()));
         }
 
 
@@ -73,8 +73,8 @@ namespace SharpAlgosTests
         [TestCase("jjcjcjccjcjjc", "ccjcjccjcccccccjcjjjcjcjjccccjcjccjjcccccjccjjjccjjcjjccjcjcjjcjcjcjjcjjccjjcjjcccjccjjcjcjjcjcjccjcjjcccjjccjjcccccjcjjjjcjccccjjjjccjjcjjccjc", "cjjcjjcccjcccjjcjjjccjcjcjccjcjccjccjcccjcjcjjcjjjjcccjccccjjjjcjjjjcjcjccjcjjcjjccccccjccjcccjcjjjccjjcjcjjccjjcjjjccjjjcjccjjccjjcjjjccccjcjjjjj")]
         public void TestLongestCommonSubstringWithHash(string expected, string a, string b)
         {
-            Assert.AreEqual(expected, Utils.LongestCommonSubstringWithHash(a, b));
-            Assert.AreEqual(expected, Utils.LongestCommonSubstringWithHash(b, a));
+            Assert.AreEqual(expected, Utils.LongestCommonSubstring_With_Hash(a, b));
+            Assert.AreEqual(expected, Utils.LongestCommonSubstring_With_Hash(b, a));
         }
 
         [TestCase(new[] { "" }, "", "")]

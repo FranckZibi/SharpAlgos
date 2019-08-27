@@ -5,13 +5,13 @@ using NUnit.Framework;
 namespace SharpAlgosTests
 {
     [TestFixture]
-    public class TestArrayUtils
+    public class TestArrayHashComputer
     {
         [Test]
         public void ArrayHashComputerHashTest()
         {
             var test = "abcdeabc";
-            var hashComputer = Utils.ArrayHashComputer<char>.FromString(test);
+            var hashComputer = ArrayHashComputer<char>.FromString(test);
 
             Assert.AreEqual(hashComputer.Hash(0, 2), hashComputer.Hash(5, 7));
             for (int i = 1; i < 5; ++i)
@@ -38,7 +38,7 @@ namespace SharpAlgosTests
         [TestCase("eqfvuokjvnlkyrgdnzem")]
         public void RecomputeHashTest(string str)
         {
-            var hashA = Utils.ArrayHashComputer<char>.FromString(str);
+            var hashA = ArrayHashComputer<char>.FromString(str);
             for(int i=0;i<str.Length;++i)
             {
                 for (int j = i; j < str.Length; ++j)
@@ -52,7 +52,7 @@ namespace SharpAlgosTests
         [Test]
         public void AllIndexesOfPatternTest()
         {
-            var hashA = Utils.ArrayHashComputer<char>.FromString("abcdabca");
+            var hashA = ArrayHashComputer<char>.FromString("abcdabca");
             Assert.IsTrue(new[] { 0 }.SequenceEqual(hashA.AllIndexesOfPattern("abcdabca".ToList())));
             Assert.IsTrue(new [] {0, 4}.SequenceEqual(hashA.AllIndexesOfPattern("ab".ToList())));
             Assert.IsTrue(new [] {0, 4, 7}.SequenceEqual(hashA.AllIndexesOfPattern("a".ToList())));
@@ -62,23 +62,23 @@ namespace SharpAlgosTests
         [Test]
         public void DistinctSubArrayCountTest()
         {
-            var hashA = Utils.ArrayHashComputer<char>.FromString("abc");
+            var hashA = ArrayHashComputer<char>.FromString("abc");
             Assert.AreEqual(6, hashA.DistinctSubArrayCount());
-            hashA = Utils.ArrayHashComputer<char>.FromString("aba");
+            hashA = ArrayHashComputer<char>.FromString("aba");
             Assert.AreEqual(5, hashA.DistinctSubArrayCount());
         }
 
         [Test]
         public void FirstIndexOfSameSubArrayWithLengthTest()
         {
-            var hashA = Utils.ArrayHashComputer<char>.FromString("abcdeabc");
-            var hashB = Utils.ArrayHashComputer<char>.FromString("abcdeabc");
+            var hashA = ArrayHashComputer<char>.FromString("abcdeabc");
+            var hashB = ArrayHashComputer<char>.FromString("abcdeabc");
             Assert.AreEqual(0, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 0));
             Assert.AreEqual(0, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 8));
             Assert.AreEqual(-1, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 9));
 
-            hashA = Utils.ArrayHashComputer<char>.FromString("123456");
-            hashB = Utils.ArrayHashComputer<char>.FromString("456789");
+            hashA = ArrayHashComputer<char>.FromString("123456");
+            hashB = ArrayHashComputer<char>.FromString("456789");
             Assert.AreEqual(0, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 0));
             Assert.AreEqual(3, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 1));
             Assert.AreEqual(3, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 2));
@@ -90,8 +90,8 @@ namespace SharpAlgosTests
             Assert.AreEqual(0, hashB.FirstIndexOfSameSubArrayWithLength(hashA, 3));
             Assert.AreEqual(-1, hashB.FirstIndexOfSameSubArrayWithLength(hashA, 4));
 
-            hashA = Utils.ArrayHashComputer<char>.FromString("123");
-            hashB = Utils.ArrayHashComputer<char>.FromString("456");
+            hashA = ArrayHashComputer<char>.FromString("123");
+            hashB = ArrayHashComputer<char>.FromString("456");
             Assert.AreEqual(0, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 0));
             Assert.AreEqual(-1, hashA.FirstIndexOfSameSubArrayWithLength(hashB, 1));
             Assert.AreEqual(-1, hashB.FirstIndexOfSameSubArrayWithLength(hashA, 1));
