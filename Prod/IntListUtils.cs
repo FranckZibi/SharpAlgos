@@ -66,6 +66,53 @@ namespace SharpAlgos
         }
 
         /// <summary>
+        /// return all longest intervals containing exactly 'k' distinct elements in o(n) time
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="k"></param>
+        /// <returns></returns>
+        public static List<Tuple<int, int>> LongestIntervalsContainingExactly_K_DistinctItems(int[] data, int k)
+        {
+            var result = new List<Tuple<int, int>>();
+            int i = 0;
+            int j = 0;
+            int dist = 0;
+            var itemToCountInCurrentInterval = new Dictionary<int, int>();
+            foreach (var item in data)
+            {
+                itemToCountInCurrentInterval[item] = 0;
+            }
+            while (j < data.Length)
+            {
+                while (dist == k)
+                {
+                    //we reduce the interval by the left side, removing element at i (data[i])
+                    --itemToCountInCurrentInterval[data[i]];
+                    if (itemToCountInCurrentInterval[data[i]] == 0)
+                    {
+                        --dist;
+                    }
+                    ++i;
+                }
+                while (j < data.Length && (dist < k || itemToCountInCurrentInterval[data[j]] != 0))
+                {
+                    //we increase the interval by the right side, adding element at 'j' (data[j])
+                    if (itemToCountInCurrentInterval[data[j]] == 0)
+                    {
+                        ++dist;
+                    }
+                    ++itemToCountInCurrentInterval[data[j]];
+                    ++j;
+                }
+                if (dist == k)
+                {
+                    result.Add(Tuple.Create(i, j-1));
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Compute the largest rectangle inside an histogram in o(N) time (and o(N) memory)
         /// the start & end indexes are stored in [startIndex,endIndex]
         /// </summary>

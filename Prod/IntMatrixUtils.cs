@@ -6,15 +6,23 @@ namespace SharpAlgos
 {
     public static partial class Utils
     {
-        // return a matrix where matrix[row,col] = sum of all elements in m from top left to (row,col)
+        /// <summary>
+        /// return a matrix where matrix[row,col] = sum of all elements in m from top left to (row,col)
+        /// in o(N*M) time (& memory)
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns>the count matrix</returns>
         public static int[,] CreateCountMatrix(int[,] m)
         {
             var countMatrix = (int[,]) m.Clone();
             for (int row = 0; row < m.GetLength(0); ++row)
-            for (int col = 0; col < m.GetLength(1); ++col)
             {
-                countMatrix[row, col] += Default(countMatrix, row, col - 1, 0) + Default(countMatrix, row - 1, col, 0) -
-                                         Default(countMatrix, row - 1, col - 1, 0);
+                for (int col = 0; col < m.GetLength(1); ++col)
+                {
+                    countMatrix[row, col] += Default(countMatrix, row, col - 1, 0) +
+                                             Default(countMatrix, row - 1, col, 0) -
+                                             Default(countMatrix, row - 1, col - 1, 0);
+                }
             }
             return countMatrix;
         }
@@ -26,29 +34,36 @@ namespace SharpAlgos
                    Default(countMatrix, row1, col0 - 1, 0) + Default(countMatrix, row0 - 1, col0 - 1, 0);
         }
 
-
+        /// <summary>
+        /// find the minimum cost to go from top left to bottom right on matrix in o(N*M) time (& memory)
+        /// </summary>
+        /// <param name="m">the matrix with the cost in each cell</param>
+        /// <returns>the minimum cost</returns>
         public static int MinimumCostToGoFromTopLeftToBottomRightOfMatrix(int[,] m)
         {
             var cost = (int[,]) m.Clone();
-            for (int row = 0; row < m.GetLength(0); ++row)
-            for (int col = 0; col < m.GetLength(1); ++col)
+            var nbRows = m.GetLength(0);
+            var nbCols = m.GetLength(1);
+            for (int row = 0; row < nbRows; ++row)
             {
-                if (row == 0 && col == 0)
+                for (int col = 0; col < nbCols; ++col)
                 {
-                    continue;
+                    if (row == 0 && col == 0)
+                    {
+                        continue;
+                    }
+                    var costLeft = row == 0 ? int.MaxValue : cost[row - 1, col];
+                    var costTop = col == 0 ? int.MaxValue : cost[row, col - 1];
+                    cost[row, col] += Math.Min(costLeft, costTop);
                 }
-                var costLeft = row == 0 ? int.MaxValue : cost[row - 1, col];
-                var costTop = col == 0 ? int.MaxValue : cost[row, col - 1];
-                cost[row, col] += Math.Min(costLeft, costTop);
             }
-            return cost[m.GetLength(0) - 1, m.GetLength(1) - 1];
+            return cost[nbRows - 1, nbCols - 1];
         }
 
         //Find the number of path (from top left to bottom right) with total cost equal 'givenCost' in o (m.Height * m.Width) time
         public static int NumberOfPathsToGoFromTopLeftToBottomRightOfMatrixWithGivenCost(int[,] m, int givenCost)
         {
-            return NumberOfPathsToGoFromTopLeftToBottomRightOfMatrixWithGivenCost(m, new Dictionary<string, int>(),
-                m.GetLength(0) - 1, m.GetLength(1) - 1, givenCost);
+            return NumberOfPathsToGoFromTopLeftToBottomRightOfMatrixWithGivenCost(m, new Dictionary<string, int>(), m.GetLength(0) - 1, m.GetLength(1) - 1, givenCost);
         }
 
         private static int NumberOfPathsToGoFromTopLeftToBottomRightOfMatrixWithGivenCost(int[,] m, IDictionary<string, int> cache, int row, int col, int remainingCost)
@@ -72,26 +87,30 @@ namespace SharpAlgos
             return cache[key];
         }
 
-        //Find the longest sequence satisfying a given constraint in o (m.Height * m.Width) time (& memory)
+        //Find the longest sequence satisfying a given constraint in o(M*N) time (& memory)
         public static List<int> LongestSequenceSatisfyingConstraints(int[,] m, Func<int, int, bool> isOkToGoFromSourceValueToTargetValue)
         {
             var score = new int[m.GetLength(0), m.GetLength(1)];
-            //Point[,] prevPoint= null; //uncomment line if the goal is only to compute length of longest path
+            //uncomment line if the goal is only to compute length of longest path
+            //Point[,] prevPoint= null; 
             var prevPoint = new Point[m.GetLength(0), m.GetLength(1)];
             int rowMax = 0;
             int colMax = 0;
             for (int row = 0; row < m.GetLength(0); ++row)
-            for (int col = 0; col < m.GetLength(1); ++col)
             {
-                LongestSequenceSatisfyingConstraints_Helper(m, score, prevPoint, isOkToGoFromSourceValueToTargetValue,
-                    row, col);
-                if (score[row, col] > score[rowMax, colMax])
+                for (int col = 0; col < m.GetLength(1); ++col)
                 {
-                    rowMax = row;
-                    colMax = col;
+                    LongestSequenceSatisfyingConstraints_Helper(m, score, prevPoint, isOkToGoFromSourceValueToTargetValue, row, col);
+                    if (score[row, col] > score[rowMax, colMax])
+                    {
+                        rowMax = row;
+                        colMax = col;
+                    }
                 }
             }
-            //return score[rowMax, colMax]; //uncomment line to return length of longest path
+
+            //uncomment line to return length of longest path
+            //return score[rowMax, colMax]; 
             var bestPath = new List<int>();
             var prev = new Point(rowMax, colMax);
             while (bestPath.Count < score[rowMax, colMax])
@@ -208,7 +227,12 @@ namespace SharpAlgos
             return result;
         }
 
-        //compute the max sum from a sub matrix of a N*M 'matrix' in o(N^2*M) time
+        /// <summary>
+        ///  compute the max sum from a sub matrix of a N*M 'matrix' in o(N^2*M) time
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <param name="coordinates">4 integers coordinates where the max sum is located:  rowStart, colStart, rowEnd, colEnd </param>
+        /// <returns>the max sum</returns>
         public static int MaximumSubmatrixSum(int[,] matrix, out int[] coordinates)
         {
             int nbRows = matrix.GetLength(0);
@@ -226,16 +250,16 @@ namespace SharpAlgos
                     {
                         subSum[col] = SubMatrixSumInCountMatrix(countMatrix, rowStart, col, rowEnd, col);
                     }
-                    int startIndexMasSubSum;
-                    int endIndexMaxSubSum;
-                    int curMaxSum = MaxSubSum(subSum, false, out startIndexMasSubSum, out endIndexMaxSubSum);
+                    int colStart;
+                    int colEnd;
+                    int curMaxSum = MaxSubSum(subSum, false, out colStart, out colEnd);
                     if (curMaxSum > maxSum)
                     {
                         maxSum = curMaxSum;
                         coordinates[0] = rowStart;
-                        coordinates[1] = startIndexMasSubSum;
+                        coordinates[1] = colStart;
                         coordinates[2] = rowEnd;
-                        coordinates[3] = endIndexMaxSubSum;
+                        coordinates[3] = colEnd;
                     }
                 }
             }

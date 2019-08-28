@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SharpAlgos;
@@ -16,6 +17,35 @@ namespace SharpAlgosTests
         {
             Assert.AreEqual(26, Utils.MaximumSubsequenceSumWithNoAdjacentElement(new[] { 1, 2, 9, 4, 5, 0, 4, 11, 6 }));
         }
+
+        [Test]
+        public void TestLongestIntervalsContainingExactly_K_DistinctItems()
+        {
+            var res = Utils.LongestIntervalsContainingExactly_K_DistinctItems(new[] { 1, 2, 9, 4, 5, 0, 4, 11, 6 }, 1);
+            Assert.AreEqual(9, res.Count);
+            for (int i = 0; i < res.Count; ++i)
+            {
+                Assert.AreEqual(i, res[i].Item1);
+                Assert.AreEqual(i, res[i].Item2);
+            }
+
+            res = Utils.LongestIntervalsContainingExactly_K_DistinctItems(new[] { 1, 2, 1, 4, 5, 5, 1, 1, 1 }, 2);
+            Assert.AreEqual(4, res.Count);
+            Assert.AreEqual(Tuple.Create(0,2), res[0]);
+            Assert.AreEqual(Tuple.Create(2,3), res[1]);
+            Assert.AreEqual(Tuple.Create(3,5), res[2]);
+            Assert.AreEqual(Tuple.Create(4,8), res[3]);
+
+            res = Utils.LongestIntervalsContainingExactly_K_DistinctItems(new[] { 1, 2, 1, 4, 5, 5, 1, 1, 1 }, 3);
+            Assert.AreEqual(2, res.Count);
+            Assert.AreEqual(Tuple.Create(0, 3), res[0]);
+            Assert.AreEqual(Tuple.Create(2, 8), res[1]);
+
+            res = Utils.LongestIntervalsContainingExactly_K_DistinctItems(new[] { 1, 2, 1, 4, 5, 5, 1, 1, 1 }, 5);
+            Assert.AreEqual(0, res.Count);
+        }
+
+
 
         [TestCase(new[] { 2, 1, 5, 6, 2, 3 }, 10,2,3)]
         [TestCase(new[] { 1, 2, 3, 4, 5 }, 9,2,4)]
@@ -154,9 +184,9 @@ namespace SharpAlgosTests
         [TestCase(new[] { 4, 3, 2, 1 }, 2, "43")]
         [TestCase(new[] { 4, 3, 2, 1 }, 3, "432")]
         [TestCase(new[] { 4, 3, 2, 1 }, 4, "4321")]
-        public void TestBuildBiggestNumberUsingSubsequenceOfKElements(int[] digits, int K, string expectedResult)
+        public void TestBuildBiggestNumberUsingSubsequenceOfKElements(int[] digits, int k, string expectedResult)
         {
-            Assert.AreEqual(expectedResult, string.Join("",Utils.BuildBiggestNumberUsingSubsequenceOfKElements(digits, K)));
+            Assert.AreEqual(expectedResult, string.Join("",Utils.BuildBiggestNumberUsingSubsequenceOfKElements(digits, k)));
         }
 
 

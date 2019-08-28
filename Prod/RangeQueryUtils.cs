@@ -262,7 +262,12 @@ namespace SharpAlgos
         }
         #endregion
 
-        //retrieve the better value (min/max/sum) in interval [startIndex, endIndex] in o(log(N)) time
+        /// <summary>
+        /// Query an interval [startIndex, endIndex] (for min/max/sum)  in o(log(N)) time 
+        /// </summary>
+        /// <param name="startIndex">start index of the interval</param>
+        /// <param name="endIndex">end index of the interval</param>
+        /// <returns>the interval value (min/max/sum)</returns>
         public int Query(int startIndex, int endIndex) { return Query(0, 0, dataLength - 1, Math.Max(0, startIndex), Math.Min(dataLength - 1, endIndex)); }
         //return the contribution of segment 'segmentId' to compute the value for interval [startIndex, endIndex]
         private int Query(int segmentId, int segmentStartIndex, int segmentEndIndex, int startIndex, int endIndex)
@@ -336,8 +341,27 @@ namespace SharpAlgos
             ComputeHeapForNbInfToK(0, 0, data.Length - 1, data);
         }
 
-        //retrieve the number of elements in interval [startIndex, endIndex] <= K , in o(log^2(N)) time
+        /// <summary>
+        /// retrieve the number of elements in interval [startIndex, endIndex] less or equal to  K in o(log^2(N)) time
+        /// </summary>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <param name="K"></param>
+        /// <returns></returns>
         public int Query(int startIndex, int endIndex, int K) { return Query(0, 0, dataLength - 1, K, startIndex, endIndex); }
+
+
+        /// <summary>
+        /// retrieve the number of elements in interval [startIndex, endIndex] equals to  K in o(log^2(N)) time
+        /// </summary>
+        /// <param name="startIndex"></param>
+        /// <param name="endIndex"></param>
+        /// <param name="K"></param>
+        /// <returns>the number of elements equals to K in interval</returns>
+        public int QueryEqualsToK(int startIndex, int endIndex, int K)
+        {
+            return Query(startIndex, endIndex, K) - Query(startIndex, endIndex, K-1);
+        }
 
 
         private List<int> ComputeHeapForNbInfToK(int segmentId, int segmentStartIndex, int segmentEndIndex, int[] data)

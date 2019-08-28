@@ -7,7 +7,7 @@ namespace SharpAlgos
     public static partial class Utils
     {
         /// <summary>
-        /// find the element tat is present in the most intervals
+        /// find the element that is present in the most intervals
         /// </summary>
         /// <param name="intervals"></param>
         /// <returns>

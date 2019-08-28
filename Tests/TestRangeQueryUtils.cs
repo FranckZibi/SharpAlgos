@@ -113,7 +113,8 @@ namespace SharpAlgosTests
                     {
                         foreach (var K in new[] { r.Next(-2000, 2000), ints[startIndex], ints[endIndex], ints[(startIndex + endIndex) / 2], ints[startIndex] - 1, ints[endIndex] - 1, ints[startIndex] + 1, ints[endIndex] + 1 })
                         {
-                            Assert.AreEqual(SlowCountInferiorToKInInterval(ints, startIndex, endIndex, K), st.Query(startIndex, endIndex, K));
+                            Assert.AreEqual(SlowCountInferiorOrEqualToKInInterval(ints, startIndex, endIndex, K), st.Query(startIndex, endIndex, K));
+                            Assert.AreEqual(SlowCountEqualToKInInterval(ints, startIndex, endIndex, K), st.QueryEqualsToK(startIndex, endIndex, K));
                         }
                     }
             }
@@ -178,9 +179,13 @@ namespace SharpAlgosTests
         {
             return data.Skip(startIndex).Take(endIndex - startIndex + 1).Sum();
         }
-        private static int SlowCountInferiorToKInInterval(int[] data, int startIndex, int endIndex, int K)
+        private static int SlowCountInferiorOrEqualToKInInterval(int[] data, int startIndex, int endIndex, int K)
         {
             return data.Skip(startIndex).Take(endIndex - startIndex + 1).Count(i => i <= K);
+        }
+        private static int SlowCountEqualToKInInterval(int[] data, int startIndex, int endIndex, int K)
+        {
+            return data.Skip(startIndex).Take(endIndex - startIndex + 1).Count(i => i == K);
         }
     }
 }
