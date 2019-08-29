@@ -14,31 +14,34 @@ namespace SharpAlgosTests
         [Test]
         public void TestIntervalTreeSeveralElement()
         {
-            int minValue = -100;
-            int maxValue = 100;
+            int minValue = -30;
+            int maxValue = 30;
             var rand = new Random(0);
-            for (int length = 1; length <= 100; ++length)
+            for (int testId = 0; testId < 20; ++testId)
             {
-                for (int testId = 0; testId < 100; ++testId)
+                for (int length = 1; length <= 25; ++length)
                 {
-                    var intervals = GetRandomIntervals(length,minValue, maxValue, rand);
-                    var x = rand.Next(minValue - 50, maxValue + 50);
-                    foreach(bool endOfIntervalIsIncludedInInterval in new[]{true,false})
+                    var intervals = GetRandomIntervals(length, minValue, maxValue, rand);
+                    for (int x = minValue-2; x<= maxValue+2; ++x)
                     {
-                        var observed = Utils.IntervalTree.ValueOf(intervals, endOfIntervalIsIncludedInInterval).AllIntervalsContaining(x);
-                        observed = observed.OrderBy(i => i.Item1).ThenBy(i => i.Item2).ToList();
-                        var expected = AllIntervalsContainingXSlow(intervals, x, endOfIntervalIsIncludedInInterval);
-                        expected = expected.OrderBy(i => i.Item1).ThenBy(i => i.Item2).ToList();
-                        Assert.AreEqual(expected, observed);
+                        foreach(bool endOfIntervalIsIncludedInInterval in new[]{true,false})
+                        {
+                            var intervalTree = Utils.IntervalTree.ValueOf(intervals, endOfIntervalIsIncludedInInterval);
+                            var observed = intervalTree?.AllIntervalsContaining(x)??new List<Tuple<int, int>>();
+                            observed = observed.OrderBy(i => i.Item1).ThenBy(i => i.Item2).ToList();
+                            var expected = AllIntervalsContainingXSlow(intervals, x, endOfIntervalIsIncludedInInterval);
+                            expected = expected.OrderBy(i => i.Item1).ThenBy(i => i.Item2).ToList();
+                            Assert.AreEqual(expected, observed);
 
-                        var observedCount = Utils.IntervalTree.ValueOf(intervals, endOfIntervalIsIncludedInInterval).CountIntervalsContaining(x);
-                        Assert.AreEqual(expected.Count , observedCount);
+                            var observedCount = intervalTree?.CountIntervalsContaining(x)??0;
+                            Assert.AreEqual(expected.Count , observedCount);
+                        }
                     }
                 }
             }
         }
 
-        public static List<Tuple<int,int>> GetRandomIntervals(int nbIntervals, int minValue, int maxValue, Random rand)
+        private static List<Tuple<int,int>> GetRandomIntervals(int nbIntervals, int minValue, int maxValue, Random rand)
         {
 
             var result = new List<Tuple<int, int>>();
@@ -52,7 +55,7 @@ namespace SharpAlgosTests
         }
 
 
-        public static List<Tuple<int, int>> AllIntervalsContainingXSlow(List<Tuple<int, int>> intervals, int x, bool endOfIntervalIsIncludedInInterval)
+        private static List<Tuple<int, int>> AllIntervalsContainingXSlow(List<Tuple<int, int>> intervals, int x, bool endOfIntervalIsIncludedInInterval)
         {
             var result = new List<Tuple<int, int>>();
             foreach (var i in intervals)

@@ -6,10 +6,9 @@ namespace SharpAlgos
 {
     public static partial class Utils
     {
-
-
         public class IntervalTree
         {
+            #region private fields
             private readonly bool _endOfIntervalIsIncludedInInterval;
             //interval containing _center
             private readonly List<Tuple<int, int>> _intervalsSortedByStart;
@@ -20,6 +19,7 @@ namespace SharpAlgos
             private readonly IntervalTree _left;
             //intervals that start strictly after _center
             private readonly IntervalTree _right;
+            #endregion
 
             private IntervalTree(List<Tuple<int, int>> intervalsSortedByStart, bool endOfIntervalIsIncludedInInterval, int center, IntervalTree left, IntervalTree right)
             {
@@ -33,6 +33,7 @@ namespace SharpAlgos
 
             /// <summary>
             /// return the list of intervals containing 'x' in o(log(n) + m) time
+            /// (+ o(n) preparation time
             /// (where 'm' is the number of interval returned)
             /// </summary>
             /// <param name="x"></param>
@@ -69,53 +70,32 @@ namespace SharpAlgos
                 return res;
             }
 
-
-            //TODO improve complexity to o(log(n)) time thanks to dichotomy search
             /// <summary>
-            /// return the number of intervals containing 'x' in o(log(n) + m) time
-            /// (where 'm' is the number of interval returned)
+            /// return the number of intervals containing 'x' in o(log(n)) time
+            /// (+ o(n) preparation time
+            /// (where 'n' is the total number of interval)
             /// </summary>
             /// <param name="x"></param>
             /// <returns>number of intervals containing x</returns>
             public int CountIntervalsContaining(int x)
             {
-                int res = 0;
                 if (x < _center || (x == _center && !_endOfIntervalIsIncludedInInterval))
                 {
-                    res = _left?.CountIntervalsContaining(x)??0;
-                    foreach (var i in _intervalsSortedByStart)
-                    {
-                        if (i.Item1 > x)
-                        {
-                            break;
-                        }
-                        ++res;
-                    }
+                    return (_left?.CountIntervalsContaining(x)??0)
+                            + MaximumValidIndex(0, _intervalsSortedByStart.Count,idx => (idx == 0) || _intervalsSortedByStart[idx - 1].Item1 <= x);
                 }
                 else
                 {
-                    res = _right?.CountIntervalsContaining(x) ?? 0;
-                    for (var index = _intervalsSortedByEnd.Count - 1; index >= 0; --index)
-                    {
-                        var i = _intervalsSortedByEnd[index];
-                        if ((i.Item2 < x) || (i.Item2 == x && !_endOfIntervalIsIncludedInInterval))
-                        {
-                            break;
-                        }
-                        ++res;
-                    }
+                    return (_right?.CountIntervalsContaining(x)??0)
+                            +MaximumValidIndex(0, _intervalsSortedByEnd.Count, idx => (idx == 0) 
+                                || _intervalsSortedByEnd[_intervalsSortedByEnd.Count-idx].Item2 > x
+                                || (_endOfIntervalIsIncludedInInterval&& _intervalsSortedByEnd[_intervalsSortedByEnd.Count-idx].Item2 == x) 
+                                );
                 }
-
-                return res;
             }
 
             public static IntervalTree ValueOf(List<Tuple<int, int>> intervals, bool endOfIntervalIsIncludedInInterval, bool intervalAreAlreadySorted = false)
             {
-                if (intervals.Count == 0)
-                {
-                    return null;
-                }
-
                 if (!intervalAreAlreadySorted)
                 {
                     intervals = intervals.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
@@ -124,6 +104,11 @@ namespace SharpAlgos
                         intervals.RemoveAll(i => i.Item1 == i.Item2);
                     }
                 }
+                if (intervals.Count == 0)
+                {
+                    return null;
+                }
+
 
                 var left = new List<Tuple<int, int>>();
                 var C = new List<Tuple<int, int>>();
@@ -152,11 +137,7 @@ namespace SharpAlgos
                     ValueOf(left, endOfIntervalIsIncludedInInterval, true),
                     ValueOf(right, endOfIntervalIsIncludedInInterval, true));
             }
-
-
-
         }
-
 
         /// <summary>
         /// find the element that is present in the most intervals
