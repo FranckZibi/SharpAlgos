@@ -8,6 +8,52 @@ namespace SharpAlgos
     public static partial class Utils
     {
 
+        /// <summary>
+        /// return all longest intervals containing exactly 'k' distinct elements in o(n) time
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="k"></param>
+        /// <returns></returns>
+        public static List<Tuple<int, int>> LongestIntervalsContainingExactly_K_DistinctItems<T>(T[] data, int k)
+        {
+            var result = new List<Tuple<int, int>>();
+            int i = 0;
+            int j = 0;
+            int dist = 0;
+            var itemToCountInCurrentInterval = new Dictionary<T, int>();
+            foreach (var item in data)
+            {
+                itemToCountInCurrentInterval[item] = 0;
+            }
+            while (j < data.Length)
+            {
+                while (dist == k)
+                {
+                    //we reduce the interval by the left side, removing element at i (data[i])
+                    --itemToCountInCurrentInterval[data[i]];
+                    if (itemToCountInCurrentInterval[data[i]] == 0)
+                    {
+                        --dist;
+                    }
+                    ++i;
+                }
+                while (j < data.Length && (dist < k || itemToCountInCurrentInterval[data[j]] != 0))
+                {
+                    //we increase the interval by the right side, adding element at 'j' (data[j])
+                    if (itemToCountInCurrentInterval[data[j]] == 0)
+                    {
+                        ++dist;
+                    }
+                    ++itemToCountInCurrentInterval[data[j]];
+                    ++j;
+                }
+                if (dist == k)
+                {
+                    result.Add(Tuple.Create(i, j - 1));
+                }
+            }
+            return result;
+        }
 
         #region Duplicate detection
         //TODO: returns index of duplicates instead of true/false
@@ -24,7 +70,6 @@ namespace SharpAlgos
             var cache = ComputeCacheForFindDuplicate(data);
             return HasDuplicateInInterval(cache, i, j);
         }
-
         /// <summary>
         /// find if there is a duplicate in interval [i,j] in o(1) time (+o(n) preparation time & o(n) preparation memory)
         /// </summary>
@@ -43,7 +88,6 @@ namespace SharpAlgos
             return false; //no duplicate found in  [i,j]
 
         }
-
         private static Tuple<int[],int[]> ComputeCacheForFindDuplicate<T>(T[] data)
         {
             var idxToLastIdxWithSameValue = new int[data.Length];
@@ -65,8 +109,6 @@ namespace SharpAlgos
             }
             return Tuple.Create(idxToLastIdxWithSameValue, idxToMaxIdxWithDuplicates);
         }
-
         #endregion
-
     }
 }
