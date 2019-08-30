@@ -33,7 +33,7 @@ namespace SharpAlgos
 
             /// <summary>
             /// return the list of intervals containing 'x' in o(log(n) + m) time
-            /// (+ o(n) preparation time
+            /// (+ o(n log(n) ) preparation time
             /// (where 'm' is the number of interval returned)
             /// </summary>
             /// <param name="x"></param>
@@ -72,7 +72,7 @@ namespace SharpAlgos
 
             /// <summary>
             /// return the number of intervals containing 'x' in o(log(n)) time
-            /// (+ o(n) preparation time
+            /// (+ o(n log(n) ) preparation time
             /// (where 'n' is the total number of interval)
             /// </summary>
             /// <param name="x"></param>
@@ -176,6 +176,95 @@ namespace SharpAlgos
                 }
             }
             return Tuple.Create(valueForMaxCount, maxCount);
+        }
+
+
+        /// <summary>
+        /// return the minimum point need to have at least one point in each interval in o(n) time
+        /// </summary>
+        /// <param name="intervals"></param>
+        /// <param>
+        /// true if open interval (where start and end of interval are not included in interval (ex: ]a,b[ )
+        /// false for closed or semi open interval : [a,b] or ]a,b] or [a;b[
+        /// <name>bothStartAndEndAreExcludedFromInterval</name>
+        /// </param>
+        /// <returns>
+        /// minimum list of point coordinates to have at leats one point in each interval
+        /// </returns>
+        public static List<int> MinimumPointsToCoverAllIntervals(List<Tuple<int, int>> intervals)
+        {
+            var result  =  new List<int>();
+            intervals = intervals.OrderBy(x => x.Item2).ToList();
+            foreach (var i in intervals)
+            {
+                if (result.Count == 0)
+                {
+                    result.Add(i.Item2);
+                }
+                else
+                {
+                    if (result.Last() < i.Item1) //no point in interval
+                    {
+                        result.Add(i.Item2);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+            /// merge all intervals that intersect and return the new list of all intervals (with merged intervals) in o(n) time
+            /// </summary>
+            /// <param name="intervals"></param>
+            /// <param name="bothStartAndEndAreExcludedFromInterval">
+            /// true if open interval (where start and end of interval are not included in interval (ex: ]a,b[ )
+            /// false for closed or semi open interval : [a,b] or ]a,b] or [a;b[
+            /// </param>
+            /// <returns>
+            /// merged intervals
+            /// </returns>
+            public static List<Tuple<int, int>> IntervalsUnion(List<Tuple<int, int>> intervals, bool bothStartAndEndAreExcludedFromInterval = false)
+        {
+            var result  =new List<Tuple<int, int>>();
+            var tmp = intervals.Select(x=> Tuple.Create(x.Item1, true)).ToList();
+            tmp.AddRange(intervals.Select(x=> Tuple.Create(x.Item2, false)));
+            if (bothStartAndEndAreExcludedFromInterval)
+            {
+                tmp = tmp.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+            }
+            else
+            {
+                tmp = tmp.OrderBy(x => x.Item1).ThenByDescending(x => x.Item2).ToList();
+            }
+
+            int currentStart = 0;
+            int nbInCurrentInterval = 0;
+
+            foreach (var e in tmp)
+            {
+                if (e.Item2) //start of interval
+                {
+                    if (nbInCurrentInterval == 0)
+                    {
+                        currentStart = e.Item1;
+                    }
+                    ++nbInCurrentInterval;
+                }
+                else //end of interval
+                {
+                    --nbInCurrentInterval;
+                    if (nbInCurrentInterval == 0)
+                    {
+                        result.Add(Tuple.Create(currentStart, e.Item1));
+                    }
+                }
+            }
+            if (nbInCurrentInterval != 0)
+            {
+                result.Add(Tuple.Create(currentStart, tmp.Last().Item1));
+            }
+            return result;
         }
     }
 }

@@ -7,13 +7,13 @@ namespace SharpAlgos
 {
     public static partial class Utils
     {
-
-        //Input:
-        //  isAccessible 'bool matrix' of available squares
-        //Output:
-        //  segmentIdToCount:           segmentId => nb of available squares in the segment
-        //  segmentIdToDimension:       segmentId => max dimension of the segment
-        //  returned value:             for each square the segmentId associated with the square, or -1 if the square is not accessible
+        /// <summary>
+        /// identify all connected components in a grid in o(N*M) time (& memory)
+        /// </summary>
+        /// <param name="isAccessible">'bool matrix' of available squares</param>
+        /// <param name="segmentIdToDimension">segmentId => nb of available squares in the segment</param>
+        /// <param name="segmentIdToCount">segmentId => nb of available squares in the segment</param>
+        /// <returns>for each square the segmentId associated with the square, or -1 if the square is not accessible</returns>
         public static int[,] IdentifyAllSegments(bool[,] isAccessible, out IDictionary<int, Rectangle> segmentIdToDimension, out IDictionary<int, int> segmentIdToCount)
         {
             segmentIdToDimension = new Dictionary<int, Rectangle>();
@@ -34,35 +34,35 @@ namespace SharpAlgos
                     continue;
                 }
                 ++previousSegmentId;
-                var currentSegmentId = previousSegmentId; //we have found a new segment, wich segmentId is 'currentSegmentId'
-                var toProcess = new Queue<Point>();
-                toProcess.Enqueue(p);
+                var currentSegmentId = previousSegmentId; //we have found a new segment, which segmentId is 'currentSegmentId'
+                var pointsWhereNeighborsNeedToBeProcessed = new Queue<Point>(); //we'll need to process the neighbors of the points in this queue
+                pointsWhereNeighborsNeedToBeProcessed.Enqueue(p);
                 result[p.X, p.Y] = currentSegmentId;
                 segmentIdToCount[currentSegmentId] = 1;
                 segmentIdToDimension[currentSegmentId] = new Rectangle(p.X, p.Y, 1, 1);
-                while (toProcess.Count != 0)
+                while (pointsWhereNeighborsNeedToBeProcessed.Count != 0)
                 {
-                    var current = toProcess.Dequeue();
-                    foreach (var pAround in AllPointsHorizontalVertical(isAccessible, current.X, current.Y))
-                    //foreach (var pAround in AllPointsAround(isAccessible, current.X, current.Y, 1))
+                    var current = pointsWhereNeighborsNeedToBeProcessed.Dequeue();
+                    foreach (var neighbor in AllPointsHorizontalVertical(isAccessible, current.X, current.Y))
+                    //foreach (var neighbor in AllPointsAround(isAccessible, current.X, current.Y, 1))
                     {
-                        if (!isAccessible[pAround.X, pAround.Y] || (result[pAround.X, pAround.Y] != -1))
+                        if (!isAccessible[neighbor.X, neighbor.Y] || (result[neighbor.X, neighbor.Y] != -1))
                         {
                             continue;
                         }
 
-                        result[pAround.X, pAround.Y] = currentSegmentId;
-                        toProcess.Enqueue(pAround);
+                        result[neighbor.X, neighbor.Y] = currentSegmentId;
+                        pointsWhereNeighborsNeedToBeProcessed.Enqueue(neighbor);
 
                         //we update 'segmentIdToCount'
                         ++segmentIdToCount[currentSegmentId];
 
                         //we update 'segmentIdToDimension'
                         var rect = segmentIdToDimension[currentSegmentId];
-                        var minX = Math.Min(rect.X, pAround.X);
-                        var maxX = Math.Max(rect.X + rect.Width - 1, pAround.X);
-                        var minY = Math.Min(rect.Y, pAround.Y);
-                        var maxY = Math.Max(rect.Y + rect.Height - 1, pAround.Y);
+                        var minX = Math.Min(rect.X, neighbor.X);
+                        var maxX = Math.Max(rect.X + rect.Width - 1, neighbor.X);
+                        var minY = Math.Min(rect.Y, neighbor.Y);
+                        var maxY = Math.Max(rect.Y + rect.Height - 1, neighbor.Y);
                         segmentIdToDimension[currentSegmentId] = new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
                     }
                 }

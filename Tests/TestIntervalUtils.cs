@@ -41,19 +41,77 @@ namespace SharpAlgosTests
             }
         }
 
-        private static List<Tuple<int,int>> GetRandomIntervals(int nbIntervals, int minValue, int maxValue, Random rand)
+        private static List<Tuple<int, int>> GetRandomIntervals(int nbIntervals, int minValue, int maxValue, Random rand)
         {
-
             var result = new List<Tuple<int, int>>();
             while (result.Count < nbIntervals)
             {
                 var r1 = rand.Next(minValue, maxValue);
                 var r2 = rand.Next(minValue, maxValue);
-                result.Add(Tuple.Create(Math.Min(r1,r2), Math.Max(r1, r2)));
+                result.Add(Tuple.Create(Math.Min(r1, r2), Math.Max(r1, r2)));
             }
             return result;
         }
 
+        [Test]
+        public void TestMinimumPointsToCoverAllIntervals()
+        {
+            var i1 = Tuple.Create(0, 10);
+            var i2 = Tuple.Create(10, 20);
+            var i3 = Tuple.Create(21, 30);
+
+            var observed = Utils.MinimumPointsToCoverAllIntervals(new List<Tuple<int, int>> {i1});
+            var expected = new List<int> {10};
+            Assert.AreEqual(expected, observed);
+
+            observed = Utils.MinimumPointsToCoverAllIntervals(new List<Tuple<int, int>> { i1,i2 });
+            expected = new List<int> { 10 };
+            Assert.AreEqual(expected, observed);
+
+            observed = Utils.MinimumPointsToCoverAllIntervals(new List<Tuple<int, int>> { i2, i3 });
+            expected = new List<int> { 20,30 };
+            Assert.AreEqual(expected, observed);
+
+            observed = Utils.MinimumPointsToCoverAllIntervals(new List<Tuple<int, int>> { i1, i2,i3 });
+            expected = new List<int> { 10,30 };
+            Assert.AreEqual(expected, observed);
+        }
+
+        [Test]
+        public void TestIntervalsUnion()
+        {
+            var i1 = Tuple.Create(0, 10);
+            var i2 = Tuple.Create(10, 20);
+            var i3 = Tuple.Create(21, 30);
+            var i4 = Tuple.Create(19, 30);
+
+            var observed = Utils.IntervalsUnion(new List<Tuple<int, int>> {i1}, false);
+            var expected = new List<Tuple<int, int>> {i1};
+            Assert.AreEqual(expected, observed);
+            observed = Utils.IntervalsUnion(new List<Tuple<int, int>> { i1 }, true);
+            Assert.AreEqual(expected, observed);
+
+            observed = Utils.IntervalsUnion(new List<Tuple<int, int>> { i1,i2 }, false);
+            expected = new List<Tuple<int, int>> { Tuple.Create(0,20) };
+            Assert.AreEqual(expected, observed);
+            observed = Utils.IntervalsUnion(new List<Tuple<int, int>> { i1, i2 }, true);
+            expected = new List<Tuple<int, int>> { i1,i2 };
+            Assert.AreEqual(expected, observed);
+
+            observed = Utils.IntervalsUnion(new List<Tuple<int, int>> { i1, i2,i3 }, false);
+            expected = new List<Tuple<int, int>> { Tuple.Create(0, 20),i3 };
+            Assert.AreEqual(expected, observed);
+            observed = Utils.IntervalsUnion(new List<Tuple<int, int>> { i1, i2,i3 }, true);
+            expected = new List<Tuple<int, int>> { i1, i2, i3 };
+            Assert.AreEqual(expected, observed);
+
+            observed = Utils.IntervalsUnion(new List<Tuple<int, int>> { i1, i2, i4 }, false);
+            expected = new List<Tuple<int, int>> { Tuple.Create(0, 30)};
+            Assert.AreEqual(expected, observed);
+            observed = Utils.IntervalsUnion(new List<Tuple<int, int>> { i1, i2, i4 }, true);
+            expected = new List<Tuple<int, int>> { i1, Tuple.Create(10, 30) };
+            Assert.AreEqual(expected, observed);
+        }
 
         private static List<Tuple<int, int>> AllIntervalsContainingXSlow(List<Tuple<int, int>> intervals, int x, bool endOfIntervalIsIncludedInInterval)
         {
