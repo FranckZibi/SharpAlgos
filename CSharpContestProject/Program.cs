@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 // ReSharper disable UnusedMember.Local
@@ -26,7 +27,6 @@ namespace CSharpContestProject
         public static void Process()
         {
         }
-
 
         #region reading input
         private static List<string> ReadAllLines()

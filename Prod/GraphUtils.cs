@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+// ReSharper disable UnusedMember.Global
 
 namespace SharpAlgos
 {
@@ -666,8 +667,117 @@ namespace SharpAlgos
         }
         #endregion
 
-        //List of Sub graph where for any 2 vertices 'u' & 'v' of this sub graph, there is a path from 'u' to 'v' and a path from 'v' to 'u'
-        #region Detect strongly connected components in o(|V| + |E|)   ( => o(n) for tree ,  o(n^2) for fully connected graph)
+
+        #region 2-SAT
+
+        /// <summary>
+        /// Solve 2SAT Problem in o(E+V) Time with clauses as input
+        /// </summary>
+        /// <param name="clauses">
+        ///     List of clauses: all of them must be satisfied at the same time
+        ///     Each element of the list (Tuple<int, int>) if a disjunction:
+        ///         at least one of the 2 constraints must be satisfied (Tuple.Item1 or Tuple.Item2)
+        /// </param>
+        /// <param name="Invert">compute the complement of a constraint a => ~a , ~a => a</param>
+        /// <param name="AreValidAtSameTime">true if the 2 constraints can be valid at same time
+        /// <param name="distinctConstraintsAreAlwaysValidAtSameTime">true if 2 distinct constraints are always invalid
+        ///  so only 'a' and '~a' are not valid at same time, all other combinations of constraints are valid
+        /// </param>
+        /// <returns>
+        /// For each clause, the constraint (Tuple.Item1 or Tuple.Item2) to satisfy the 2SAT problem
+        /// or null if it is not possible to satisfy all clauses at the same time
+        /// </returns>
+        public static List<T> Solve2SAT<T>(List<Tuple<T, T>> clauses, Func<T, T> Invert, Func<T, T, bool> AreValidAtSameTime, bool distinctConstraintsAreAlwaysValidAtSameTime)
+        {
+            //We construct the implication graph and extract the associated SCC
+            var implicationGraph = new Graph<T>(true);
+            foreach (var disjunction in clauses)
+            {
+                //a disjunction (a or b) is equivalent to ( (~a => b) and (~b => a) )
+                implicationGraph.Add(Invert(disjunction.Item1), disjunction.Item2, 1);
+                implicationGraph.Add(Invert(disjunction.Item2), disjunction.Item1, 1);
+            }
+            if (!distinctConstraintsAreAlwaysValidAtSameTime)
+            { 
+                for (int first = 0; first < clauses.Count; ++first)
+                {
+                    var constraint1 = clauses[first].Item1;
+                    var constraint2 = clauses[first].Item2;
+                    for (int other = first + 1; other < clauses.Count; ++other)
+                    {
+                        var otherConstraint1 = clauses[other].Item1;
+                        var otherConstraint2 = clauses[other].Item2;
+                        if (!AreValidAtSameTime(clauses[first].Item1, (clauses[other].Item1)))
+                        {
+                            implicationGraph.Add(constraint1, Invert(otherConstraint1), 1);
+                            implicationGraph.Add(otherConstraint1, Invert(constraint1), 1);
+                        }
+                        if (!AreValidAtSameTime(clauses[first].Item1, (clauses[other].Item2)))
+                        {
+                            implicationGraph.Add(constraint1, Invert(otherConstraint2), 1);
+                            implicationGraph.Add(otherConstraint2, Invert(constraint1), 1);
+                        }
+                        if (!AreValidAtSameTime(clauses[first].Item2, (clauses[other].Item1)))
+                        {
+                            implicationGraph.Add(constraint2, Invert(otherConstraint1), 1);
+                            implicationGraph.Add(otherConstraint1, Invert(constraint2), 1);
+                        }
+                        if (!AreValidAtSameTime(clauses[first].Item2, (clauses[other].Item2)))
+                        {
+                            implicationGraph.Add(constraint2, Invert(otherConstraint2), 1);
+                            implicationGraph.Add(otherConstraint2, Invert(constraint2), 1);
+                        }
+                    }
+                }
+            }
+            var sccInTopologicalOrder = implicationGraph.ExtractStronglyConnectedComponents();
+            var constraintsThatMustBeSatisfied = new HashSet<T>();
+            var constraingToSccId = new Dictionary<T, int>();
+            for (var sccId = 0; sccId < sccInTopologicalOrder.Count; sccId++)
+            {
+                var component = sccInTopologicalOrder[sccId];
+                foreach (var constraintId in component)
+                {
+                    var constraintComplement = Invert(constraintId);
+                    if (constraingToSccId.TryGetValue(constraintComplement, out var sccIdOfOtherComponent))
+                    {
+                        if (sccIdOfOtherComponent == sccId)
+                        {
+                            return null; //both the constraint and its complement are in the same SCC : no solution
+                        }
+
+                        constraintsThatMustBeSatisfied.Add(sccIdOfOtherComponent <= sccId
+                            ? constraintId
+                            : constraintComplement);
+                    }
+                    constraingToSccId[constraintId] = sccId;
+                }
+            }
+            var solutions = new List<T>();
+            foreach (var clause in clauses)
+            {
+                if (constraintsThatMustBeSatisfied.Contains(clause.Item1) || constraintsThatMustBeSatisfied.Contains(Invert(clause.Item2)))
+                {
+                    solutions.Add(clause.Item1);
+                }
+                else
+                {
+                    solutions.Add(clause.Item2);
+                }
+            }
+            return solutions;
+        }
+
+        #endregion
+
+        #region Strongly connected components
+        /// <summary>
+        /// Strongly connected component Detection in o(|V| + |E|)   ( => o(n) for tree ,  o(n^2) for fully connected graph)
+        /// Strongly connected component: Largest sub graph where for any 2 vertices 'u' & 'v' of this sub graph, there is a path from 'u' to 'v' and a path from 'v' to 'u'
+        /// </summary>
+        /// <returns>
+        /// List of Strongly connected component in Topological order
+        /// </returns>
         public List<List<T>> ExtractStronglyConnectedComponents()
         {
             var stronglyConnectedComponents = new List<List<T>>();
@@ -687,6 +797,8 @@ namespace SharpAlgos
                     StronglyConnectedComponent(v, stronglyConnectedComponents, dfsIndex, lowLinkDfsIndex, verticesInStack, ref nextDfsIndex);
                 }
             }
+            //the SCC are currently in inverse Topological order: we need to invert the order to make them in topological order
+            stronglyConnectedComponents.Reverse();
             return stronglyConnectedComponents;
         }
         private void StronglyConnectedComponent(T v, List<List<T>> stronglyConnectedComponents, IDictionary<T, int> dfsIndex, IDictionary<T, int> sccId, Stack<T> stack, ref int nextDfsIndex)
@@ -1297,7 +1409,7 @@ namespace SharpAlgos
                     var cost = EdgeValue(maze[from.X,from.Y], maze[to.X,to.Y]);
                     if (!double.IsNaN(cost))
                     {
-                        g.edgesWithCost[@from][to] = cost;
+                        g.edgesWithCost[from][to] = cost;
                     }
                 }
             }

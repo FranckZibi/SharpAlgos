@@ -109,9 +109,9 @@ namespace SharpAlgosTests
         }
 
         [TestCase(new int[] { }, new int[] { })]
-        [TestCase(new[] {1}, new[] {1})]
-        [TestCase(new[] {1}, new[] {1, 1})]
-        [TestCase(new[] {1, 2, 5, 4, 3}, new[] {1, 2, 5, 2, 4, 3})]
+        [TestCase(new int[] {1}, new int[] {1})]
+        [TestCase(new int[] {1}, new int[] {1, 1})]
+        [TestCase(new int[] {1, 2, 5, 4, 3}, new int[] {1, 2, 5, 2, 4, 3})]
         public void TestLongestBitonicSubsequence(int[] expected, int[] data)
         {
             Assert.IsTrue(expected.SequenceEqual(Utils.LongestBitonicSubsequence(data)));

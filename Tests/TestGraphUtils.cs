@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using SharpAlgos;
 using NUnit.Framework;
 
@@ -9,8 +11,109 @@ namespace SharpAlgosTests
     [TestFixture]
     public partial class TestUtils
     {
+
         [Test]
-        public void TestEtractStronglyConnectedComponents()
+        public void TestSolve2SAT()
+        {
+            bool AreValidAtSameTime(int x, int y) => (x != -y);
+
+            var clauses = new List<Tuple<int, int>>
+            {
+                Tuple.Create(1, 2), Tuple.Create(1, -2)
+            };
+            var solution = Graph<int>.Solve2SAT(clauses, x => -x, AreValidAtSameTime, true);
+            Assert.IsTrue(IsValidSolution(solution, AreValidAtSameTime));
+
+            clauses = new List<Tuple<int, int>>
+            {
+                Tuple.Create(1, 2),Tuple.Create(1, -2),Tuple.Create(-1, -2),Tuple.Create(-1, 2)
+            };
+            solution = Graph<int>.Solve2SAT(clauses, x => -x, AreValidAtSameTime, true);
+            Assert.AreEqual(null, solution);
+
+            clauses = new List<Tuple<int, int>>
+            {
+                Tuple.Create(1, 2), Tuple.Create(-2, 3), Tuple.Create(-1, -2), Tuple.Create(3, 4), Tuple.Create(-3, 5), Tuple.Create(-4, -5), Tuple.Create(-3, 4)
+            };
+            solution = Graph<int>.Solve2SAT(clauses, x => -x, AreValidAtSameTime, true);
+            Assert.IsTrue(IsValidSolution(solution, AreValidAtSameTime));
+
+            clauses = new List<Tuple<int, int>>
+            {
+                Tuple.Create(1, 2), Tuple.Create(2, -1), Tuple.Create(-1, -2)
+            };
+            solution = Graph<int>.Solve2SAT(clauses, x => -x, AreValidAtSameTime, true);
+            Assert.IsTrue(IsValidSolution(solution, AreValidAtSameTime));
+
+            clauses = new List<Tuple<int, int>>
+            {
+                Tuple.Create(1, 2), Tuple.Create(-1, 2), Tuple.Create(1, -2), Tuple.Create(-1, -2)
+            };
+            solution = Graph<int>.Solve2SAT(clauses, x => -x, AreValidAtSameTime, true);
+            Assert.AreEqual(null, solution);
+        }
+
+        [Test]
+        public void TestSolve2SAT_BattleDev()
+        {
+            for (int index = 8; index <= 8; ++index)
+            {
+                var entry = Load2SAT_BattleDev(index);
+                var hasSolution = entry.Item2;
+                var clauses = entry.Item1;
+                var solution = Graph<int>.Solve2SAT(clauses, x=>Tuple.Create(x.Item1,-x.Item2), AreValidAtSameTime_2SAT_BattleDev, false);
+                if (!hasSolution)
+                {
+                    Assert.IsNull(solution);
+                    return;
+                }
+                Assert.IsNotNull(solution);
+                Assert.IsTrue(IsValidSolution(solution, AreValidAtSameTime_2SAT_BattleDev));
+            }
+        }
+
+        private static bool IsValidSolution<T>(IReadOnlyList<T> solution, Func<T,T,bool> AreValidAtSameTime)
+        {
+            for (int firstClause = 0; firstClause < solution.Count; ++firstClause)
+            {
+                for (int secondClause = firstClause + 1; secondClause < solution.Count; ++secondClause)
+                {
+                    if (!AreValidAtSameTime(solution[firstClause], solution[secondClause]))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static bool AreValidAtSameTime_2SAT_BattleDev(Tuple<int,int> studentAndstartHour1, Tuple<int, int> studentAndstartHour2)
+        {
+            var min = Math.Min(studentAndstartHour1.Item2, studentAndstartHour2.Item2);
+            var max = Math.Max(studentAndstartHour1.Item2, studentAndstartHour2.Item2);
+            return (max - min) > 60;
+        }
+
+        private static Tuple<List<Tuple<Tuple<int,int>, Tuple<int, int>>>, bool> Load2SAT_BattleDev(int index)
+        {
+            var inputPath = Path.Combine(TestDataDirectory, "2SAT/input" + index + ".txt");
+            var hourClauses = new List<Tuple<Tuple<int, int>, Tuple<int, int>>>();
+            var readAllLines = File.ReadAllLines(inputPath);
+            for (var i = 1; i < readAllLines.Length; i++)
+            {
+                var l = readAllLines[i];
+                var line = l.Split().Select(int.Parse).ToList();
+                hourClauses.Add(Tuple.Create(Tuple.Create(i-1, line[0]), Tuple.Create(i-1, line[1])));
+            }
+
+            var outputPath = Path.Combine(TestDataDirectory, "2SAT/output" + index + ".txt");
+            var lines = File.ReadAllLines(outputPath);
+            bool hasSolution = !(lines.Length == 1 && lines[0].Equals("KO"));
+            return Tuple.Create(hourClauses, hasSolution);
+        }
+
+        [Test]
+        public void TestExtractStronglyConnectedComponents()
         {
             var g = new Graph<string>(false);
             TestStronglyConnectedComponents(new string[] { }, g.ExtractStronglyConnectedComponents());
@@ -1307,5 +1410,8 @@ namespace SharpAlgosTests
             return g.HasEdge(a, b) || g.HasEdge(b, a);
         }
 
+
+        private static string TestDataDirectory => Path.Combine(ExecutablePath, "../../Data");
+        private static string ExecutablePath => new Uri(Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase) ?? "").LocalPath;
     }
 }
