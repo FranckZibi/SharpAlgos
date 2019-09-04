@@ -675,27 +675,27 @@ namespace SharpAlgos
         /// </summary>
         /// <param name="clauses">
         ///     List of clauses: all of them must be satisfied at the same time
-        ///     Each element of the list (Tuple<int, int>) if a disjunction:
-        ///         at least one of the 2 constraints must be satisfied (Tuple.Item1 or Tuple.Item2)
+        ///     Each element of the list (a Tuple) if a disjunction:
+        ///         at least one of the 2 constraints (Tuple.Item1 or Tuple.Item2) must be satisfied 
         /// </param>
-        /// <param name="Invert">compute the complement of a constraint a => ~a , ~a => a</param>
-        /// <param name="AreValidAtSameTime">true if the 2 constraints can be valid at same time
+        /// <param name="Complement">compute the complement of a constraint a => ~a , ~a => a</param>
+        /// <param name="AreValidAtSameTime">true if the 2 constraints can be valid at same time</param>
         /// <param name="distinctConstraintsAreAlwaysValidAtSameTime">true if 2 distinct constraints are always invalid
         ///  so only 'a' and '~a' are not valid at same time, all other combinations of constraints are valid
         /// </param>
         /// <returns>
         /// For each clause, the constraint (Tuple.Item1 or Tuple.Item2) to satisfy the 2SAT problem
-        /// or null if it is not possible to satisfy all clauses at the same time
+        /// null if it is not possible to satisfy all clauses at the same time
         /// </returns>
-        public static List<T> Solve2SAT<T>(List<Tuple<T, T>> clauses, Func<T, T> Invert, Func<T, T, bool> AreValidAtSameTime, bool distinctConstraintsAreAlwaysValidAtSameTime)
+        public static List<T> Solve2SAT(List<Tuple<T, T>> clauses, Func<T, T> Complement, Func<T, T, bool> AreValidAtSameTime, bool distinctConstraintsAreAlwaysValidAtSameTime)
         {
-            //We construct the implication graph and extract the associated SCC
+            //We construct the implication graph
             var implicationGraph = new Graph<T>(true);
             foreach (var disjunction in clauses)
             {
                 //a disjunction (a or b) is equivalent to ( (~a => b) and (~b => a) )
-                implicationGraph.Add(Invert(disjunction.Item1), disjunction.Item2, 1);
-                implicationGraph.Add(Invert(disjunction.Item2), disjunction.Item1, 1);
+                implicationGraph.Add(Complement(disjunction.Item1), disjunction.Item2, 1);
+                implicationGraph.Add(Complement(disjunction.Item2), disjunction.Item1, 1);
             }
             if (!distinctConstraintsAreAlwaysValidAtSameTime)
             { 
@@ -709,54 +709,52 @@ namespace SharpAlgos
                         var otherConstraint2 = clauses[other].Item2;
                         if (!AreValidAtSameTime(clauses[first].Item1, (clauses[other].Item1)))
                         {
-                            implicationGraph.Add(constraint1, Invert(otherConstraint1), 1);
-                            implicationGraph.Add(otherConstraint1, Invert(constraint1), 1);
+                            implicationGraph.Add(constraint1, Complement(otherConstraint1), 1);
+                            implicationGraph.Add(otherConstraint1, Complement(constraint1), 1);
                         }
                         if (!AreValidAtSameTime(clauses[first].Item1, (clauses[other].Item2)))
                         {
-                            implicationGraph.Add(constraint1, Invert(otherConstraint2), 1);
-                            implicationGraph.Add(otherConstraint2, Invert(constraint1), 1);
+                            implicationGraph.Add(constraint1, Complement(otherConstraint2), 1);
+                            implicationGraph.Add(otherConstraint2, Complement(constraint1), 1);
                         }
                         if (!AreValidAtSameTime(clauses[first].Item2, (clauses[other].Item1)))
                         {
-                            implicationGraph.Add(constraint2, Invert(otherConstraint1), 1);
-                            implicationGraph.Add(otherConstraint1, Invert(constraint2), 1);
+                            implicationGraph.Add(constraint2, Complement(otherConstraint1), 1);
+                            implicationGraph.Add(otherConstraint1, Complement(constraint2), 1);
                         }
                         if (!AreValidAtSameTime(clauses[first].Item2, (clauses[other].Item2)))
                         {
-                            implicationGraph.Add(constraint2, Invert(otherConstraint2), 1);
-                            implicationGraph.Add(otherConstraint2, Invert(constraint2), 1);
+                            implicationGraph.Add(constraint2, Complement(otherConstraint2), 1);
+                            implicationGraph.Add(otherConstraint2, Complement(constraint2), 1);
                         }
                     }
                 }
             }
+
             var sccInTopologicalOrder = implicationGraph.ExtractStronglyConnectedComponents();
             var constraintsThatMustBeSatisfied = new HashSet<T>();
-            var constraingToSccId = new Dictionary<T, int>();
+            var constraintToSccId = new Dictionary<T, int>(); //'constraint' to associated 'strongly connected component id'
             for (var sccId = 0; sccId < sccInTopologicalOrder.Count; sccId++)
             {
                 var component = sccInTopologicalOrder[sccId];
                 foreach (var constraintId in component)
                 {
-                    var constraintComplement = Invert(constraintId);
-                    if (constraingToSccId.TryGetValue(constraintComplement, out var sccIdOfOtherComponent))
+                    var constraintIdComplement = Complement(constraintId);
+                    if (constraintToSccId.TryGetValue(constraintIdComplement, out var sccIdOfConstraintComplement))
                     {
-                        if (sccIdOfOtherComponent == sccId)
+                        if (sccIdOfConstraintComplement == sccId)
                         {
                             return null; //both the constraint and its complement are in the same SCC : no solution
                         }
-
-                        constraintsThatMustBeSatisfied.Add(sccIdOfOtherComponent <= sccId
-                            ? constraintId
-                            : constraintComplement);
+                        constraintsThatMustBeSatisfied.Add(sccIdOfConstraintComplement <= sccId ? constraintId : constraintIdComplement);
                     }
-                    constraingToSccId[constraintId] = sccId;
+                    constraintToSccId[constraintId] = sccId;
                 }
             }
             var solutions = new List<T>();
             foreach (var clause in clauses)
             {
-                if (constraintsThatMustBeSatisfied.Contains(clause.Item1) || constraintsThatMustBeSatisfied.Contains(Invert(clause.Item2)))
+                if (constraintsThatMustBeSatisfied.Contains(clause.Item1) || constraintsThatMustBeSatisfied.Contains(Complement(clause.Item2)))
                 {
                     solutions.Add(clause.Item1);
                 }
@@ -849,23 +847,18 @@ namespace SharpAlgos
             var allCycles = new List<List<T>>();
             foreach (var scc in ExtractStronglyConnectedComponents())
             {
-                allCycles.AddRange(AllCyclesFromStronglyConnectedComponent(scc));
+                var areAllowed = new HashSet<T>(scc);
+                var allCyclesFromStronglyConnectedComponent = new List<List<T>>();
+                foreach (var vertex in scc)
+                {
+                    AllCyclesFromStronglyConnectedComponent(vertex, new List<T>(), new HashSet<T>(), new Dictionary<T, HashSet<T>>(), allCyclesFromStronglyConnectedComponent, areAllowed);
+                    areAllowed.Remove(vertex);
+                }
+                allCycles.AddRange(allCyclesFromStronglyConnectedComponent);
             }
             return allCycles;
         }
-        private List<List<T>> AllCyclesFromStronglyConnectedComponent(List<T> stronglyConnectedComponent)
-        {
-            stronglyConnectedComponent.Sort();
-            var areAllowed = new HashSet<T>(stronglyConnectedComponent);
-            var allLoops = new List<List<T>>();
-            foreach (var vertex in stronglyConnectedComponent)
-            {
-                AllCyclesFromStronglyConnectedComponent(vertex, vertex, new List<T>(), new HashSet<T>(), new Dictionary<T, HashSet<T>>(), allLoops, areAllowed);
-                areAllowed.Remove(vertex);
-            }
-            return allLoops;
-        }
-        private bool AllCyclesFromStronglyConnectedComponent(T rootVertex, T currentVertex, IList<T> path, HashSet<T> blockeds, Dictionary<T, HashSet<T>> blockedMap, List<List<T>> allLoops, HashSet<T> areAllowed)
+        private bool AllCyclesFromStronglyConnectedComponent(T currentVertex, IList<T> path, HashSet<T> blocked, Dictionary<T, HashSet<T>> blockedMap, List<List<T>> allCycles, HashSet<T> areAllowed)
         {
             path.Add(currentVertex);
             var foundCycles = false;
@@ -875,22 +868,22 @@ namespace SharpAlgos
                 {
                     continue;
                 }
-                if (Equals(child, rootVertex))
+                if (Equals(child, path[0]))
                 {
-                    allLoops.Add(new List<T>(path));
+                    allCycles.Add(new List<T>(path));
                     foundCycles = true;
                     continue;
                 }
-                if (!blockeds.Contains(child))
+                if (!blocked.Contains(child))
                 {
-                    blockeds.Add(child);
-                    foundCycles = foundCycles || AllCyclesFromStronglyConnectedComponent(rootVertex, child, path, blockeds, blockedMap, allLoops, areAllowed);
+                    blocked.Add(child);
+                    foundCycles = foundCycles || AllCyclesFromStronglyConnectedComponent(child, path, blocked, blockedMap, allCycles, areAllowed);
                 }
             }
 
             if (foundCycles)
             {
-                Unblock(currentVertex, blockeds, blockedMap);
+                Unblock(currentVertex, blocked, blockedMap);
             }
             else
             {
@@ -912,16 +905,16 @@ namespace SharpAlgos
             path.RemoveAt(path.Count - 1);
             return foundCycles;
         }
-        private static void Unblock(T u, HashSet<T> blockeds, Dictionary<T, HashSet<T>> blockedMap)
+        private static void Unblock(T u, HashSet<T> blocked, Dictionary<T, HashSet<T>> blockedMap)
         {
-            blockeds.Remove(u);
+            blocked.Remove(u);
             if (!blockedMap.ContainsKey(u))
             {
                 return;
             }
-            foreach (var v in blockedMap[u].Where(blockeds.Contains))
+            foreach (var v in blockedMap[u].Where(blocked.Contains))
             {
-                Unblock(v, blockeds, blockedMap);
+                Unblock(v, blocked, blockedMap);
             }
             blockedMap.Remove(u);
         }

@@ -58,10 +58,10 @@ namespace SharpAlgosTests
         {
             for (int index = 8; index <= 8; ++index)
             {
-                var entry = Load2SAT_BattleDev(index);
+                Tuple<List<Tuple<Tuple<int, int>, Tuple<int, int>>>, bool> entry = Load2SAT_BattleDev(index);
                 var hasSolution = entry.Item2;
                 var clauses = entry.Item1;
-                var solution = Graph<int>.Solve2SAT(clauses, x=>Tuple.Create(x.Item1,-x.Item2), AreValidAtSameTime_2SAT_BattleDev, false);
+                var solution = Graph<Tuple<int,int>>.Solve2SAT(clauses, x=>Tuple.Create(x.Item1,-x.Item2), AreValidAtSameTime_2SAT_BattleDev, false);
                 if (!hasSolution)
                 {
                     Assert.IsNull(solution);
