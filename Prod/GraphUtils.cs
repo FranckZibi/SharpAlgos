@@ -11,24 +11,24 @@ namespace SharpAlgos
     public class Graph<T>
     {
         #region Private fields
-        private readonly IDictionary<T, IDictionary<T, double>> edgesWithCost = new Dictionary<T, IDictionary<T, double>>();
-        private readonly bool isDirected;
+        private readonly IDictionary<T, IDictionary<T, double>> _edgesWithCost = new Dictionary<T, IDictionary<T, double>>();
+        private readonly bool _isDirected;
         #endregion
-        public Graph(bool isDirected) { this.isDirected = isDirected; }
+        public Graph(bool isDirected) { this._isDirected = isDirected; }
         public void Add(T from, T to, double cost)
         {
             AddVertex(from);
             AddVertex(to);
-            edgesWithCost[from][to] = cost;
-            if (!isDirected)
+            _edgesWithCost[from][to] = cost;
+            if (!_isDirected)
             {
-                edgesWithCost[to][@from] = cost;
+                _edgesWithCost[to][@from] = cost;
             }
         }
         public IEnumerable<T> Children(T t)
         {
             IDictionary<T, double> tmp;
-            return edgesWithCost.TryGetValue(t, out tmp) ? tmp.Keys : new List<T>();
+            return _edgesWithCost.TryGetValue(t, out tmp) ? tmp.Keys : new List<T>();
         }
         private static List<T> ExtractPath(T start, T end, IDictionary<T, T> prevVertex)
         {
@@ -51,29 +51,29 @@ namespace SharpAlgos
                 path.Insert(0, previousIndex);
             }
         }
-        public HashSet<T> Vertices { get { return new HashSet<T>(edgesWithCost.Keys); } }
+        public HashSet<T> Vertices { get { return new HashSet<T>(_edgesWithCost.Keys); } }
         public void AddVertex(T v)
         {
-            if (!edgesWithCost.ContainsKey(v))
+            if (!_edgesWithCost.ContainsKey(v))
             {
-                edgesWithCost[v] = new Dictionary<T, double>();
+                _edgesWithCost[v] = new Dictionary<T, double>();
             }
         }
         public void Remove(T from, T to)
         {
-            if (edgesWithCost.ContainsKey(from))
+            if (_edgesWithCost.ContainsKey(from))
             {
-                edgesWithCost[@from].Remove(to);
+                _edgesWithCost[@from].Remove(to);
             }
-            if (!isDirected && edgesWithCost.ContainsKey(to))
+            if (!_isDirected && _edgesWithCost.ContainsKey(to))
             {
-                edgesWithCost[to].Remove(@from);
+                _edgesWithCost[to].Remove(@from);
             }
         }
         public void Remove(T from)
         {
-            edgesWithCost.Remove(from);
-            foreach (var edges in edgesWithCost)
+            _edgesWithCost.Remove(from);
+            foreach (var edges in _edgesWithCost)
             {
                 edges.Value.Remove(@from);
             }
@@ -82,14 +82,14 @@ namespace SharpAlgos
         {
             get
             {
-                var totalEdges = edgesWithCost.Select(x => x.Value.Count).Sum();
-                return isDirected ? totalEdges : totalEdges / 2;
+                var totalEdges = _edgesWithCost.Select(x => x.Value.Count).Sum();
+                return _isDirected ? totalEdges : totalEdges / 2;
             }
         }
         private IDictionary<T, HashSet<T>> ChildrenToParents()
         {
             var result = new Dictionary<T, HashSet<T>>();
-            foreach (var start in edgesWithCost)
+            foreach (var start in _edgesWithCost)
                 foreach (var end in start.Value)
                 {
                     if (!result.ContainsKey(end.Key))
@@ -127,7 +127,7 @@ namespace SharpAlgos
             double result = 0;
             for (int i = 1; i < validPath.Count; i++)
             {
-                result += edgesWithCost[validPath[i - 1]][validPath[i]];
+                result += _edgesWithCost[validPath[i - 1]][validPath[i]];
             }
             return result;
         }
@@ -196,14 +196,14 @@ namespace SharpAlgos
                     continue; //already used
                 }
                 path.Add(child);
-                BestPath_DFS_Helper(path, pathScore + edgesWithCost[vertex][child], end, bestPath, ref bestPathScore, minimizeCost);
+                BestPath_DFS_Helper(path, pathScore + _edgesWithCost[vertex][child], end, bestPath, ref bestPathScore, minimizeCost);
                 path.RemoveAt(path.Count - 1);
             }
         }
         //Find one shortest path from 'start' in o(V) (tree) to o(V!) (dense graph) time
         public List<T> ShortestPath_DFS(T start)
         {
-            if (!edgesWithCost.ContainsKey(start))
+            if (!_edgesWithCost.ContainsKey(start))
             {
                 return null;
             }
@@ -215,7 +215,7 @@ namespace SharpAlgos
         //Find one longest path from 'start' in o(V) (tree) to o(V!) (dense graph) time
         public List<T> LongestPath_DFS(T start)
         {
-            if (!edgesWithCost.ContainsKey(start))
+            if (!_edgesWithCost.ContainsKey(start))
             {
                 return null;
             }
@@ -234,7 +234,7 @@ namespace SharpAlgos
                     continue; //already used
                 }
                 path.Add(child);
-                var pathScoreWithChild = pathScore + edgesWithCost[vertex][child];
+                var pathScoreWithChild = pathScore + _edgesWithCost[vertex][child];
                 if ((minimizeCost && pathScoreWithChild < bestPathScore)
                     || (!minimizeCost && pathScoreWithChild > bestPathScore))
                 {
@@ -250,7 +250,7 @@ namespace SharpAlgos
         //works only for 'connected undirected graph' or 'strongly connected directed graph'
         public List<T> LongestPathInConnectedGraph_DFS()
         {
-            var startVertex = LongestPath_DFS(edgesWithCost.Keys.First()).Last();
+            var startVertex = LongestPath_DFS(_edgesWithCost.Keys.First()).Last();
             return LongestPath_DFS(startVertex);
         }
         //Find longest path from any two vertices in o(V^2) (tree) to o(V*V!) (dense graph) time
@@ -302,7 +302,7 @@ namespace SharpAlgos
         //Works only for constant and positive weight for all edges, and for connected graph
         public List<T> LongestPathInConnectedGraph_BFS()
         {
-            var v = edgesWithCost.Keys.First();
+            var v = _edgesWithCost.Keys.First();
             var longest_from_v = LongestPath_BFS(v);
             return LongestPath_BFS(longest_from_v.Last());
         }
@@ -415,7 +415,7 @@ namespace SharpAlgos
             var infiniteCost = double.MaxValue;
             var minCostToReachVertex = new Dictionary<T, double>();
             var prevVertex = new Dictionary<T, T>();
-            foreach (var v in edgesWithCost.Keys)
+            foreach (var v in _edgesWithCost.Keys)
             {
                 minCostToReachVertex[v] = infiniteCost;
                 minDistance.Enqueue(v, Equals(v, start) ? 0 : infiniteCost);
@@ -437,7 +437,7 @@ namespace SharpAlgos
                 }
                 foreach (var childOfNearestNeighbour in unvisitedVertices.Intersect(Children(nearestNeighbour)))
                 {
-                    var newCostIfUsingNearestNeighbour = bestCostToNearestNeighbour + edgesWithCost[nearestNeighbour][childOfNearestNeighbour];
+                    var newCostIfUsingNearestNeighbour = bestCostToNearestNeighbour + _edgesWithCost[nearestNeighbour][childOfNearestNeighbour];
                     var previousCostWithoutNearestNeighbour = minCostToReachVertex[childOfNearestNeighbour];
                     if ((previousCostWithoutNearestNeighbour == infiniteCost) //there was no known path from 'start' to 'end' before using 'nearestNeighbour'
                          || (newCostIfUsingNearestNeighbour < previousCostWithoutNearestNeighbour) //less expensive path
@@ -467,15 +467,14 @@ namespace SharpAlgos
                 bestDistanceFromStart[v] = infiniteCost;
             }
             bestDistanceFromStart[start] = 0;
-            int V = allVertices.Count;
 
             //a shortest path (without cycle) between any vertices 'u' & 'v' takes at most 'V' nodes and 'V-1' edges
             //we'll make 'V-1' steps and, at each step:
             //  for each existing edge (u,v)
             //      we'll use this edge (u,v) to improve the best path between 'start' & 'v'
-            for (int i = 0; i < V; ++i) // 'V-1' steps
+            for (int i = 0; i < allVertices.Count; ++i) // 'V-1' steps
             {
-                foreach (var e in edgesWithCost)
+                foreach (var e in _edgesWithCost)
                 {
                     var u = e.Key;
                     foreach (var targetWithCost in e.Value)
@@ -503,7 +502,7 @@ namespace SharpAlgos
             //  we have computed (in 'bestDistanceFromStart') all best path from 'start' using at most 'V-1' edges
             //We'll make one more step: 
             //  if this step can improve any best path, it means that the new best path is using a negative cycle
-            foreach (var e in edgesWithCost)
+            foreach (var e in _edgesWithCost)
             {
                 var u = e.Key;
                 foreach (var targetWithCost in e.Value)
@@ -536,7 +535,7 @@ namespace SharpAlgos
             }
             for (int depth = 1; depth <= maxDepth; ++depth)
             {
-                foreach (var e in edgesWithCost)
+                foreach (var e in _edgesWithCost)
                 {
                     var edgeStart = e.Key;
                     var shortestPathToEdgeStartAtPreviousDepth = bestDistanceFromStart[edgeStart][depth - 1];
@@ -598,7 +597,7 @@ namespace SharpAlgos
                 }
                 costResult[u][u] = 0;
             }
-            foreach (var e in edgesWithCost) //We add all existing edge
+            foreach (var e in _edgesWithCost) //We add all existing edge
             {
                 var u = e.Key;
                 foreach (var toWithCost in e.Value)
@@ -965,16 +964,19 @@ namespace SharpAlgos
         #region Minimum Spanning Tree in o(E log(E)) time (= E log(V) time because E <= V^2)
         public Graph<T> MinimumSpanningTree()
         {
-            var sorted = new List<Tuple<T, T, double>>();
-            foreach (var e in edgesWithCost)
+            var sortedEdges = new List<Tuple<T, T, double>>();
+            foreach (var e in _edgesWithCost)
+            {
                 foreach (var cost in e.Value)
                 {
-                    sorted.Add(Tuple.Create(e.Key, cost.Key, cost.Value));
+                    sortedEdges.Add(Tuple.Create(e.Key, cost.Key, cost.Value));
                 }
-            sorted.Sort((x, y) => x.Item3.CompareTo(y.Item3));
+            }
+
+            sortedEdges.Sort((x, y) => x.Item3.CompareTo(y.Item3));
             var g = new Graph<T>(false);
             var uf = new UnionFind<T>();
-            foreach (var s in sorted)
+            foreach (var s in sortedEdges)
             {
                 if (uf.Union(s.Item1, s.Item2))
                 {
@@ -983,6 +985,45 @@ namespace SharpAlgos
             }
             return g;
         }
+        #endregion
+
+
+        #region Topological Sort
+        /// <summary>
+        /// return a topological sort of the graph in o(V) time
+        /// The graph must be a DAG (directed , no cycles)
+        /// </summary>
+        /// <returns>list of vertices, in topological order</returns>
+        public List<T> TopolologicalSort()
+        {
+            var parentCount = Vertices.ToDictionary(x => x, x => 0);
+            foreach (var v in Vertices)
+            {
+                foreach (var c in Children(v))
+                {
+                    ++parentCount[c];
+                }
+            }
+
+            var result = new List<T>();
+            var Q = parentCount.Where(t => t.Value == 0).Select(t => t.Key).ToList();
+            while (Q.Count != 0)
+            {
+                var v = Q[Q.Count - 1];
+                Q.RemoveAt(Q.Count-1);
+                result.Add(v);
+                foreach(var c in Children(v))
+                { 
+                    parentCount[c] -= 1;
+                    if (parentCount[c] == 0)
+                    {
+                        Q.Add(c);
+                    }
+                }
+            }
+            return result;
+        }
+
         #endregion
 
         #region Hamiltonian Path (path using all vertices exactly once) & Hamiltonian Circuit (must return to start vertex) in o(V^2 2^V) time
@@ -1045,7 +1086,7 @@ namespace SharpAlgos
         {
             edgeCost = 0;
             IDictionary<T, double> tmp;
-            return edgesWithCost.TryGetValue(start, out tmp) && tmp.TryGetValue(end, out edgeCost);
+            return _edgesWithCost.TryGetValue(start, out tmp) && tmp.TryGetValue(end, out edgeCost);
         }
         private void TravellingSalesmanProblem_Helper(T start, int endIndex, double[,] minCost, List<T> verticesWithoutStart, int nextPossibleIndexInVerticesWithoutStart, int sizeSet, int currentMask, List<int> path)
         {
@@ -1197,7 +1238,7 @@ namespace SharpAlgos
                 return null;
             }
             var availableEdges = new Dictionary<T, List<T>>();
-            foreach (var edge in edgesWithCost)
+            foreach (var edge in _edgesWithCost)
             {
                 var children = edge.Value.Keys.ToList(); //children of vertex 'edge.Key'
                 children.Sort();
@@ -1213,7 +1254,7 @@ namespace SharpAlgos
                 {
                     var endEdge = targets.Last();
                     targets.RemoveAt(targets.Count - 1);
-                    if (!isDirected && availableEdges.ContainsKey(endEdge))
+                    if (!_isDirected && availableEdges.ContainsKey(endEdge))
                     {
                         availableEdges[endEdge].Remove(stack.Last());
                     }
@@ -1232,7 +1273,7 @@ namespace SharpAlgos
         private List<T> ValidDepartureForEulerPath(bool mustBeACycle)
         {
             var allVertices = Vertices.ToList();
-            if (isDirected)
+            if (_isDirected)
             {
                 //directed graph
                 //if for all vertices Count(parent vertices) = Count(children vertices)
@@ -1320,7 +1361,7 @@ namespace SharpAlgos
                 var maxAddedFlowInShortedPath = double.MaxValue;
                 for (int i = 1; i < augmentingPath.Count; ++i)
                 {
-                    maxAddedFlowInShortedPath = Math.Min(maxAddedFlowInShortedPath, residualGraph.edgesWithCost[augmentingPath[i - 1]][augmentingPath[i]]);
+                    maxAddedFlowInShortedPath = Math.Min(maxAddedFlowInShortedPath, residualGraph._edgesWithCost[augmentingPath[i - 1]][augmentingPath[i]]);
                 }
                 maxFlowArrivingAtDestination += maxAddedFlowInShortedPath;
                 for (int i = 1; i < augmentingPath.Count; ++i)
@@ -1331,28 +1372,28 @@ namespace SharpAlgos
                     {
                         maxFlowGraph.Add(start, end, 0);
                     }
-                    maxFlowGraph.edgesWithCost[start][end] += maxAddedFlowInShortedPath;
+                    maxFlowGraph._edgesWithCost[start][end] += maxAddedFlowInShortedPath;
                     if (!maxFlowGraph.HasEdge(end, start))
                     {
                         maxFlowGraph.Add(end, start, 0);
                     }
-                    maxFlowGraph.edgesWithCost[end][start] -= maxAddedFlowInShortedPath;
+                    maxFlowGraph._edgesWithCost[end][start] -= maxAddedFlowInShortedPath;
                 }
             }
 
             return maxFlowArrivingAtDestination;
         }
-        public bool HasEdge(T from, T to) { return edgesWithCost.ContainsKey(from) && edgesWithCost[from].ContainsKey(to); }
+        public bool HasEdge(T from, T to) { return _edgesWithCost.ContainsKey(from) && _edgesWithCost[from].ContainsKey(to); }
         private Graph<T> GetResidualGraph(Graph<T> flowGraph)
         {
             var residualGraph = new Graph<T>(true);
-            foreach (var allCapacities in edgesWithCost)
+            foreach (var allCapacities in _edgesWithCost)
             {
                 var start = allCapacities.Key;
                 foreach (var endWithCapacity in allCapacities.Value)
                 {
                     var end = endWithCapacity.Key;
-                    var flow = flowGraph.HasEdge(start, end) ? flowGraph.edgesWithCost[start][end] : 0;
+                    var flow = flowGraph.HasEdge(start, end) ? flowGraph._edgesWithCost[start][end] : 0;
                     var capacity = endWithCapacity.Value;
                     if (flow < capacity)
                     {
@@ -1378,7 +1419,7 @@ namespace SharpAlgos
             double minimumCostOfEdgesToDeleteToRemovePathFromSourceToDestination = MaximumFlowUsingEdmondsKarp(source, destination, out maxFlowGraph);
             var verticesFromSourceCut = new HashSet<T>(GetResidualGraph(maxFlowGraph).AllReachable(source));
             deletedEdges = new List<KeyValuePair<T, T>>();
-            foreach (var edge in edgesWithCost)
+            foreach (var edge in _edgesWithCost)
                 foreach (var dest in edge.Value)
                 {
                     if (verticesFromSourceCut.Contains(edge.Key) && !verticesFromSourceCut.Contains(dest.Key))
@@ -1396,13 +1437,13 @@ namespace SharpAlgos
             var g = new Graph<Point>(false);
             foreach (var from in Utils.AllPoints(maze))
             {
-                g.edgesWithCost.Add(from, new Dictionary<Point, double>());
+                g._edgesWithCost.Add(from, new Dictionary<Point, double>());
                 foreach (var to in Utils.AllPointsHorizontalVertical(maze, from))
                 {
                     var cost = EdgeValue(maze[from.X,from.Y], maze[to.X,to.Y]);
                     if (!double.IsNaN(cost))
                     {
-                        g.edgesWithCost[from][to] = cost;
+                        g._edgesWithCost[from][to] = cost;
                     }
                 }
             }

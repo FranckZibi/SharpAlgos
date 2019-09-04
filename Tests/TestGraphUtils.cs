@@ -11,6 +11,27 @@ namespace SharpAlgosTests
     [TestFixture]
     public partial class TestUtils
     {
+        [Test]
+        public void TestTopolologicalSort()
+        {
+            var g = new Graph<int>(true);
+            g.Add(1, 5, 0);
+            g.Add(1, 2, 0);
+            g.Add(3, 1, 0);
+            g.Add(5, 2, 0);
+            g.Add(5, 4, 0);
+            g.Add(4, 2, 0);
+            var observed = g.TopolologicalSort();
+            Assert.AreEqual(new[]{3,1,5,4,2}, observed);
+
+            g = new Graph<int>(true);
+            g.Add(1, 2, 0);
+            g.Add(2, 3, 0);
+            g.Add(10, 11, 0);
+            g.Add(11, 12, 0);
+            observed = g.TopolologicalSort();
+            Assert.IsTrue(new [] { 1, 2, 3, 10, 11,12 }.SequenceEqual(observed)|| new[] { 10, 11, 12, 1, 2, 3}.SequenceEqual(observed));
+        }
 
         [Test]
         public void TestSolve2SAT()

@@ -13,23 +13,23 @@ namespace SharpAlgos
         /// <param name="isAccessible">'bool matrix' of available squares</param>
         /// <param name="segmentIdToDimension">segmentId => nb of available squares in the segment</param>
         /// <param name="segmentIdToCount">segmentId => nb of available squares in the segment</param>
-        /// <returns>for each square the segmentId associated with the square, or -1 if the square is not accessible</returns>
+        /// <returns>for each square the segmentId (>= 1) associated with the square,
+        /// or 0 if the square is not accessible</returns>
         public static int[,] IdentifyAllSegments(bool[,] isAccessible, out IDictionary<int, Rectangle> segmentIdToDimension, out IDictionary<int, int> segmentIdToCount)
         {
             segmentIdToDimension = new Dictionary<int, Rectangle>();
             segmentIdToCount = new Dictionary<int, int>();
 
             var result = new int[isAccessible.GetLength(0), isAccessible.GetLength(1)];
-            result.SetAll(-1);
 
-            var previousSegmentId = -1;
+            var previousSegmentId = 0;
             foreach (var p in AllPoints(isAccessible))
             {
                 if (!isAccessible[p.X, p.Y])
                 {
                     continue;
                 }
-                if (result[p.X, p.Y] != -1)
+                if (result[p.X, p.Y] != 0)
                 {
                     continue;
                 }
@@ -46,7 +46,7 @@ namespace SharpAlgos
                     foreach (var neighbor in AllPointsHorizontalVertical(isAccessible, current.X, current.Y))
                     //foreach (var neighbor in AllPointsAround(isAccessible, current.X, current.Y, 1))
                     {
-                        if (!isAccessible[neighbor.X, neighbor.Y] || (result[neighbor.X, neighbor.Y] != -1))
+                        if (!isAccessible[neighbor.X, neighbor.Y] || (result[neighbor.X, neighbor.Y] != 0))
                         {
                             continue;
                         }
@@ -75,7 +75,7 @@ namespace SharpAlgos
         {
             int w = matrix.GetLength(0);
             int h = matrix.GetLength(1);
-            int[] heigts = new int[h];
+            int[] heights = new int[h];
             int maxArea = 0;
             for (int x = 0; x < w; ++x)
             {
@@ -83,16 +83,16 @@ namespace SharpAlgos
                 {
                     if (matrix[x, y])
                     {
-                        ++heigts[y];
+                        ++heights[y];
                     }
                     else
                     {
-                        heigts[y] = 0;
+                        heights[y] = 0;
                     }
                 }
                 int startIndex;
                 int endIndex;
-                maxArea = Math.Max(maxArea, LargestRectangleArea(heigts, out startIndex, out endIndex));
+                maxArea = Math.Max(maxArea, LargestRectangleArea(heights, out startIndex, out endIndex));
             }
             return maxArea;
         }

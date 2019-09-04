@@ -18,6 +18,21 @@ namespace SharpAlgosTests
             Assert.AreEqual(4, Utils.MaximalRectangleArea(matrix));
         }
 
+
+
+        [Test]
+        public void TestIdentifyAllSegments()
+        {
+
+            var data = new[,] {{true, true, false}, { true, false, false }, {false, true, true } };
+            var observed = Utils.IdentifyAllSegments(data, out var _, out var segmentIdToCount);
+            var expected = new[,] { { 1, 1, 0 }, { 1, 0, 0}, { 0, 2, 2} };
+            Assert.AreEqual(expected.ToList(), observed.ToList());
+            Assert.AreEqual(2, segmentIdToCount.Count);
+            Assert.AreEqual(3, segmentIdToCount[1]);
+            Assert.AreEqual(2, segmentIdToCount[2]);
+        }
+
         [Test]
         public void TestMaximalSquareSideSize()
         {

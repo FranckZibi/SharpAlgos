@@ -5,9 +5,10 @@ namespace SharpAlgos
     public class UnionFind<T>
     {
         #region  private fields
-        private readonly IDictionary<T, int> ranks = new Dictionary<T, int>();
-        private readonly IDictionary<T, T> childToParent = new Dictionary<T, T>();
-        public int Count { get { return childToParent.Count; } }
+        private readonly IDictionary<T, int> _ranks = new Dictionary<T, int>();
+        // _childToParent[t] == t means that 't' is a root
+        private readonly IDictionary<T, T> _childToParent = new Dictionary<T, T>();
+        public int Count { get { return _childToParent.Count; } }
         public int DistinctFamilyCount {get; private set;}
         #endregion
 
@@ -27,18 +28,18 @@ namespace SharpAlgos
                 return false; //already connected before
             }
             --DistinctFamilyCount;
-            var deltaRank = ranks[rootA] - ranks[rootB];
+            var deltaRank = _ranks[rootA] - _ranks[rootB];
             if (deltaRank >= 0)
             {
-                childToParent[rootB] = rootA;
+                _childToParent[rootB] = rootA;
                 if (deltaRank == 0)
                 {
-                    ++ranks[rootA];
+                    ++_ranks[rootA];
                 }
             }
             else
             {
-                childToParent[rootA] = rootB;
+                _childToParent[rootA] = rootB;
             }
             return true; //newly connected
         }
@@ -55,14 +56,14 @@ namespace SharpAlgos
             {
                 return t;
             }
-            var currentParent = childToParent[t];
+            var currentParent = _childToParent[t];
             if (Equals(t, currentParent))
             {
                 return currentParent; //'t' is already a root node
             }
             //we find the root node of 't' and change its direct parent to be the root of the node
-            childToParent[t] = Find(currentParent);
-            return childToParent[t];
+            _childToParent[t] = Find(currentParent);
+            return _childToParent[t];
         }
 
         /// <summary>
@@ -73,12 +74,12 @@ namespace SharpAlgos
         /// false if it was already present</returns>
         public bool Add(T t)
         {
-            if (childToParent.ContainsKey(t))
+            if (_childToParent.ContainsKey(t))
             {
                 return false; //already present
             }
-            ranks[t] = 0;
-            childToParent[t] = t;
+            _ranks[t] = 0;
+            _childToParent[t] = t;
             ++DistinctFamilyCount;
             return true;
         }
