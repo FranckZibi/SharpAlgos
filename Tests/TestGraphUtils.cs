@@ -531,6 +531,49 @@ namespace SharpAlgosTests
 
         }
 
+        [Test]
+        public void TestVerticeCount()
+        {
+            foreach (var isDirected in new[] {true, false})
+            {
+                var g = new Graph<int>(isDirected);
+                g.Add(0, 1, 1);
+                g.Add(1, 2, 12);
+                g.Add(3, 4, 34);
+                Assert.AreEqual(5, g.VerticeCount);
+            }
+        }
+
+        [Test]
+        public void TestEdgeCount()
+        {
+            foreach (var isDirected in new[] { true, false })
+            {
+                var g = new Graph<int>(isDirected);
+                g.Add(0, 1, 1);
+                g.Add(1, 2, 12);
+                g.Add(3, 4, 34);
+                Assert.AreEqual(3, g.EdgeCount);
+            }
+        }
+
+        [Test]
+        public void TestAllEdgeCost()
+        {
+            foreach (var isDirected in new[] { true, false })
+            {
+                var g = new Graph<int>(isDirected);
+                g.Add(0, 1, 1);
+                g.Add(1, 2, 12);
+                g.Add(3, 4, 34);
+                var allEdgeCost = g.AllEdgeCost();
+                allEdgeCost.Sort();
+                var expected = isDirected ? new double[] {1, 12, 34} : new double[] {1, 1, 12, 12, 34, 34};
+                Assert.IsTrue(allEdgeCost.SequenceEqual(expected));
+            }
+        }
+
+
 
         /*
         [Test]
@@ -1426,6 +1469,7 @@ namespace SharpAlgosTests
                     "should be neighbours:" + connections[i] + " => " + connections[i + 1]);
             }
         }
+
         public static bool AreNeighbours<T>(Graph<T> g, T a, T b)
         {
             return g.HasEdge(a, b) || g.HasEdge(b, a);

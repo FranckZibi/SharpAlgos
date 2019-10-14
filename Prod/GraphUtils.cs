@@ -86,6 +86,17 @@ namespace SharpAlgos
                 return _isDirected ? totalEdges : totalEdges / 2;
             }
         }
+        public int VerticeCount => _edgesWithCost.Count;
+        public List<double> AllEdgeCost()
+        {
+            var result = new List<double>();
+            foreach (var targetWithCost in _edgesWithCost.Values)
+            {
+                result.AddRange(targetWithCost.Values);
+            }
+
+            return result;
+        }
         private IDictionary<T, HashSet<T>> ChildrenToParents()
         {
             var result = new Dictionary<T, HashSet<T>>();
@@ -247,7 +258,7 @@ namespace SharpAlgos
             }
         }
         //Find longest path from any two vertices in o(V) (tree) to o(V!) (dense graph) time
-        //works only for 'connected undirected graph' or 'strongly connected directed graph'
+        //works only for 'connected undidirected graph' or 'strongly connected directed graph'
         public List<T> LongestPathInConnectedGraph_DFS()
         {
             var startVertex = LongestPath_DFS(_edgesWithCost.Keys.First()).Last();
@@ -678,8 +689,12 @@ namespace SharpAlgos
         ///         at least one of the 2 constraints (Tuple.Item1 or Tuple.Item2) must be satisfied 
         /// </param>
         /// <param name="Complement">compute the complement of a constraint a => ~a , ~a => a</param>
-        /// <param name="AreValidAtSameTime">true if the 2 constraints can be valid at same time</param>
-        /// <param name="distinctConstraintsAreAlwaysValidAtSameTime">true if 2 distinct constraints are always invalid
+        /// <param name="AreValidAtSameTime">true if the 2 constraints can be valid at same time
+        /// Those constraints will always come from the original clauses list
+        /// Only needed if 'distinctConstraintsAreAlwaysValidAtSameTime' is false
+        /// </param>
+        /// <param name="distinctConstraintsAreAlwaysValidAtSameTime">
+        ///  true if 2 distinct constraints are always valid at same time
         ///  so only 'a' and '~a' are not valid at same time, all other combinations of constraints are valid
         /// </param>
         /// <returns>
@@ -1432,7 +1447,7 @@ namespace SharpAlgos
         #endregion
 
         #region Maze
-        private static Graph<Point> LoadMaze(char[,] maze)
+        public static Graph<Point> LoadMaze(char[,] maze)
         {
             var g = new Graph<Point>(false);
             foreach (var from in Utils.AllPoints(maze))
