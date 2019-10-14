@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 // ReSharper disable UnusedMember.Local
@@ -13,21 +12,11 @@ namespace CSharpContestProject
 {
     static class Program
     {
-
-        private static void Main(string[] args)
-        {
-            //int nbTests = ReadInt();
-            int nbTests = 1;
-            for (int i = 1; i <= nbTests; ++i)
-            {
-                Process();
-            }
-        }
-
-        public static void Process()
+         private static void Main(string[] args)
         {
         }
 
+      
         #region reading input
         private static List<string> ReadAllLines()
         {
@@ -81,7 +70,7 @@ namespace CSharpContestProject
             char[,] maze = null;
             for (int row = 0; row < nbRows; row++)
             {
-                var line = Console.ReadLine()??"";
+                var line = Console.ReadLine() ?? "";
                 if (maze == null)
                 {
                     maze = new char[nbRows, line.Length];

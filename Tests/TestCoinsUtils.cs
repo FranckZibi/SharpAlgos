@@ -43,7 +43,13 @@ namespace SharpAlgosTests
         {
             Assert.AreEqual(expectedResult, Utils.CountWaysToAchieveAmount(amount, coins));
         }
-
+        [Test]
+        public void TestTotalNumberOfWaysToGetTheDenominationOfCoins()
+        {
+            Assert.AreEqual(6, Utils.TotalNumberOfWaysToGetTheDenominationOfCoins(8, new[] { 1, 3, 5, 7 }));
+            Assert.AreEqual(4, Utils.TotalNumberOfWaysToGetTheDenominationOfCoins(4, new[] { 1, 2, 3 }));
+            Assert.AreEqual(0, Utils.TotalNumberOfWaysToGetTheDenominationOfCoins(4, new[] { 3, 5, 7 }));
+        }
 
 
         [Test]
@@ -56,13 +62,7 @@ namespace SharpAlgosTests
 
 
 
-        [Test]
-        public void TestTotalNumberOfWaysToGetTheDenominationOfCoins()
-        {
-            Assert.AreEqual(6, Utils.TotalNumberOfWaysToGetTheDenominationOfCoins(8, new[] { 1, 3, 5, 7 }));
-            Assert.AreEqual(4, Utils.TotalNumberOfWaysToGetTheDenominationOfCoins(4, new[] { 1, 2, 3 }));
-            Assert.AreEqual(0, Utils.TotalNumberOfWaysToGetTheDenominationOfCoins(4, new[] { 3, 5, 7 }));
-        }
+     
 
 
 

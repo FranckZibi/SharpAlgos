@@ -43,7 +43,7 @@ namespace SharpAlgos
         }
 
 
-        //return the minimum number of coins needed to achieve exactly 'amount'
+        //return the minimum number of coins needed to achieve exactly 'amount' given an infinite number of coins of face 'coins'
         // (return -1 if it is not possible)
         public static int CoinChange(int[] coins, int amount)
         {
@@ -81,53 +81,7 @@ namespace SharpAlgos
             cache[remainingAmount] = currentMin;
             return currentMin;
         }
-
-        //count the number of ways to achieve 'amount' given an infinite number of coins of face 'coins'
-        //for instance, there are 3 ways to achieve 4 cents with coins of 1cent and 2cents (2*2cents, 4*1cent, 2*1cent+2cent)
-        public static int CountWaysToAchieveAmount(int amount, int[] coins)
-        {
-            var prev = new int[1 + amount];
-            var current = new int[1 + amount];
-            prev[0] = 1;
-
-            for (int i = 0; i < coins.Length; ++i)
-            {
-                current[0] = 1;
-                for (int a = 1; a <= amount; ++a)
-                {
-                    int nbWithoutCoinI = prev[a];
-                    int nbWithCoinI = (a >= coins[i]) ? current[a - coins[i]] : 0;
-                    current[a] = nbWithoutCoinI + nbWithCoinI;
-                }
-                var tmp = current;
-                current = prev;
-                prev = tmp;
-            }
-            return prev.Last();
-        }
-
-        public static int TotalNumberOfWaysToGetTheDenominationOfCoins(int target, int[] values)
-        {
-            var hashValues = new HashSet<int>(values);
-            Array.Sort(values);
-            int[] numberOfWays = new int[1 + target];
-            numberOfWays[0] = 1;
-            for (int targetValue = 1; targetValue < numberOfWays.Length; ++targetValue)
-            {
-                for (var leftVal = 1; leftVal < targetValue; leftVal++)
-                {
-                    numberOfWays[targetValue] = Math.Max(numberOfWays[targetValue], numberOfWays[leftVal] * numberOfWays[targetValue - leftVal]);
-                }
-                if (hashValues.Contains(targetValue))
-                {
-                    ++numberOfWays[targetValue];
-                }
-            }
-            return numberOfWays[target];
-        }
-
-
-        //Solve minium Coin change-making problem (unlimited supply of coins) in o(target*values.Length) time
+        //Solve minimum Coin change-making problem (unlimited supply of coins) in o(target*values.Length) time
         public static int MinimumCoinChangeMaking(int target, int[] values)
         {
             Array.Sort(values);
@@ -153,6 +107,52 @@ namespace SharpAlgos
             }
             return minimumCoins[target];
         }
+        //count the number of ways to achieve 'amount' given an infinite number of coins of face 'coins'
+        //for instance, there are 3 ways to achieve 4 cents with coins of 1cent and 2cents (2*2cents, 4*1cent, 2*1cent+2cent)
+        public static int CountWaysToAchieveAmount(int amount, int[] coins)
+        {
+            var numberOfWays = new int[1 + amount];
+            numberOfWays[0] = 1;
+            var current = new int[1 + amount];
+            
+            for (int i = 0; i < coins.Length; ++i)
+            {
+                current[0] = 1;
+                for (int a = 1; a <= amount; ++a)
+                {
+                    int nbWithoutCoinI = numberOfWays[a];
+                    int nbWithCoinI = (a >= coins[i]) ? current[a - coins[i]] : 0;
+                    current[a] = nbWithoutCoinI + nbWithCoinI;
+                }
+                var tmp = current;
+                current = numberOfWays;
+                numberOfWays = tmp;
+            }
+            return numberOfWays.Last();
+        }
+
+        public static int TotalNumberOfWaysToGetTheDenominationOfCoins(int target, int[] values)
+        {
+            var hashValues = new HashSet<int>(values);
+            Array.Sort(values);
+            int[] numberOfWays = new int[1 + target];
+            numberOfWays[0] = 1;
+            for (int targetValue = 1; targetValue < numberOfWays.Length; ++targetValue)
+            {
+                for (var leftVal = 1; leftVal < targetValue; leftVal++)
+                {
+                    numberOfWays[targetValue] = Math.Max(numberOfWays[targetValue], numberOfWays[leftVal] * numberOfWays[targetValue - leftVal]);
+                }
+                if (hashValues.Contains(targetValue))
+                {
+                    ++numberOfWays[targetValue];
+                }
+            }
+            return numberOfWays[target];
+        }
+
+
+     
 
     }
 }

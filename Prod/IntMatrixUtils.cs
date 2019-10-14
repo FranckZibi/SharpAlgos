@@ -265,5 +265,57 @@ namespace SharpAlgos
             }
             return maxSum;
         }
+
+        /// <summary>
+        /// compute the product of 2 matrices 'a' (N,M) and 'b' (M,K) in o(N*M*K) time
+        /// each cell of the resulting matrix will be computed '% modulo'
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="modulo"></param>
+        /// <returns></returns>
+        public static long[,] ProductModulo(long[,] a, long[,] b, long modulo)
+        {
+            var result = new long[a.GetLength(0), b.GetLength(1)];
+            for (int row = 0; row < result.GetLength(0); row++)
+            {
+                for (int col = 0; col < result.GetLength(1); col++)
+                {
+                    long sum = 0;
+                    for (int i = 0; i < a.GetLength(1); i++)
+                    {
+                        sum = (sum + a[row, i] * b[i, col]) % modulo;
+                    }
+                    result[row, col] = (sum + modulo) % modulo;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Compute a square matrix of size (N*N) to power 'exp' in O (N^3 * log(exp) ) time
+        /// each cell of the matrix will be computed '% modulo'
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <param name="exp"></param>
+        /// <param name="modulo"></param>
+        /// <returns></returns>
+        public static long[,] PowerModulo(long[,] mat, int exp, long modulo)
+        {
+            if (exp == 1)
+            {
+                return mat;
+            }
+            var sq = ProductModulo(mat, mat, modulo);
+            if (exp % 2 == 0)
+            {
+                return PowerModulo(sq, exp / 2, modulo);
+            }
+            else // >= 3 and is odd
+            {
+                return ProductModulo(mat, PowerModulo(sq, exp / 2, modulo), modulo);
+            }
+        }
+
     }
 }
