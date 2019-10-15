@@ -409,6 +409,24 @@ namespace SharpAlgosTests
             }
         }
 
+
+        [Test]
+        public void TestCycleWithMinimumAverageWeight()
+        {
+            var g = new Graph<string>(true);
+            g.Add("A", "B",1);
+            g.Add("A", "C", 10);
+            Assert.AreEqual(null, g.CycleWithMinimumAverageWeight("A"));
+            g.Add("C", "A", 10);
+            g.Add("B", "D", 1);
+            g.Add("D", "E", 1);
+            g.Add("E", "A", 1);
+            Assert.AreEqual("ABDEA", string.Join("",g.CycleWithMinimumAverageWeight("A")));
+            g.Add("E", "A", 10000);
+            Assert.AreEqual("ACA", string.Join("", g.CycleWithMinimumAverageWeight("A")));
+        }
+
+
         private static List<string> NormalizeCycle(IList<string> cycle)
         {
             int indexMin = cycle.IndexOf(cycle.Min());

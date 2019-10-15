@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
+
 // ReSharper disable UnusedMember.Global
 
 namespace SharpAlgos
@@ -140,6 +143,9 @@ namespace SharpAlgos
             {
                 result += _edgesWithCost[validPath[i - 1]][validPath[i]];
             }
+
+            int a;
+            a = 5;
             return result;
         }
 
@@ -933,7 +939,52 @@ namespace SharpAlgos
             blockedMap.Remove(u);
         }
         #endregion
-    
+
+        public List<T> CycleWithMinimumAverageWeight(T start)
+        {
+            int n = VerticeCount;
+
+
+            var shortedPathFromStartUsing_X_Edges = new Dictionary<T, List<double>>();
+            //we compute the minimum distance for #edges = 0
+            foreach(var v in Vertices)
+            {
+                shortedPathFromStartUsing_X_Edges[v] =  new List<double> { Equals(v, start) ? 0 : double.MaxValue };
+            }
+
+            for(int edgeCount = 1;edgeCount<=n;++edgeCount)
+            {
+                foreach (var v in Vertices)
+                {
+                    shortedPathFromStartUsing_X_Edges[v].Add(double.MaxValue);
+                }
+                foreach (var u in Vertices)
+                {
+                    var curForU = shortedPathFromStartUsing_X_Edges[u];
+                    var cos_start_to_u_PrevEdge = curForU[edgeCount - 1];
+                    foreach (var v in Children(u))
+                    {
+                        var curForV = shortedPathFromStartUsing_X_Edges[v];
+                        TryEdgeCost(u, v, out double cost_u_v);
+                        curForV[edgeCount] = Math.Min(curForV[edgeCount], cos_start_to_u_PrevEdge+cost_u_v);
+
+                    }
+
+
+                    //shortedPathFromStartUsing_X_Edges[v] = new List<double> { Equals(v, start) ? 0 : double.MaxValue };
+                }
+
+            }
+
+
+
+
+            //?D
+            return new List<T>();
+        }
+
+
+
         #region Forrest detection
         public IList<HashSet<T>> AllForrests()
         {
