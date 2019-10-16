@@ -940,48 +940,125 @@ namespace SharpAlgos
         }
         #endregion
 
-        public List<T> CycleWithMinimumAverageWeight(T start)
+
+        #region Find cycle with minimum average weigth in o (V E) time using Karp alog
+        public Tuple<List<T>, double> CycleWithMinimumAverageWeight()
         {
-            int n = VerticeCount;
-
-
-            var shortedPathFromStartUsing_X_Edges = new Dictionary<T, List<double>>();
-            //we compute the minimum distance for #edges = 0
-            foreach(var v in Vertices)
+            Tuple<List<T>, double> bestSoFar = null;
+            foreach (var scc in ExtractStronglyConnectedComponents())
             {
-                shortedPathFromStartUsing_X_Edges[v] =  new List<double> { Equals(v, start) ? 0 : double.MaxValue };
+                var res = CycleWithMinimumAverageWeight(scc[0], scc);
+                if (res != null && (bestSoFar==null || res.Item2<bestSoFar.Item2))
+                {
+                    bestSoFar = res;
+                }
             }
-
+            return bestSoFar;
+        }
+        /// <summary>
+        /// Finding the cycle with minimum average weight, given a root node 'start'
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="allowedVertices">
+        /// null if we can use all vertices of the graph
+        /// </param>
+        /// <returns>
+        /// null if no cycle exist in the graph
+        /// Tuple.Item1 = cycle with minimum average weight
+        /// Tuple.Item2 = minimum average weight for a cycle in the graph
+        /// </returns>
+        public Tuple<List<T>,double> CycleWithMinimumAverageWeight(T start, List<T> allowedVertices = null)
+        {
+            allowedVertices = allowedVertices ?? Vertices.ToList();
+            if (allowedVertices.Count <= 1)
+            {
+                return null;
+            }
+            int n = VerticeCount;
+            var shortestPath_from_start_to_v_using_X_Edges = new Dictionary<T, List<double>>();
+            var prec = new Dictionary<int, IDictionary<T, T>>();
+            //we compute the minimum distance for #edges = 0
+            foreach (var v in allowedVertices)
+            {
+                shortestPath_from_start_to_v_using_X_Edges[v] =  new List<double> { Equals(v, start) ? 0 : double.MaxValue };
+            }
             for(int edgeCount = 1;edgeCount<=n;++edgeCount)
             {
-                foreach (var v in Vertices)
+                prec[edgeCount] = new Dictionary<T, T>();
+                foreach (var v in allowedVertices)
                 {
-                    shortedPathFromStartUsing_X_Edges[v].Add(double.MaxValue);
+                    shortestPath_from_start_to_v_using_X_Edges[v].Add(double.MaxValue);
                 }
-                foreach (var u in Vertices)
+                foreach (var node in allowedVertices)
                 {
-                    var curForU = shortedPathFromStartUsing_X_Edges[u];
-                    var cos_start_to_u_PrevEdge = curForU[edgeCount - 1];
-                    foreach (var v in Children(u))
+                    var curForU = shortestPath_from_start_to_v_using_X_Edges[node];
+                    var cost_start_to_u_PrevEdge = curForU[edgeCount - 1];
+                    foreach (var neighbor in Children(node))
                     {
-                        var curForV = shortedPathFromStartUsing_X_Edges[v];
-                        TryEdgeCost(u, v, out double cost_u_v);
-                        curForV[edgeCount] = Math.Min(curForV[edgeCount], cos_start_to_u_PrevEdge+cost_u_v);
-
+                        var shortedPath_neighbor = shortestPath_from_start_to_v_using_X_Edges[neighbor];
+                        var newCost = cost_start_to_u_PrevEdge + _edgesWithCost[node][neighbor];
+                        if (newCost < shortedPath_neighbor[edgeCount])
+                        {
+                            prec[edgeCount][neighbor] = node;
+                            shortedPath_neighbor[edgeCount] = newCost;
+                        }
                     }
-
-
-                    //shortedPathFromStartUsing_X_Edges[v] = new List<double> { Equals(v, start) ? 0 : double.MaxValue };
                 }
 
             }
 
+            double minimumCycleMean = double.MaxValue;
+            var argmin_node = default(T);
+            int argmin_k = -1;
+            foreach (var node in allowedVertices)
+            {
+                double valMax_for_node = Double.MinValue;
+                int argmax = -1;
+                List<double> shortestPathByDepth = shortestPath_from_start_to_v_using_X_Edges[node];
+                for (int k = 0; k < n; ++k)
+                {
+                    if (shortestPathByDepth[n] == double.MaxValue || shortestPathByDepth[k] == double.MaxValue)
+                    {
+                        continue;
+                    }
+                    double alt = (shortestPathByDepth[n] - shortestPathByDepth[k]) / (n - k);
+                    if (alt >= valMax_for_node)
+                    {
+                        valMax_for_node = alt;
+                        argmax = k;
+                    }
+                }
+
+                if (argmax != -1 && valMax_for_node!=double.MinValue && valMax_for_node < minimumCycleMean)
+                {
+                    //var cycleStart = node;
+                    //for (int l = n; l > argmax; --l) {cycleStart = prec[l][cycleStart];}
+                    //if (!Equals(node,cycleStart)) continue;
+                    minimumCycleMean = valMax_for_node;
+                    argmin_node = node;
+                    argmin_k = argmax;
+                }
+            }
 
 
+            //uncomment if we just want to compute the mean of the cycle
+            //return minimumCycleMean;
 
-            //?D
-            return new List<T>();
+            if (minimumCycleMean == double.MaxValue)
+            {
+                return null;
+            }
+            var path = new List<T>();
+            for (int l = n; l > argmin_k; --l)
+            {
+                path.Add(argmin_node);
+                argmin_node = prec[l][argmin_node];
+            }
+
+            path.Reverse();
+            return Tuple.Create(path, minimumCycleMean);
         }
+        #endregion
 
 
 

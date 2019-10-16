@@ -395,8 +395,7 @@ namespace SharpAlgosTests
             var observed = new List<string>();
             foreach (List<string> l in observedCycles)
             {
-                var normalizedCycle = NormalizeCycle(l);
-                observed.Add(string.Join("", normalizedCycle.ToArray()));
+                observed.Add(ToStringNormalizedCycle(l));
             }
             observed.Sort();
             var expected = new List<string>(expectedCycles);
@@ -409,6 +408,11 @@ namespace SharpAlgosTests
             }
         }
 
+        public static string ToStringNormalizedCycle(List<string> cycle)
+        {
+            return string.Join("", NormalizeCycle(cycle));
+
+        }
 
         [Test]
         public void TestCycleWithMinimumAverageWeight()
@@ -417,13 +421,51 @@ namespace SharpAlgosTests
             g.Add("A", "B",1);
             g.Add("A", "C", 10);
             Assert.AreEqual(null, g.CycleWithMinimumAverageWeight("A"));
+            Assert.AreEqual(null, g.CycleWithMinimumAverageWeight());
             g.Add("C", "A", 10);
             g.Add("B", "D", 1);
             g.Add("D", "E", 1);
-            g.Add("E", "A", 1);
-            Assert.AreEqual("ABDEA", string.Join("",g.CycleWithMinimumAverageWeight("A")));
+            g.Add("E", "A", 5);
+            var res = g.CycleWithMinimumAverageWeight("A");
+            Assert.AreEqual("ABDE", ToStringNormalizedCycle(res.Item1));
+            Assert.AreEqual(2.0, res.Item2, 1e-9);
+            res = g.CycleWithMinimumAverageWeight();
+            Assert.AreEqual("ABDE", ToStringNormalizedCycle(res.Item1));
+            Assert.AreEqual(2.0, res.Item2, 1e-9);
             g.Add("E", "A", 10000);
-            Assert.AreEqual("ACA", string.Join("", g.CycleWithMinimumAverageWeight("A")));
+            var minimumMean = g.CycleWithMinimumAverageWeight("A").Item2;
+            Assert.AreEqual(10.0, minimumMean, 1e-9);
+            minimumMean = g.CycleWithMinimumAverageWeight().Item2;
+            Assert.AreEqual(10.0, minimumMean, 1e-9);
+
+
+            g = new Graph<string>(true);
+            g.Add("v1","v3",10);
+            g.Add("v1","v2",1);
+            g.Add("v2", "v3", 3);
+            g.Add("v3", "v4", 2);
+            g.Add("v4", "v1", 8);
+            g.Add("v4", "v2", 0);
+            res = g.CycleWithMinimumAverageWeight();
+            Assert.AreEqual("v2v3v4", ToStringNormalizedCycle(res.Item1));
+            Assert.AreEqual(5.0/3.0, res.Item2, 1e-9);
+
+
+
+            g = new Graph<string>(true);
+            g.Add("s", "a", 1);
+            g.Add("a", "b", 3);
+            g.Add("b", "s", -1);
+            g.Add("a", "c", 2);
+            g.Add("f", "a", 1);
+            g.Add("c", "g", 1);
+            g.Add("c", "d", 1);
+            g.Add("g", "d", 2);
+            g.Add("d", "e", -1);
+            g.Add("e", "f", 2);
+            res = g.CycleWithMinimumAverageWeight();
+            //Assert.AreEqual("abs", ToStringNormalizedCycle(res.Item1));
+            Assert.AreEqual(1.0, res.Item2, 1e-9);
         }
 
 
