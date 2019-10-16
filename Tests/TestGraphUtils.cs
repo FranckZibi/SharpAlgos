@@ -506,35 +506,57 @@ namespace SharpAlgosTests
         public void TestCycleWithLowestRatioCostDuration()
         {
             var duration = new Dictionary<Tuple<int, int>, double>();
+            for (int i = 0; i < 1000; ++i)
+                duration[Tuple.Create(-999, i)] = 0;
             var g = new Graph<int>(true);
             g.Add(0, 1, 1);
             duration[Tuple.Create(0, 1)] = 1;
             g.Add(1, 2, 1);
             duration[Tuple.Create(1, 2)] = 1;
+
+            //no cycles
+            var res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(null, res);
+            res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(null, res);
+
+            //signle cycle 0 => 1 => 2
             g.Add(2, 0, 1);
             duration[Tuple.Create(2, 0)] = 1;
-
-            foreach (var v in g.Vertices)
-                duration[Tuple.Create(-999,v)] = 0;
-            var res = g.CycleWithLowestRatioCostDuration(-999, (u,v)=> duration[Tuple.Create(u,v)]);
+            res = g.CycleWithLowestRatioCostDuration(-999, (u,v)=> duration[Tuple.Create(u,v)]);
             Assert.AreEqual(1, res.Item1, 1e-4);
             Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
+            res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(1, res.Item1, 1e-4);
+            Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
+
+            g.Add(1, 3, 10);
+            duration[Tuple.Create(1, 3)] = 1;
+            g.Add(3, 0, 10);
+            duration[Tuple.Create(3, 0)] = 1;
+            res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(1.0, res.Item1, 1e-4);
+            Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
+            res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(21.0/3, res.Item1, 1e-4);
+            Assert.AreEqual("013", ToStringNormalizedCycle(res.Item2));
 
             g.Add(1, 3, 0.5);
-            duration[Tuple.Create(1, 3)] = 0.5;
             g.Add(3, 0, 0.5);
-            duration[Tuple.Create(3, 0)] = 0.51;
-            foreach (var v in g.Vertices)
-                duration[Tuple.Create(-999, v)] = 0;
             res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
-            Assert.AreEqual(2.0/2.01, res.Item1, 1e-4);
+            Assert.AreEqual(2.0/3, res.Item1, 1e-4);
             Assert.AreEqual("013", ToStringNormalizedCycle(res.Item2));
-            duration[Tuple.Create(3, 0)] = 0.49;
-            res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
-            Assert.AreEqual(1, res.Item1, 1e-4);
+            res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(1.0, res.Item1, 1e-4);
             Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
 
-
+            duration[Tuple.Create(3, 0)] = 0.1;
+            res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(2.0 / 2.1, res.Item1, 1e-4);
+            Assert.AreEqual("013", ToStringNormalizedCycle(res.Item2));
+            res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(1.0, res.Item1, 1e-4);
+            Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
         }
         private static List<string> NormalizeCycle(IList<string> cycle)
         {
@@ -546,7 +568,6 @@ namespace SharpAlgosTests
             {
                 return begin;
             }
-
             if (string.CompareOrdinal(begin[1], begin.Last()) > 0)
             {
                 var sub = begin.Skip(1).Reverse().ToList();

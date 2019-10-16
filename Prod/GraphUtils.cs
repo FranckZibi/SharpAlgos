@@ -550,60 +550,12 @@ namespace SharpAlgos
             }
             return ExtractPath(start, end, prevVertex);
         }
-
-        /// <summary>
-        /// solve the tramp streamer problem in o ( log(sum(duration)) V E ) time
-        /// each edge 'A' => 'B' has a given cost, and an associate duration (= duration(A,B) )
-        /// the goal is to find a cycle minimizing the ratio (cycle cost)/(cycle duration) , so with the highest rentability 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>
-        /// null if there is no cycle in the graph
-        /// Tuple.Item1 : the lowest ratio 'cost/duration' we can achieve in a cycle
-        /// Tuple.Item2 : the cycle achieving this lowest ratio
-        /// </returns>
-        /// 
-        public Tuple<double,List<T>> CycleWithLowestRatioCostDuration(T notUsedRoot, Func<T, T, double> duration)
-        {
-            double min = 0.00001;
-            double max = 1e9;
-            if (null != ExtractNegativeCycleIfAny(notUsedRoot,(u, v) => _edgesWithCost[u][v] - min * duration(u, v)))
-            {
-                return null;
-            }
-            var lastNotNullCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => _edgesWithCost[u][v] - max * duration(u, v));
-            if (lastNotNullCycle == null)
-            {
-                return null;
-            }
-
-            while (min < max)
-            {
-                if (Math.Abs(max - min) < 1e-6)
-                {
-                    break;
-                }
-                var middle = (min + max) / 2;
-                var negCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => _edgesWithCost[u][v] - middle * duration(u, v));
-                if (negCycle == null)
-                {
-                    min = middle;
-                }
-                else
-                {
-                    lastNotNullCycle = negCycle;
-                    max = middle;
-                }
-            }
-            return Tuple.Create((max + min) / 2, lastNotNullCycle);
-        }
-
         private static List<T> ExtractCyclePath(T end, IDictionary<T, T> prevVertex)
         {
             var cycle = new List<T> { end };
             for (; ; )
             {
-                if (cycle.Count > prevVertex.Count+1)
+                if (cycle.Count > prevVertex.Count + 1)
                 {
                     return null;
                 }
@@ -615,14 +567,13 @@ namespace SharpAlgos
                 var idx = cycle.IndexOf(previousIndex);
                 if (idx >= 0)
                 {
-                    cycle = cycle.GetRange(idx, cycle.Count-idx);
+                    cycle = cycle.GetRange(idx, cycle.Count - idx);
                     cycle.Reverse();
                     return cycle;
                 }
                 cycle.Add(previousIndex);
             }
         }
-
 
         /// <summary>
         /// return a negative cycle in the graph (if any) in o(V E) time
@@ -681,6 +632,101 @@ namespace SharpAlgos
             return (bestDistanceFromStart[end][maxDepth] == double.MaxValue) ? -1 : bestDistanceFromStart[end][maxDepth];
         }
         #endregion
+
+        #region Tramp Streamer Problem : find the cycle with the optimal ratio (cycle edge sum) / (cycle duration)
+        /// <summary>
+        /// solve the tramp streamer problem in o ( log(sum(duration)) V E ) time
+        /// each edge 'A' => 'B' has a given cost, and an associate duration (= duration(A,B) )
+        /// the goal is to find a cycle minimizing the ratio (cycle cost)/(cycle duration)
+        /// </summary>
+        /// <returns>
+        /// null if there is no cycle in the graph
+        /// Tuple.Item1 : the lowest ratio 'cycle cost/cycle duration' we can achieve in a cycle
+        /// Tuple.Item2 : the cycle achieving this lowest ratio
+        /// </returns>
+        /// 
+        public Tuple<double, List<T>> CycleWithLowestRatioCostDuration(T notUsedRoot, Func<T, T, double> duration)
+        {
+            double min = 0.00001;
+            double max = 1e9;
+            if (null != ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => _edgesWithCost[u][v] - min * duration(u, v)))
+            {
+                return null;
+            }
+            var lastNotNullCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => _edgesWithCost[u][v] - max * duration(u, v));
+            if (lastNotNullCycle == null)
+            {
+                return null;
+            }
+
+            while (min < max)
+            {
+                if (Math.Abs(max - min) < 1e-6)
+                {
+                    break;
+                }
+                var middle = (min + max) / 2;
+                var negCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => _edgesWithCost[u][v] - middle * duration(u, v));
+                if (negCycle == null)
+                {
+                    min = middle;
+                }
+                else
+                {
+                    lastNotNullCycle = negCycle;
+                    max = middle;
+                }
+            }
+            return Tuple.Create((max + min) / 2, lastNotNullCycle);
+        }
+
+        /// <summary>
+        /// solve the tramp streamer problem in o ( log(sum(duration)) V E ) time
+        /// each edge 'A' => 'B' has a given profit, and an associate duration (= duration(A,B) )
+        /// the goal is to find a cycle maximizing the ratio (cycle profit)/(cycle duration) , so with the highest rentability 
+        /// <returns>
+        /// null if there is no cycle in the graph
+        /// Tuple.Item1 : the highest ratio 'profit/duration' we can achieve in a cycle
+        /// Tuple.Item2 : the cycle achieving this highest ratio
+        /// </returns>
+        public Tuple<double, List<T>> CycleWithHighestRatioBenefitDuration(T notUsedRoot, Func<T, T, double> duration)
+        {
+            double min = 0.00001;
+            double max = 1e9;
+            if (null != ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => -_edgesWithCost[u][v] + max * duration(u, v)))
+            {
+                return null;
+            }
+            var lastNotNullCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => -_edgesWithCost[u][v] + min * duration(u, v));
+            if (lastNotNullCycle == null)
+            {
+                return null;
+            }
+
+            while (min < max)
+            {
+                if (Math.Abs(max - min) < 1e-6)
+                {
+                    break;
+                }
+                var middle = (min + max) / 2;
+                var negCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => -_edgesWithCost[u][v] + middle * duration(u, v));
+                if (negCycle == null)
+                {
+                    max = middle;
+                }
+                else
+                {
+                    lastNotNullCycle = negCycle;
+                    min = middle;
+                }
+            }
+            return Tuple.Create((max + min) / 2, lastNotNullCycle);
+        }
+
+        #endregion
+
+
 
         #region Floyd Warshall Algorithm: find all shortest path between any vertex in o (V^3) time
         //Works for negative weight
