@@ -78,7 +78,7 @@ namespace SharpAlgos
             _edgesWithCost.Remove(from);
             foreach (var edges in _edgesWithCost)
             {
-                edges.Value.Remove(@from);
+                edges.Value.Remove(from);
             }
         }
         public int EdgeCount
@@ -473,7 +473,7 @@ namespace SharpAlgos
         #region Bellman-Ford Algorhitm: find all shortest path starting from 'start' in o (V E) time
         //Works for negative weight
         //Doesn't work if negative cycles (returns null if graph contains negative cycles)
-        public List<T> BestPathBellmanFord(T start, T end, bool minimizeCost)
+        public List<T> BestPathBellmanFord(T start, T end, bool minimizeCost, List<T> negativeCycleIfAny = null, Func<T, T, double> costOverrideIfAny = null)
         {
             var infiniteCost = minimizeCost ? double.MaxValue : double.MinValue;
             var prevVertex = new Dictionary<T, T>();
@@ -501,7 +501,9 @@ namespace SharpAlgos
                         {
                             continue;
                         }
-                        var newCost = bestDistanceFromStart[u] + targetWithCost.Value;
+
+                        var cost_u_v = (costOverrideIfAny == null)?targetWithCost.Value: costOverrideIfAny(u, v);
+                        var newCost = bestDistanceFromStart[u] + cost_u_v;
                         if ((bestDistanceFromStart[v] == infiniteCost)
                             || (minimizeCost && (newCost < bestDistanceFromStart[v]))
                             || (!minimizeCost && (newCost > bestDistanceFromStart[v]))
@@ -529,19 +531,126 @@ namespace SharpAlgos
                     {
                         continue;
                     }
-                    var newCost = bestDistanceFromStart[u] + targetWithCost.Value;
+                    var cost_u_v = (costOverrideIfAny == null) ? targetWithCost.Value : costOverrideIfAny(u, v);
+                    var newCost = bestDistanceFromStart[u] + cost_u_v;
                     //if distance between 'u' & 'v' can be improved 
                     if ((minimizeCost && (newCost < bestDistanceFromStart[v]))
                     //||(!minimizeCost && (newCost > vertexToCost[v]))
                     )
                     {
-                        return null; //Graph contains a negative-weight cycle
+                        //Graph contains a negative-weight cycle
+                        if (negativeCycleIfAny != null)
+                        {
+                            negativeCycleIfAny.Clear();
+                            negativeCycleIfAny.AddRange(ExtractCyclePath(v, prevVertex) ?? new List<T>());
+                        }
+                        return null;
                     }
                 }
             }
             return ExtractPath(start, end, prevVertex);
         }
-        //find the sortest path between 'start' and 'end' using at most 'maxDepth' edges in o(maxDepth * E) time 
+
+        /// <summary>
+        /// solve the tramp streamer problem in o ( log(sum(duration)) V E ) time
+        /// each edge 'A' => 'B' has a given cost, and an associate duration (= duration(A,B) )
+        /// the goal is to find a cycle minimizing the ratio (cycle cost)/(cycle duration) , so with the highest rentability 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>
+        /// null if there is no cycle in the graph
+        /// Tuple.Item1 : the lowest ratio 'cost/duration' we can achieve in a cycle
+        /// Tuple.Item2 : the cycle achieving this lowest ratio
+        /// </returns>
+        /// 
+        public Tuple<double,List<T>> CycleWithLowestRatioCostDuration(T notUsedRoot, Func<T, T, double> duration)
+        {
+            double min = 0.00001;
+            double max = 1e9;
+            if (null != ExtractNegativeCycleIfAny(notUsedRoot,(u, v) => _edgesWithCost[u][v] - min * duration(u, v)))
+            {
+                return null;
+            }
+            var lastNotNullCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => _edgesWithCost[u][v] - max * duration(u, v));
+            if (lastNotNullCycle == null)
+            {
+                return null;
+            }
+
+            while (min < max)
+            {
+                if (Math.Abs(max - min) < 1e-6)
+                {
+                    break;
+                }
+                var middle = (min + max) / 2;
+                var negCycle = ExtractNegativeCycleIfAny(notUsedRoot, (u, v) => _edgesWithCost[u][v] - middle * duration(u, v));
+                if (negCycle == null)
+                {
+                    min = middle;
+                }
+                else
+                {
+                    lastNotNullCycle = negCycle;
+                    max = middle;
+                }
+            }
+            return Tuple.Create((max + min) / 2, lastNotNullCycle);
+        }
+
+        private static List<T> ExtractCyclePath(T end, IDictionary<T, T> prevVertex)
+        {
+            var cycle = new List<T> { end };
+            for (; ; )
+            {
+                if (cycle.Count > prevVertex.Count+1)
+                {
+                    return null;
+                }
+                T previousIndex;
+                if (!prevVertex.TryGetValue(cycle.Last(), out previousIndex))
+                {
+                    return null;
+                }
+                var idx = cycle.IndexOf(previousIndex);
+                if (idx >= 0)
+                {
+                    cycle = cycle.GetRange(idx, cycle.Count-idx);
+                    cycle.Reverse();
+                    return cycle;
+                }
+                cycle.Add(previousIndex);
+            }
+        }
+
+
+        /// <summary>
+        /// return a negative cycle in the graph (if any) in o(V E) time
+        /// </summary>
+        /// <param name="notUsedRoot"></param>
+        /// <returns>
+        /// a negative cycle, or null if no negative cycle exist in teh graph</returns>
+        public List<T> ExtractNegativeCycleIfAny(T notUsedRoot, Func<T, T, double> costOverrideIfAny = null)
+        {
+            if (_isDirected)
+            {
+                foreach (var v in Vertices)
+                {
+                    Add(notUsedRoot, v, 0);
+                }
+            }
+
+            var cycleWithNegativeWeight = new List<T>();
+            var tmp = BestPathBellmanFord(notUsedRoot, Vertices.First(), true, cycleWithNegativeWeight, costOverrideIfAny);
+            Remove(notUsedRoot);
+            if (tmp != null)
+            {
+                return null; //no  negative cycle;
+            }
+            return cycleWithNegativeWeight;
+        }
+
+        //find the shortest path between 'start' and 'end' using at most 'maxDepth' edges in o(maxDepth * E) time 
         public double BestPathBellmanFordWithMaxDepth(T start, T end, int maxDepth)
         {
             //bestDistanceFromStart[v][d] : shortest path from 'start' to 'v' using at most 'd' edges  

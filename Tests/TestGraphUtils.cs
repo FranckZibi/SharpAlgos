@@ -411,7 +411,10 @@ namespace SharpAlgosTests
         public static string ToStringNormalizedCycle(List<string> cycle)
         {
             return string.Join("", NormalizeCycle(cycle));
-
+        }
+        public static string ToStringNormalizedCycle(List<int> cycle)
+        {
+            return ToStringNormalizedCycle(cycle.Select(x=>x.ToString()).ToList());
         }
 
         [Test]
@@ -469,6 +472,70 @@ namespace SharpAlgosTests
         }
 
 
+        [Test]
+        public void TestExtractNegativeCycleIfAny()
+        {
+            var g = new Graph<int>(true);
+            g.Add(0,1,-1);
+            g.Add(1,2,-1);
+            g.Add(2,0,-1);
+            var cycle = g.ExtractNegativeCycleIfAny(-999);
+            Assert.AreEqual("012", ToStringNormalizedCycle(cycle));
+
+            g.Add(2, 0, 3);
+            cycle = g.ExtractNegativeCycleIfAny(-999);
+            Assert.AreEqual(null, cycle);
+
+            g = new Graph<int>(true);
+            for (int i = 1; i < 100; ++i)
+            {
+                g.Add(i - 1, i, 1);
+            }
+            g.Add(99, 0, 1);
+            cycle = g.ExtractNegativeCycleIfAny(-999);
+            Assert.AreEqual(null, cycle);
+            g.Add(8, 1, -6.999);
+            cycle = g.ExtractNegativeCycleIfAny(-999);
+            Assert.AreEqual(null, cycle);
+            g.Add(8, 1, -7.0001);
+            cycle = g.ExtractNegativeCycleIfAny(-999);
+            Assert.AreEqual("12345678", ToStringNormalizedCycle(cycle));
+        }
+
+        [Test]
+        public void TestCycleWithLowestRatioCostDuration()
+        {
+            var duration = new Dictionary<Tuple<int, int>, double>();
+            var g = new Graph<int>(true);
+            g.Add(0, 1, 1);
+            duration[Tuple.Create(0, 1)] = 1;
+            g.Add(1, 2, 1);
+            duration[Tuple.Create(1, 2)] = 1;
+            g.Add(2, 0, 1);
+            duration[Tuple.Create(2, 0)] = 1;
+
+            foreach (var v in g.Vertices)
+                duration[Tuple.Create(-999,v)] = 0;
+            var res = g.CycleWithLowestRatioCostDuration(-999, (u,v)=> duration[Tuple.Create(u,v)]);
+            Assert.AreEqual(1, res.Item1, 1e-4);
+            Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
+
+            g.Add(1, 3, 0.5);
+            duration[Tuple.Create(1, 3)] = 0.5;
+            g.Add(3, 0, 0.5);
+            duration[Tuple.Create(3, 0)] = 0.51;
+            foreach (var v in g.Vertices)
+                duration[Tuple.Create(-999, v)] = 0;
+            res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(2.0/2.01, res.Item1, 1e-4);
+            Assert.AreEqual("013", ToStringNormalizedCycle(res.Item2));
+            duration[Tuple.Create(3, 0)] = 0.49;
+            res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
+            Assert.AreEqual(1, res.Item1, 1e-4);
+            Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
+
+
+        }
         private static List<string> NormalizeCycle(IList<string> cycle)
         {
             int indexMin = cycle.IndexOf(cycle.Min());
