@@ -10,7 +10,6 @@ namespace SharpAlgosTests
     [TestFixture]
     public partial class TestUtils
     {
-
         [Test]
         public void TestClockwiseOrAligned()
         {
@@ -88,12 +87,7 @@ namespace SharpAlgosTests
                     Assert.AreEqual(0.0, observedResult.Item2.Item2, 1e-8);
                 }
             }
-
-
         }
-        //        public static Tuple<double, Tuple<double, double>> SmallestCircleIncludingAllPoints(IEnumerable<Tuple<double, double>> p)
-
-
 
         [Test]
         public void TestConvexLowerAndUpperHull()
@@ -110,7 +104,6 @@ namespace SharpAlgosTests
             Assert.IsTrue(lower.SequenceEqual(new[] {new Point(0, 0), new Point(2, 0), new Point(2, 2)}));
             Assert.IsTrue(upper.SequenceEqual(new[] {new Point(0, 0), new Point(0, 2), new Point(2, 2)}));
         }
-
 
         [Test]
         public void TestConvexHull()
@@ -156,7 +149,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(3.0, Utils.GetArea(new[] {a, b, c, d, e, f}), 1e-9);
         }
 
-
         [Test]
         public void TestMinDistance()
         {
@@ -178,18 +170,6 @@ namespace SharpAlgosTests
                 var minDistanceBruteForce = MinDistanceBruteForce(p);
                 Assert.AreEqual(minDistanceBruteForce, minDistance, 1e-9);
             }
-        }
-
-        private static double MinDistanceBruteForce(List<Point> points)
-        {
-            double minDistance = double.MaxValue;
-            for (int i = 0; i < points.Count; ++i)
-                for (int j = i + 1; j < points.Count; ++j)
-                {
-                    minDistance = Math.Min(minDistance, Utils.Distance(points[i], points[j]));
-                }
-
-            return minDistance;
         }
 
         [Test]
@@ -227,7 +207,17 @@ namespace SharpAlgosTests
             return minDistance;
         }
 
+        private static double MinDistanceBruteForce(List<Point> points)
+        {
+            double minDistance = double.MaxValue;
+            for (int i = 0; i < points.Count; ++i)
+            for (int j = i + 1; j < points.Count; ++j)
+            {
+                minDistance = Math.Min(minDistance, Utils.Distance(points[i], points[j]));
+            }
 
+            return minDistance;
+        }
     }
 }
 

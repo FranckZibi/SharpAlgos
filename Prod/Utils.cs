@@ -70,8 +70,6 @@ namespace SharpAlgos
             }
         }
 
-
-
         #region Matrix Chain Multiplication
 
         //compute the optimal cost to multiply 'n' matrix together in o(n^3) time and o(n^2) memory
@@ -131,7 +129,6 @@ namespace SharpAlgos
         }
         #endregion
 
-
         //returns all possible ways to split the amount 'totalAmountToSplit' between 'nbRecipients' persons
         //if allowZeroAmount is true
         //  will allow some recipients to receive 0
@@ -160,8 +157,6 @@ namespace SharpAlgos
                 AllPossibleSplitHelper(remainingAmountToSplit-amountForNextRecipient, nbRecipients, allowZeroAmount, new List<int>(currentSolutionInProgress) { amountForNextRecipient }, allSolutionSoFar);
             }
         }
-
-
 
         //find the max index for which IsValid is true in o(log(N)) time (using dichotomy search)
         //hypothesis: IsValid[min] is true and will always be true for an interval [min, y] then always false after y
@@ -221,9 +216,6 @@ namespace SharpAlgos
             }
             return currentMatching;
         }
-
-
-
 
         public static int MaxKnapsackValue(int knapSackCapacity, int[] weights, int[] values, int penaltyForNotFillingBag, out List<int> takenIndexes)
         {
@@ -311,8 +303,6 @@ namespace SharpAlgos
             }
             return computedValues[maxIndexOfItemToCheck,remainingCapacity].Value;
         }
-
-        
 
         //Compute all ways to select 'p' elements among 'n'
         //Each combination is stored in a 64 bit array (a long) where exactly 'p' bits are set to 1
@@ -672,26 +662,3 @@ namespace SharpAlgos
         #endregion 
     }
 }
-
-/*
-public List<T> AllReachableFrom(T start)
-{
-    var visited = new HashSet<T> { start }; //var visited = new Dictionary<T,int>();visited[start] = 0;
-    var toProcess = new Queue<T>();
-    toProcess.Enqueue(start);
-    while (toProcess.Count != 0)
-    {
-        var current = toProcess.Dequeue();
-        foreach (var child in Children(current))
-        {
-            if (visited.Contains(child)) //if (visited.ContainsKey(child))
-                continue;
-            //visited[child] = visited[current] + 1;
-            visited.Add(child);
-            toProcess.Enqueue(child);
-        }
-    }
-    return visited.ToList();
-}
-*/
-

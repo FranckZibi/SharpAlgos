@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using SharpAlgos;
 using NUnit.Framework;
@@ -9,33 +7,24 @@ namespace SharpAlgosTests
     [TestFixture]
     public partial class TestUtils
     {
-
-
-
         [Test]
         public void TestMaximumSubsequenceSumWithNoAdjacentElement()
         {
             Assert.AreEqual(26, Utils.MaximumSubsequenceSumWithNoAdjacentElement(new[] { 1, 2, 9, 4, 5, 0, 4, 11, 6 }));
         }
 
-    
-
         [TestCase(new[] { 2, 1, 5, 6, 2, 3 }, 10,2,3)]
         [TestCase(new[] { 1, 2, 3, 4, 5 }, 9,2,4)]
         public void LargestRectangleArea(int[] heights, int expectedResult, int expectedStartIndex, int expectedEndIndex)
         {
-            int observedStartIndex;
-            int observedEndIndex;
-            Assert.AreEqual(expectedResult, Utils.LargestRectangleArea(heights, out observedStartIndex, out observedEndIndex));
+            Assert.AreEqual(expectedResult, Utils.LargestRectangleArea(heights, out _, out _));
         }
-
 
         [Test]
         public void TestMinimumSumPartition()
         {
             Assert.AreEqual(5, Utils.MinimumSumPartition(new[] { 10, 20, 15, 5, 25 }));
         }
-
 
         [Test]
         public void TestMaximizeValueOfTheExpression()
@@ -53,17 +42,16 @@ namespace SharpAlgosTests
         [Test]
         public void TestCanBeDividedInto_K_SubsetWithEqualSum()
         {
-            List<int>[] valuesForEachSubset;
-            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 3, 1, 1, 2, 2, 1 }, 1, out valuesForEachSubset));
-            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 3, 1, 1, 2, 2, 1 }, 2, out valuesForEachSubset));
-            Assert.AreEqual(false, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 3, 2 },2, out valuesForEachSubset));
+            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 3, 1, 1, 2, 2, 1 }, 1, out _));
+            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 3, 1, 1, 2, 2, 1 }, 2, out _));
+            Assert.AreEqual(false, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 3, 2 },2, out _));
 
-            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 7, 3, 2, 1, 5, 4, 8 }, 1, out valuesForEachSubset));
-            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 7, 3, 2, 1, 5, 4, 8 }, 3, out valuesForEachSubset));
-            Assert.AreEqual(false, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 7, 3, 2, 1, 5, 4, 9 }, 3, out valuesForEachSubset));
+            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 7, 3, 2, 1, 5, 4, 8 }, 1, out _));
+            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 7, 3, 2, 1, 5, 4, 8 }, 3, out _));
+            Assert.AreEqual(false, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 7, 3, 2, 1, 5, 4, 9 }, 3, out _));
 
-            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 4, 3, 2, 3, 5, 2, 1 }, 4, out valuesForEachSubset));
-            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 780, 935, 2439, 444, 513, 1603, 504, 2162, 432, 110, 1856, 575, 172, 367, 288, 316 }, 4, out valuesForEachSubset));
+            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 4, 3, 2, 3, 5, 2, 1 }, 4, out _));
+            Assert.AreEqual(true, Utils.CanBeDividedInto_K_SubsetWithEqualSum(new[] { 780, 935, 2439, 444, 513, 1603, 504, 2162, 432, 110, 1856, 575, 172, 367, 288, 316 }, 4, out _));
         }
 
         [Test]
@@ -79,7 +67,6 @@ namespace SharpAlgosTests
         {
             Assert.AreEqual(6, Utils.LongestAlternatingSubsequence(new[] {8, 9, 6, 4, 5, 7, 3, 2, 4}));
             Assert.AreEqual(6, Utils.LongestAlternatingSubsequence(new[] {10, 22, 9, 33, 49, 50, 31, 60}));
-
         }
 
         [TestCase(6, new[] {1, 3, 6, 7, 9, 4, 10, 5, 6})]
@@ -109,9 +96,9 @@ namespace SharpAlgosTests
         }
 
         [TestCase(new int[] { }, new int[] { })]
-        [TestCase(new int[] {1}, new int[] {1})]
-        [TestCase(new int[] {1}, new int[] {1, 1})]
-        [TestCase(new int[] {1, 2, 5, 4, 3}, new int[] {1, 2, 5, 2, 4, 3})]
+        [TestCase(new[] {1}, new[] {1})]
+        [TestCase(new[] {1}, new[] {1, 1})]
+        [TestCase(new[] {1, 2, 5, 4, 3}, new[] {1, 2, 5, 2, 4, 3})]
         public void TestLongestBitonicSubsequence(int[] expected, int[] data)
         {
             Assert.IsTrue(expected.SequenceEqual(Utils.LongestBitonicSubsequence(data)));
@@ -142,7 +129,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(expectedResult, Utils.BuildBiggestNumberUsingAllParts(parts));
         }
 
-
         [TestCase(new[] { 1, 3, 5, 2, 6 }, 0, "")]
         [TestCase(new int[] { }, 0, "")]
         [TestCase(new int[] { }, 1, "")]
@@ -161,9 +147,6 @@ namespace SharpAlgosTests
         {
             Assert.AreEqual(expectedResult, string.Join("",Utils.BuildBiggestNumberUsingSubsequenceOfKElements(digits, k)));
         }
-
-
-
 
     }
 }

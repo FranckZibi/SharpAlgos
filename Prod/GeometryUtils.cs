@@ -15,7 +15,7 @@ namespace SharpAlgos
 
         // -1 if 'a=>b=>c' is clockwise (right turn)
         // +1 if 'a=>b=>c' counter clockwise (left turn)
-        //  0 if 'a=>b=>c' colinear (aligned) 
+        //  0 if 'a=>b=>c' co linear (aligned) 
         public static int Direction(Point a, Point b, Point c)
         {
             var direction = ((long) (a.X - c.X)) * (b.Y - c.Y) - ((long) (b.X - c.X)) * (a.Y - c.Y);
@@ -262,17 +262,17 @@ namespace SharpAlgos
         public static long OverlappingSurfaceOfAllRectangles(List<Tuple<int, int, int, int>> rect)
         {
             //each rectangle is a Tuple<left,top,right,bottom> (right>left && top>bottom)
-            var all_Y = new HashSet<int>(rect.Select(r => r.Item2).Union(rect.Select(r => r.Item4))).OrderBy(t => t).ToList();
-            var all_X = new HashSet<int>(rect.Select(r => r.Item1).Union(rect.Select(r => r.Item3))).OrderBy(t => t).ToList();
+            var allY = new HashSet<int>(rect.Select(r => r.Item2).Union(rect.Select(r => r.Item4))).OrderBy(t => t).ToList();
+            var allX = new HashSet<int>(rect.Select(r => r.Item1).Union(rect.Select(r => r.Item3))).OrderBy(t => t).ToList();
             long overlappingArea = 0;
-            for (int row = 0; row < all_Y.Count - 1; ++row)
+            for (int row = 0; row < allY.Count - 1; ++row)
             {
-                int bottom = all_Y[row];
-                int top = all_Y[row + 1];
-                for (int col = 0; col < all_X.Count - 1; ++col)
+                int bottom = allY[row];
+                int top = allY[row + 1];
+                for (int col = 0; col < allX.Count - 1; ++col)
                 {
-                    var left = all_X[col];
-                    var right = all_X[col + 1];
+                    var left = allX[col];
+                    var right = allX[col + 1];
                     int nbOverlappingRectangles = 0;
                     foreach (var r in rect)
                     {

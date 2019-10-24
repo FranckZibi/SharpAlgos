@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace SharpAlgos
 {
-
     public static class LeetCodeUtils
     {
 
@@ -26,8 +25,6 @@ namespace SharpAlgos
             }
             return new int[] {};
         }
-
-       
 
         public static int LengthOfLongestSubstring(string s)
         {
@@ -50,77 +47,7 @@ namespace SharpAlgos
             return currentMax;
         }
 
-        public static void SetZeroes(int[,] matrix)
-        {
-            int W = matrix.GetLength(0);
-            int H = matrix.GetLength(1);
-
-            bool[] zeroX = new bool[W];
-            bool[] zeroY = new bool[H];
-            for (int x = 0; x < W; ++x)
-                for (int y = 0; y < H; ++y)
-                    if (matrix[x, y] == 0)
-                    {
-                        zeroX[x] = true;
-                        zeroY[y] = true;
-                    }
-
-            for (int x = 0; x < W; ++x)
-            {
-                if (!zeroX[x]) continue;
-                for (int y = 0; y < H; ++y)
-                    matrix[x, y] = 0;
-            }
-            for (int y = 0; y < H; ++y)
-            {
-                if (!zeroY[y]) continue;
-                for (int x = 0; x < W; ++x)
-                    matrix[x, y] = 0;
-            }
-        }
-
-
-
-
-     
-
-
-
-     
-
-        public static int FirstUniqChar(string s)
-        {
-            if (string.IsNullOrEmpty(s)) return -1;
-            var dico = new Dictionary<char, int>();
-            for (int i = 0; i < s.Length; ++i)
-            {
-                if (dico.ContainsKey(s[i]))
-                    dico[s[i]] = int.MaxValue;
-                else
-                    dico[s[i]] = i;
-            }
-
-            int minValue = dico.Values.Min();
-            if (minValue == int.MaxValue)
-                return -1;
-            return minValue;
-
-        }
-
-        public static int LongestPalindrome(string s)
-        {
-            var count = new int[256];
-            foreach (var c in s)
-                ++count[c];
-            int result = 0;
-            foreach (var c in count)
-                result += 2*(c/2);
-            if (result < s.Length)
-                ++result;
-            return result;
-        }
-
-        /*
+       /*
         public class TreeNode
         {
             public int val;
@@ -128,9 +55,8 @@ namespace SharpAlgos
             public TreeNode right;
             public TreeNode(int x) { val = x; }
         }
-*/
+        */
 
-        
         public static double KnightProbability(int N, int K, int r, int c)
         {
             var moves = new List<int[]>
@@ -149,7 +75,7 @@ namespace SharpAlgos
             return totalOk/total;
         }
 
-        public static double KnightProbabilityCount(int N, int K, int r, int c, List<int[]> moves, double[] cache)
+        private static double KnightProbabilityCount(int N, int K, int r, int c, List<int[]> moves, double[] cache)
         {
             if (Math.Min(r, c) < 0) return 0;
             if (Math.Max(r, c) >= N) return 0;
@@ -165,19 +91,6 @@ namespace SharpAlgos
             return result;
 
         }
-
-
-        public static bool JudgeCircle(string moves)
-        {
-            if ((moves.Length%2) != 0)
-                return false;
-            var count = new int[128];
-            foreach (var m in moves)
-                ++count[m];
-            return (count['U'] == count['D']) && (count['L'] == count['R']);
-
-        }
-
 
         public static bool IsUgly(int num)
         {
@@ -215,21 +128,7 @@ namespace SharpAlgos
             return n/2 + 1 + 2*LastRemaining(n/2);
         }
 
-        public static char FindTheDifference(string s, string t)
-        {
-            var sDico = s.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
-            var tDico = t.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
-            foreach (var e in tDico)
-            {
-                if (!sDico.ContainsKey(e.Key))
-                    return e.Key;
-                if (e.Value != sDico[e.Key])
-                    return e.Key;
-            }
-            return 'A';
-        }
-
-
+      
         public static List<int> AllMaximumBorderLength(string w)
         {
             var L = Enumerable.Repeat(0, 1 + w.Length).ToList();
@@ -280,28 +179,6 @@ namespace SharpAlgos
             return t.Length;
         }
 
-
-        public static IList<string> LetterCombinations(string digits)
-        {
-            var tmp = digits.Select(x => phoneDigitsToCharDico[x - '0'].ToList()).ToList();
-            return Utils.AllCombinations(tmp).Select(x => string.Join("", x.ToArray())).ToList();
-        }
-        private static readonly IDictionary<int, IEnumerable<string>> phoneDigitsToCharDico =
-            new Dictionary<int, IEnumerable<string>>
-            {
-                {1, new[] {""}},
-                {2, new[] {"a", "b", "c"}},
-                {3, new[] {"d", "e", "f"}},
-                {4, new[] {"g", "h", "i"}},
-                {5, new[] {"j", "k", "l"}},
-                {6, new[] {"m", "n", "o"}},
-                {7, new[] {"p", "q", "r", "s"}},
-                {8, new[] {"t", "u", "v"}},
-                {9, new[] {"w", "x", "y", "z"}}
-            };
-
-
-
         public static string LongestCommonPrefix(string[] strs)
         {
             if ((strs == null) || (strs.Length == 0))
@@ -324,9 +201,6 @@ namespace SharpAlgos
             return currentResult;
         }
 
-
-
-
         public static int ClimbStairs(int n)
         {
             if (n <= 0)
@@ -346,26 +220,6 @@ namespace SharpAlgos
             return prev;
         }
 
-        public static string AddBinary(string a, string b)
-        {
-
-            List<int> a1 = a.ToCharArray().Reverse().Select(x => x - '0').ToList();
-            List<int> b1 = b.ToCharArray().Reverse().Select(x => x - '0').ToList();
-
-            int retenu = 0;
-            List<int> sum = new List<int>();
-            for (int i = 0; i < Math.Max(a1.Count, b1.Count); ++i)
-            {
-                int res = (i >= a1.Count ? 0 : a1[i]) + (i >= b1.Count ? 0 : b1[i]) + retenu;
-                sum.Add(res%2);
-                retenu = res/2;
-            }
-            if (retenu != 0)
-                sum.Add(retenu);
-
-            return string.Join("", sum.Select(x => x.ToString()).Reverse().ToArray());
-        }
-
         public static int HammingWeight(uint n)
         {
             int result = 0;
@@ -377,71 +231,6 @@ namespace SharpAlgos
             }
             return result;
         }
-
-
-        public static int UniquePaths(int m, int n)
-        {
-            var m_2_N_2_result = new Dictionary<int, IDictionary<int, int>>();
-
-            for (int i = 0; i <= m; ++i)
-                m_2_N_2_result[i] = new Dictionary<int, int>();
-            return UniquePaths_Helper(m, n, m_2_N_2_result);
-
-        }
-
-        private static int UniquePaths_Helper(int m, int n, IDictionary<int, IDictionary<int, int>> m_2_N_2_result)
-        {
-            if ((m <= 0) || (n <= 0))
-                return 0;
-            if (m == 1)
-                return 1;
-            if (n == 1)
-                return 1;
-            int result;
-            if (m_2_N_2_result[m].TryGetValue(n, out result))
-                return result;
-            result = UniquePaths_Helper(m - 1, n, m_2_N_2_result) + UniquePaths_Helper(m, n - 1, m_2_N_2_result);
-            m_2_N_2_result[m][n] = result;
-            return result;
-        }
-
-        public static IList<IList<int>> Combine(int n, int k)
-        {
-            var result = new List<IList<int>>();
-            AllCombinationsHelper(n, k, new List<int>(), 1, result);
-            return result;
-        }
-
-        private static void AllCombinationsHelper(int n, int k, List<int> currentSolutionInProgress, int firsAllowedInt, List<IList<int>> allSolutionSoFar)
-        {
-            if (currentSolutionInProgress.Count == k)
-            {
-                allSolutionSoFar.Add(currentSolutionInProgress); // a new combination has been found
-                return;
-            }
-
-            int nbMissing = k - currentSolutionInProgress.Count;
-            for (int number = firsAllowedInt; number <= (n - nbMissing + 1); number++)
-                AllCombinationsHelper(n, k, new List<int>(currentSolutionInProgress) {number}, number + 1,
-                    allSolutionSoFar);
-        }
-
-
-
-        public static int FindPeakElement(int[] nums)
-        {
-            for (int i = 0; i < nums.Length; ++i)
-            {
-                int n = nums[i];
-                bool prev = i == 0 || (n > nums[i - 1]);
-                bool next = i == (nums.Length - 1) || (n > nums[i + 1]);
-                if (prev && next)
-                    return i;
-            }
-            return -1;
-        }
-
-
 
         public static int RomanToInt(string num)
         {
@@ -458,7 +247,6 @@ namespace SharpAlgos
             return numbers.Sum();
         }
 
-
         public static string IntToRoman(int num)
         {
             var result = "";
@@ -472,7 +260,7 @@ namespace SharpAlgos
             return result;
         }
 
-        public static string IntToRomanHelper(int num)
+        private static string IntToRomanHelper(int num)
         {
             var data = new[] {'I', 'V', 'X', 'L', 'C', 'D', 'M'}; //1 5 10 50 100 500 1000
             int idx = 0;
@@ -485,133 +273,6 @@ namespace SharpAlgos
             if (num <= 5) return new string(data[idx], 5 - num) + data[idx + 1];
             if (num <= 8) return data[idx + 1] + new string(data[idx], num - 5);
             return data[idx] + data[idx+2].ToString();
-        }
-
-
-        public static int NumDecodings(string s)
-        {
-            if (string.IsNullOrEmpty(s))
-                return 0;
-            int[] scores = new int[1 + s.Length];
-            scores[0] = 1;
-            scores[1] = s[0] == '0' ? 0 : 1;
-            for (int i = 1; i < s.Length; ++i)
-            {
-                int prev = 10*(s[i - 1] - '0') + s[i] - '0';
-                if ((prev >= 10) && (prev <= 26))
-                    scores[i + 1] += scores[i - 1];
-                if (s[i] != '0')
-                    scores[i + 1] += scores[i];
-            }
-            return scores.Last();
-        }
-
-        public static IList<IList<int>> CombinationSum(int[] candidates, int target)
-        {
-            IList<IList<int>> result = new List<IList<int>>();
-            List<int> currentList = new List<int>();
-            CombinationSum_Helper(candidates, 0, target, result, currentList);
-            return result;
-        }
-
-        private static void CombinationSum_Helper(int[] candidates, int firstAllowedIndex, int remaining, IList<IList<int>> result, List<int> currentList)
-        {
-            if (remaining < 0)
-                return;
-            if (remaining == 0)
-            {
-                result.Add(currentList);
-                return;
-            }
-            if (firstAllowedIndex >= candidates.Length)
-                return;
-            var tmpList = new List<int>(currentList);
-            CombinationSum_Helper(candidates, firstAllowedIndex + 1, remaining, result, tmpList);
-            for (int count = 1; true; ++count)
-            {
-                int nextRemaining = remaining - count*candidates[firstAllowedIndex];
-                if (nextRemaining < 0)
-                    return;
-                tmpList.Add(candidates[firstAllowedIndex]);
-                CombinationSum_Helper(candidates, firstAllowedIndex + 1, nextRemaining, result, tmpList);
-            }
-
-
-        }
-
-        public static int EvalRPN(string[] tokens)
-        {
-            var t = new List<string>(tokens);
-            int i = 2;
-            while (t.Count != 1)
-            {
-                var s = t[i];
-                if (!"+*/-".Contains(s))
-                {
-                    ++i;
-                    continue;
-                }
-                int res = 0;
-                if (s == "+")
-                    res = (int.Parse(t[i - 2]) + int.Parse(t[i - 1]));
-                else if (s == "-")
-                    res = (int.Parse(t[i - 2]) - int.Parse(t[i - 1]));
-                else if (s == "/")
-                    res = (int.Parse(t[i - 2])/int.Parse(t[i - 1]));
-                else
-                    res = (int.Parse(t[i - 2])*int.Parse(t[i - 1]));
-                t[i - 2] = res.ToString();
-                t.RemoveAt(i - 1);
-                t.RemoveAt(i - 1);
-                --i;
-            }
-
-            return int.Parse(t.First());
-        }
-
-        public static IList<string> RestoreIpAddresses(string s)
-        {
-            List<string> current = new List<string>();
-            List<string> result = new List<string>();
-            RestoreIpAddressesHelper(s, 0, current, result);
-            return result;
-        }
-
-        public static void RestoreIpAddressesHelper(string s, int idx, List<string> current, List<string> result)
-        {
-            if (idx > s.Length)
-                return;
-            if (idx == s.Length)
-            {
-                if (current.Count == 4)
-                {
-                    result.Add(string.Join(".", current));
-                }
-                return;
-            }
-
-            int nbMissing = 4 - current.Count;
-            int max = 3*nbMissing;
-            int min = 1*nbMissing;
-            int remaining = s.Length - idx;
-            if (remaining > max) return;
-            if (remaining < min) return;
-
-            for (int l = 1; l <= 3; ++l)
-            {
-                if ((idx + l) > s.Length)
-                    break;
-                if ((s[idx] == '0') && (l >= 2))
-                    break;
-                var part = s.Substring(idx, l);
-                if (int.Parse(part) <= 255)
-                {
-                    current.Add(part);
-                    RestoreIpAddressesHelper(s, idx + l, current, result);
-                    current.RemoveAt(current.Count - 1);
-                }
-
-            }
         }
 
         public static IList<int> GrayCode(int n)
@@ -632,34 +293,34 @@ namespace SharpAlgos
 
         public static IList<IList<int>> FindSubsequences(int[] nums)
         {
-            var allSubsequecnesEndingAt0 = new List<IList<int>>[nums.Length];
-            for (int i = 0; i < allSubsequecnesEndingAt0.Length; ++i)
-                allSubsequecnesEndingAt0[i] = new List<IList<int>>();
+            var allSubsequencesEndingAt0 = new List<IList<int>>[nums.Length];
+            for (int i = 0; i < allSubsequencesEndingAt0.Length; ++i)
+                allSubsequencesEndingAt0[i] = new List<IList<int>>();
 
             int[] maxLengthEndingAt = new int[nums.Length];
             maxLengthEndingAt[0] = 1;
 
             for (int i = 0; i < nums.Length; ++i)
             {
-                allSubsequecnesEndingAt0[i].Add(new List<int> {nums[i]});
+                allSubsequencesEndingAt0[i].Add(new List<int> {nums[i]});
                 int prevMaxLength = 0;
                 for (int j = 0; j < i; ++j)
                 {
                     if (nums[j] <= nums[i])
                     {
                         prevMaxLength = Math.Max(prevMaxLength, maxLengthEndingAt[j]);
-                        foreach (var l in allSubsequecnesEndingAt0[j])
+                        foreach (var l in allSubsequencesEndingAt0[j])
                         {
                             var t = new List<int>(l);
                             t.Add(nums[i]);
-                            allSubsequecnesEndingAt0[i].Add(t);
+                            allSubsequencesEndingAt0[i].Add(t);
                         }
                     }
                 }
                 maxLengthEndingAt[i] = prevMaxLength;
             }
 
-            var result = allSubsequecnesEndingAt0.SelectMany(x => x).ToList();
+            var result = allSubsequencesEndingAt0.SelectMany(x => x).ToList();
             result.RemoveAll(x => x.Count <= 1);
             result.Sort((x, y) => x.Count - y.Count);
             for (int i = 0; i < result.Count; ++i)
@@ -672,10 +333,6 @@ namespace SharpAlgos
                 }
             return result;
         }
-
-
-
-
 
         public static IList<string> FindWords(char[,] board, string[] words)
         {
@@ -705,44 +362,7 @@ namespace SharpAlgos
             board[p.X,p.Y] = backup;
         }
  
-
-
-
-
-        /*
-        public class Point
-        {
-            public int X { get; }
-            public int Y { get; }
-
-            public Point(int x, int y)
-            {
-                X = x;
-                Y = y;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != GetType()) return false;
-                var other = (Point) obj;
-                return X == other.X && Y == other.Y;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (X*397) ^ Y;
-                }
-            }
-        }
-
-
-
-    */
-        public static  string LongestWord(string[] words)
+        public static string LongestWord(string[] words)
         {
             var cache = new Dictionary<string, bool>();
             Array.Sort(words, (x,y)=> (x.Length!=y.Length)?y.Length.CompareTo(x.Length):string.Compare(x, y, StringComparison.Ordinal)  );
@@ -774,7 +394,6 @@ namespace SharpAlgos
             }
             return IsOk(word.Substring(0, word.Length - 1), allWords, cache);
         }
-
 
         public static int TotalHammingDistance(int[] nums)
         {
@@ -863,48 +482,6 @@ namespace SharpAlgos
                 CreateHuffmanCode_Helper(root.left, currentPrefix + "0", frequencyWithCode);
         }
 
-
-        public static bool IsIsomorphic(string s, string t)
-        {
-            if (s.Length != t.Length)
-                return false;
-
-            IDictionary<char, char> dicoS2T = new Dictionary<char, char>();
-            IDictionary<char, char> dicoT2S = new Dictionary<char, char>();
-            var sChar = s.ToCharArray();
-            var tChar = t.ToCharArray();
-            for (int i = 0; i < sChar.Length; ++i)
-            {
-                if ((!dicoS2T.ContainsKey(sChar[i])))
-                {
-
-                    if (dicoT2S.ContainsKey(tChar[i]))
-                        return false;
-                    dicoS2T[sChar[i]] = tChar[i];
-                    dicoT2S[tChar[i]] = sChar[i];
-                    continue;
-                }
-                if (dicoS2T[sChar[i]] != tChar[i])
-                    return false;
-            }
-            return true;
-        }
-
-
-        public static int HammingDistance(int a, int b)
-        {
-            int result = 0;
-            while (a != b)
-            {
-                if ((a & 1) != (b & 1))
-                    ++result;
-                a /= 2;
-                b /= 2;
-            }
-            return result;
-        }
-
-
         //number of ways to place K Bishops on a NxN board
         // https://cp-algorithms.com/combinatorics/bishops-on-chessboard.html
 
@@ -942,7 +519,6 @@ namespace SharpAlgos
                 visited[i] = false;
                 path.RemoveAt(path.Count - 1);
             }
-
         }
 
         private static bool SolveNQueens_Helper_IsValid(List<int> path, int newColumn)
@@ -952,250 +528,5 @@ namespace SharpAlgos
                     return false;
             return true;
         }
-
-
-
-       
-
-        public static  IList<int> SelfDividingNumbers(int left, int right)
-        {
-            return Enumerable.Range(left, right - left + 1).Where(SelfDividingNumbersHelper).ToList();
-        }
-
-        public static bool SelfDividingNumbersHelper(int i)
-        {
-            if (i == 0)
-                return false;
-            int j = i;
-            while (j != 0)
-            {
-                int nb = j%10;
-                if (nb == 0)
-                    return false;
-                if ((i%nb) != 0)
-                    return false;
-                j /= 10;
-            }
-            return true;
-        }
-
-
-
-        public static int CutOffTree(IList<IList<int>> forest)
-        {
-            int[][] tmp = forest.Select(x=>x.ToArray()).ToArray();
-            var forrest = new List<KeyValuePair<int, Point>>();
-            for (int x = 0; x < tmp.Length; ++x)
-                for (int y = 0; y < tmp[x].Length; ++y)
-                {
-                    if (tmp[x][y] > 1)
-                        forrest.Add(new KeyValuePair<int,Point>(tmp[x][y], new Point(x,y)));
-                }
-
-            forrest.Sort((x,y)=>x.Key.CompareTo(y.Key));
-            var allPoints = forrest.Select(x => x.Value).ToList();
-            if (!allPoints.First().Equals(new Point(0,0)))
-                allPoints.Insert(0, new Point(0,0));
-
-            int result = 0;
-            for(int i=1;i<allPoints.Count;++i)
-            {
-                var start = allPoints[i - 1];
-                var to = allPoints[i];
-                var pathLength = AllReachableFrom(start, to, tmp);
-                if (pathLength == -1)
-                    return -1;
-                result += pathLength;
-            }
-            return result;
-        }
-
-   
-
-        private static readonly List<int[]>  delta = new List<int[]> {new [] {1,0}, new[] { -1, 0 }, new[] { 0, 1 }, new[] { 0, -1 }};
-
-        private static int AllReachableFrom(Point start, Point to, int[][] tmp)
-        {
-            int W = tmp.Length;
-            int H = tmp[0].Length;
-            var depth = new int[W, H];
-
-            var toProcessX = new Queue<int>();
-            var toProcessY = new Queue<int>();
-            toProcessX.Enqueue(start.X);
-            toProcessY.Enqueue(start.Y);
-            while (toProcessX.Count != 0)
-            {
-                var currentX = toProcessX.Dequeue();
-                var currentY = toProcessY.Dequeue();
-                foreach (var d in delta)
-                {
-                    int newX = currentX + d[0];
-                    int newY = currentY + d[1];
-                    if ((newX == to.X)&&(newY ==to.Y))
-                        return depth[currentX,currentY]+1;
-                    if ((newX < 0) || (newX >= W) || (newY < 0) || (newY >= H) ||tmp[newX][newY]==0 || (depth[newX,newY]!= 0) )
-                        continue;
-                    depth[newX,newY] = depth[currentX,currentY] + 1;
-                    toProcessX.Enqueue(newX);
-                    toProcessY.Enqueue(newY);
-                }
-            }
-            return -1;
-        }
-
-        public static int FindNthDigit(int n)
-        {
-            long min = 1;
-            long max = 9;
-            long digitCountBeforeMin = 0;
-            long digitCountUpToMax = 9;
-            long nbDigits = 1;
-            for (;;)
-            {
-
-                long nbDigitsInRange = nbDigits*(max - min + 1);
-                if (n <= (digitCountBeforeMin + nbDigitsInRange))
-                    break;
-                min *= 10;
-                max = 10*max + 9;
-                ++nbDigits;
-                digitCountBeforeMin = digitCountUpToMax;
-                digitCountUpToMax += (max - min + 1)*nbDigits;
-            }
-            long number = min + (n - digitCountBeforeMin - 1)/nbDigits;
-            long idx = (n - digitCountBeforeMin - 1)%nbDigits;
-            return int.Parse(number.ToString()[(int) idx] + "");
-        }
-
-        public static IList<int> LexicalOrder(int n)
-        {
-            var result = new List<int>();
-            for (int i = 1; i <= 9; ++i)
-                LexicalOrder_Dfs(i, n, result);
-            return result;
-        }
-
-        private static void LexicalOrder_Dfs(int a, int n, List<int> result)
-        {
-            if (a > n)
-                return;
-            result.Add(a);
-            for (int subDigit = 0; subDigit < 10; ++subDigit)
-                LexicalOrder_Dfs(10*a+subDigit, n, result);
-        }
-
-
-
-        public static string ConvertToBase(int num, int baseValue)
-        {
-            bool isNegative = num < 0;
-            num = Math.Abs(num);
-            string result = "";
-            do
-            {
-                var newDigitToAddAtLeft = (num% baseValue).ToString();
-                result = newDigitToAddAtLeft + result;
-                num /= baseValue;
-            }
-            while (num != 0);
-            if (isNegative)
-                result = "-" + result;
-            return result;
-        }
-
-
-        public static char[,] UpdateBoardMinesweeper(char[,] board, Point start)
-        {
-            var visited = new HashSet<Point> { start };
-            var toProcess = new Queue<Point>();
-            toProcess.Enqueue(start);
-            while (toProcess.Count != 0)
-            {
-                var current = toProcess.Dequeue();
-                var valueCurrent = board[current.X,current.Y];
-                if ((valueCurrent == 'M') || (valueCurrent == 'X'))
-                {
-                    board[current.X,current.Y] = 'X';
-                    break;
-                }
-                var around = Utils.AllPointsAround(board, current,1).Select(x => board[x.X,x.Y]).ToList();
-                int nbMines = around.Count(x=>(x=='X')||(x=='M'));
-                if (nbMines == 0)
-                {
-                    board[current.X,current.Y] = 'B';
-                    foreach (var child in Utils.AllPointsAround(board, current, 1))
-                        if (!visited.Contains(child))
-                        {
-                            toProcess.Enqueue(child);
-                            visited.Add(child);
-                        }
-                }
-                else
-                    board[current.X,current.Y] = (char)('0' + nbMines);
-            }
-            return board;
-        }
-
-
-
-
-
-        public static int FindMinArrowShots(int[,] points)
-        {
-            var data =  new List<KeyValuePair<int, int>>();
-            for (int i = 0; i < points.GetLength(0); ++i)
-                data.Add(new KeyValuePair<int, int>(points[1,0], points[1, 1]));
-            data.Sort((x,y)=>x.Value.CompareTo(y.Value));
-            int indexNextShoot = 0;
-            int nbShoots = 0;
-
-            for (;;)
-            {
-                if (indexNextShoot >= data.Count)
-                    break;
-                int shootPos = data[indexNextShoot].Value;
-                ++nbShoots;
-                while ((indexNextShoot < data.Count)&&data[indexNextShoot].Key<=shootPos)
-                    ++indexNextShoot;
-            }
-            return nbShoots;
-        }
-        /*
-                public class Point
-                {
-                    public int X { get; }
-                    public int Y { get; }
-
-                    public Point(int x, int y)
-                    {
-                        X = x;
-                        Y = y;
-                    }
-
-                    public override bool Equals(object obj)
-                    {
-                        if (ReferenceEquals(null, obj)) return false;
-                        if (ReferenceEquals(this, obj)) return true;
-                        if (obj.GetType() != GetType()) return false;
-                        var other = (Point)obj;
-                        return X == other.X && Y == other.Y;
-                    }
-
-                    public override int GetHashCode()
-                    {
-                        unchecked
-                        {
-                            return (X * 397) ^ Y;
-                        }
-                    }
-                }
-                */
-
     }
-
-
-
-
 }
-

@@ -12,21 +12,6 @@ namespace SharpAlgosTests
     [TestFixture]
     public partial class TestUtils
     {
-        
-
-        [Test, Explicit]
-        public void TestArtOptimal()
-        {
-            //ArtOptimal.Process(@"C:\download\input_0.txt");
-        }
-        [Test]
-        public void TestPizzaGoogle()
-        {
-            //PizzaGoogle.Process(@"C:\download\input_7.txt");
-            //PizzaGoogle.Process(@"C:\download\input_7.txt", @"C:\download\7.solution");
-            //PizzaGoogle.Process(@"C:\download\input_7small.txt");
-        }
-
         [Test]
         public void TestParse()
         {
@@ -77,32 +62,6 @@ namespace SharpAlgosTests
             }
             return result;
         }
-
-        /*
-        abe: abi, eve, cath, ivy, jan, dee, fay, bea, hope, gay
-            bob: cath, hope, abi, dee, eve, fay, bea, jan, ivy, gay
-            col: hope, eve, abi, dee, bea, fay, ivy, gay, cath, jan
-            dan: ivy, fay, dee, gay, hope, eve, jan, bea, cath, abi
-            ed: jan, dee, bea, cath, fay, eve, abi, ivy, hope, gay
-            fred: bea, abi, dee, gay, eve, ivy, cath, jan, hope, fay
-            gav: gay, eve, ivy, bea, cath, abi, dee, hope, jan, fay
-            hal: abi, eve, hope, fay, ivy, cath, jan, bea, gay, dee
-            ian: hope, cath, dee, gay, bea, abi, fay, ivy, jan, eve
-            jon: abi, fay, jan, gay, eve, bea, dee, cath, ivy, hope
-
-            abi: bob, fred, jon, gav, ian, abe, dan, ed, col, hal
-            bea: bob, abe, col, fred, gav, dan, ian, ed, jon, hal
-            cath: fred, bob, ed, gav, hal, col, ian, abe, dan, jon
-            dee: fred, jon, col, abe, ian, hal, gav, dan, bob, ed
-            eve: jon, hal, fred, dan, abe, gav, col, ed, ian, bob
-            fay: bob, abe, ed, ian, jon, dan, fred, gav, col, hal
-            gay: jon, gav, hal, fred, bob, abe, col, ed, dan, ian
-            hope: gav, jon, bob, abe, ian, dan, hal, ed, col, fred
-            ivy: ian, col, hal, gav, fred, bob, abe, ed, jon, dan
-            jan: ed, hal, gav, abe, bob, jon, col, ian, fred, dan*/
-
-      //public static Dictionary<T, T> StableMariageMatching<T>(Dictionary<T, List<T>> menPreference, Dictionary<T, List<T>> womenPreference)
-
 
         [Test]
         public void TestUnionFind()
@@ -172,8 +131,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(2, uf.DistinctFamilyCount);
         }
 
-
-
         [Test]
         public void TestMatrixChainMultiplication()
         {
@@ -195,23 +152,20 @@ namespace SharpAlgosTests
             Assert.AreEqual("(([5,10]*[10,6])*([6,30]*[30,4]))*([4,12]*[12,16])", Utils.MatrixChainMultiplicationParenthesis(matrixDimensions));
         }
 
-       
-
-
-        public static int NBTotalCombinaisonsInKeyboard(int length)
+        public static int NbTotalCombinationsInKeyboard(int length)
         {
             int[,] keyboard = {{ 1,2,3},{ 4,5,6},{ 7,8,9},{ -1,0,-1}};
             int?[,] cache = new int?[10,1+length];
             int result = 0;
             foreach (var p in Utils.AllPoints(keyboard))
             {
-                result += NBTotalCombinaisonsInKeyboard_Helper(length, p, keyboard, cache);
+                result += NBTotalCombinationsInKeyboard_Helper(length, p, keyboard, cache);
             }
 
             return result;
         }
 
-        private static int NBTotalCombinaisonsInKeyboard_Helper(int length, Point start, int[,] keyboard, int?[,]cache)
+        private static int NBTotalCombinationsInKeyboard_Helper(int length, Point start, int[,] keyboard, int?[,]cache)
         {
             var keyValue = keyboard[start.X, start.Y];
             if (keyValue < 0)
@@ -234,17 +188,17 @@ namespace SharpAlgosTests
             int result = 0;
             foreach (var p in Utils.AllPointsHorizontalVertical(keyboard, start.X, start.Y))
             {
-                result += NBTotalCombinaisonsInKeyboard_Helper(length - 1, p, keyboard, cache);
+                result += NBTotalCombinationsInKeyboard_Helper(length - 1, p, keyboard, cache);
             }
 
-            result += NBTotalCombinaisonsInKeyboard_Helper(length - 1, start, keyboard, cache);
+            result += NBTotalCombinationsInKeyboard_Helper(length - 1, start, keyboard, cache);
             cache[keyValue, length] = result;
             return result;
         }
         [Test]
-        public void TestNBTotalCombinaisonsInKeyboard()
+        public void TestNbTotalCombinationsInKeyboard()
         {
-            Assert.AreEqual(36, NBTotalCombinaisonsInKeyboard(2));
+            Assert.AreEqual(36, NbTotalCombinationsInKeyboard(2));
         }
 
 
@@ -355,6 +309,7 @@ namespace SharpAlgosTests
             cache[word.Length, pattern.Length] = false;
             return false;
         }
+
         [Test]
         public void TestWildcardPatternMatching()
         {
@@ -364,12 +319,12 @@ namespace SharpAlgosTests
             Assert.AreEqual(true, WildcardPatternMatching("xyxzzxy", "*"));
         }
 
-        public static double ProbabilityAliveAfterTakingNstepsIsland(int matrixWidth, int nbSteps, int startRow, int startCol)
+        public static double ProbabilityAliveAfterTakingNStepsIsland(int matrixWidth, int nbSteps, int startRow, int startCol)
         {
-            return ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps, startRow, startCol, new double?[matrixWidth, matrixWidth,1+nbSteps]);
+            return ProbabilityAliveAfterTakingNStepsIsland_Helper(matrixWidth, nbSteps, startRow, startCol, new double?[matrixWidth, matrixWidth,1+nbSteps]);
         }
 
-        private static double ProbabilityAliveAfterTakingNstepsIsland_Helper(int matrixWidth, int nbSteps, int row, int col, double?[,,] cache)
+        private static double ProbabilityAliveAfterTakingNStepsIsland_Helper(int matrixWidth, int nbSteps, int row, int col, double?[,,] cache)
         {
             if (row < 0 || col < 0 || row >= matrixWidth || col >= matrixWidth)
             {
@@ -383,22 +338,22 @@ namespace SharpAlgosTests
 
             if (!cache[row, col, nbSteps].HasValue)
             {
-                cache[row, col, nbSteps] = (ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row - 1, col, cache)
-                                            + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row, col-1, cache)
-                                            + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row + 1, col, cache)
-                                            + ProbabilityAliveAfterTakingNstepsIsland_Helper(matrixWidth, nbSteps - 1, row, col+1, cache)) / 4.0;
+                cache[row, col, nbSteps] = (ProbabilityAliveAfterTakingNStepsIsland_Helper(matrixWidth, nbSteps - 1, row - 1, col, cache)
+                                            + ProbabilityAliveAfterTakingNStepsIsland_Helper(matrixWidth, nbSteps - 1, row, col-1, cache)
+                                            + ProbabilityAliveAfterTakingNStepsIsland_Helper(matrixWidth, nbSteps - 1, row + 1, col, cache)
+                                            + ProbabilityAliveAfterTakingNStepsIsland_Helper(matrixWidth, nbSteps - 1, row, col+1, cache)) / 4.0;
             }
 
             return cache[row, col, nbSteps].Value;
         }
 
         [Test]
-        public void TestProbabilityAliveAfterTakingNstepsIsland()
+        public void TestProbabilityAliveAfterTakingNStepsIsland()
         {
-            Assert.AreEqual(0.5, ProbabilityAliveAfterTakingNstepsIsland(2, 1, 0, 0), 1e-8);
-            Assert.AreEqual(1.0, ProbabilityAliveAfterTakingNstepsIsland(3, 1, 1, 1), 1e-8);
-            Assert.AreEqual(0.25, ProbabilityAliveAfterTakingNstepsIsland(3, 3, 0, 0), 1e-8);
-            Assert.AreEqual(0.57519701756973518, ProbabilityAliveAfterTakingNstepsIsland(10, 20, 3, 3), 1e-8);
+            Assert.AreEqual(0.5, ProbabilityAliveAfterTakingNStepsIsland(2, 1, 0, 0), 1e-8);
+            Assert.AreEqual(1.0, ProbabilityAliveAfterTakingNStepsIsland(3, 1, 1, 1), 1e-8);
+            Assert.AreEqual(0.25, ProbabilityAliveAfterTakingNStepsIsland(3, 3, 0, 0), 1e-8);
+            Assert.AreEqual(0.57519701756973518, ProbabilityAliveAfterTakingNStepsIsland(10, 20, 3, 3), 1e-8);
         }
 
       
@@ -453,7 +408,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(100, Utils.MaximumValidIndex(0, 100, x => true));
         }
 
-
         [Test]
         public void TestAllPossibleSplit()
         {
@@ -494,8 +448,6 @@ namespace SharpAlgosTests
             return result;
         }
 
-
-
         [Test]
         public void TestIndexOf()
         {
@@ -526,6 +478,7 @@ namespace SharpAlgosTests
             Assert.AreEqual(3, m.MaxInRow(0));
             Assert.AreEqual(6, m.MaxInRow(1));
         }
+
         [Test]
         public void TestMaxInCol()
         {
@@ -542,6 +495,7 @@ namespace SharpAlgosTests
             Assert.IsTrue(m.Row(0).SequenceEqual(new[] { 1, 2, 3 }));
             Assert.IsTrue(m.Row(1).SequenceEqual(new[] { 4,5,6 }));
         }
+
         [Test]
         public void TestCol()
         {
@@ -550,8 +504,6 @@ namespace SharpAlgosTests
             Assert.IsTrue(m.Col(1).SequenceEqual(new[] { 2, 5 }));
             Assert.IsTrue(m.Col(2).SequenceEqual(new[] { 3, 6 }));
         }
-
-
 
         [Test]
         public void TestMaximumProdRodCutting()
@@ -567,8 +519,7 @@ namespace SharpAlgosTests
             {
                 return rodLength;
             }
-
-            int[] result = new int[1+rodLength];
+            var result = new int[1+rodLength];
             result[0] = result[1] = 1;
             for (int i = 2; i <= rodLength; ++i)
             {
@@ -586,7 +537,8 @@ namespace SharpAlgosTests
         {
             Assert.AreEqual(10, RodCutting(4, new []{1,2,3,4,5,6,7,8}, new []{1,5,8,9,10,17,17,20}));
         }
-        public static int RodCutting(int rodLength, int[] length, int[] price)
+
+        private static int RodCutting(int rodLength, int[] length, int[] price)
         {
             int[] maxPrices = new int[1+rodLength];
             for (int currentRodLength = 1; currentRodLength < maxPrices.Length; ++currentRodLength)
@@ -645,12 +597,12 @@ namespace SharpAlgosTests
             return result;
         }
 
-
         [Test]
         public void TestNumberOfTimesPatternAppearsInStringSubsequence()
         {
             Assert.AreEqual(7, NumberOfTimesPatternAppearsInStringSubsequence("subsequence", "sue"));
         }
+
         public static int CountNDigitsWithoutConsecutiveOne(int nbDigits)
         {
             return CountNDigitsWithoutConsecutiveOne_Helper(nbDigits, false, new int?[1+nbDigits,2]);
@@ -684,12 +636,12 @@ namespace SharpAlgosTests
             cache[nbDigits, mustStartWith0 ? 1 : 0] = count;
             return count;
         }
+
         [Test]
         public void TestCountNDigitsWithoutConsecutiveOne()
         {
             Assert.AreEqual(13, CountNDigitsWithoutConsecutiveOne(5));
         }
-
 
         [Test]
         public void TestMaxKnapsackValue()
@@ -765,11 +717,6 @@ namespace SharpAlgosTests
 
             result = Utils.LeCompteEstBon(new[] { 2, 4, 5, 10 }, 444);
             Assert.AreEqual(400, result.Item1);
-
         }
-
-
-
-
     }
 }

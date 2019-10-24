@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-// ReSharper disable StringCompareToIsCultureSpecific
-// ReSharper disable UnusedMember.Global
 
 namespace SharpAlgos
 {
     public static partial class Utils
     {
-
         /// <summary>
-        /// return all longest intervals containing exactly 'k' distinct elements in o(n) time
+        /// return all longest intervals containing exactly 'k' distinct elements
+        /// Complexity: o( n )
         /// </summary>
         /// <param name="data"></param>
         /// <param name="k"></param>
@@ -56,9 +54,10 @@ namespace SharpAlgos
         }
 
         #region Duplicate detection
-        //TODO: returns index of duplicates instead of true/false
         /// <summary>
-        /// find if there is a duplicate in interval [i,j] in o(n) time (+o(n) memory)
+        /// find if there is a duplicate in interval [i,j]
+        /// Complexity:         o( n )
+        /// Memory Complexity:  o( n )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
@@ -71,7 +70,9 @@ namespace SharpAlgos
             return HasDuplicateInInterval(cache, i, j);
         }
         /// <summary>
-        /// find if there is a duplicate in interval [i,j] in o(1) time (+o(n) preparation time & o(n) preparation memory)
+        /// find if there is a duplicate in interval [i,j]
+        /// Complexity:         o( 1 )    (+ o( n ) preparation time )
+        /// Memory Complexity:  o( n ) 
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="i"></param>

@@ -146,26 +146,26 @@ namespace SharpAlgosTests
         [Test]
         public void TestT9strings_to_MostWeightedWordsInDico()
         {
-            var WordChar_to_T9Char = Get_WordChar_to_T9Char();
-            var dicoWord_to_Weight = new Dictionary<string, int>();
-            dicoWord_to_Weight["aab"] = 10; //222
-            dicoWord_to_Weight["aad"] = 5; //223
-            dicoWord_to_Weight["abc"] = 20; //222
-            dicoWord_to_Weight["aba"] = 20; //222
-            dicoWord_to_Weight["g"] = -100; //4
+            var wordCharToT9Char = Get_WordChar_to_T9Char();
+            var dicoWordToWeight = new Dictionary<string, int>();
+            dicoWordToWeight["aab"] = 10; //222
+            dicoWordToWeight["aad"] = 5; //223
+            dicoWordToWeight["abc"] = 20; //222
+            dicoWordToWeight["aba"] = 20; //222
+            dicoWordToWeight["g"] = -100; //4
 
-            var result = Utils.EncodedString_to_MostWeightedWordsInDico(WordChar_to_T9Char, dicoWord_to_Weight);
+            var result = Utils.EncodedString_to_MostWeightedWordsInDico(wordCharToT9Char, dicoWordToWeight);
             Assert.AreEqual(5, result.Count);
-            var aList = result[Utils.EncodeWord("a", WordChar_to_T9Char)];
+            var aList = result[Utils.EncodeWord("a", wordCharToT9Char)];
             Assert.AreEqual(2, aList.Count);
             Assert.IsTrue(aList.Contains("abc"));
             Assert.IsTrue(aList.Contains("aba"));
-            var abcdT9Strings = Utils.EncodeWord("abcd", WordChar_to_T9Char);
+            var abcdT9Strings = Utils.EncodeWord("abcd", wordCharToT9Char);
             Assert.IsFalse(result.ContainsKey(abcdT9Strings));
-            var gList = result[Utils.EncodeWord("g", WordChar_to_T9Char)];
+            var gList = result[Utils.EncodeWord("g", wordCharToT9Char)];
             Assert.AreEqual(1, gList.Count);
             Assert.IsTrue(gList.Contains("g"));
-            var aadList = result[Utils.EncodeWord("aad", WordChar_to_T9Char)];
+            var aadList = result[Utils.EncodeWord("aad", wordCharToT9Char)];
             Assert.AreEqual(1, aadList.Count);
             Assert.IsTrue(aadList.Contains("aad"));
         }

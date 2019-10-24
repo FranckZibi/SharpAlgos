@@ -83,12 +83,12 @@ namespace SharpAlgosTests
         [TestCase(new[] { "ABC", "CAB", "ACB" }, "AB", "C")]
         [TestCase(new[] { "ABC", "CAB", "ACB" }, "AB", "C")]
         [TestCase(new[] { "ABCBDCABA", "ABDCABDAB", "ABDCBDABA" }, "ABCBDAB", "BDCABA")]
-        public void TestShortestCommonSupersequence_and_LengthOfShortestCommonSupersequence(string[] expecteds, string a, string b)
+        public void TestShortestCommonSupersequence_and_LengthOfShortestCommonSupersequence(string[] expected, string a, string b)
         {
-            Assert.AreEqual(expecteds[0].Length, Utils.LengthOfShortestCommonSupersequence(a.ToList(), b.ToList()));
-            Assert.AreEqual(expecteds[0].Length, Utils.LengthOfShortestCommonSupersequence(b.ToList(), a.ToList()));
-            Assert.IsTrue(expecteds.ToList().Contains(new string(Utils.ShortestCommonSupersequence(a.ToList(), b.ToList()).ToArray())));
-            Assert.IsTrue(expecteds.ToList().Contains(new string(Utils.ShortestCommonSupersequence(b.ToList(), a.ToList()).ToArray())));
+            Assert.AreEqual(expected[0].Length, Utils.LengthOfShortestCommonSupersequence(a.ToList(), b.ToList()));
+            Assert.AreEqual(expected[0].Length, Utils.LengthOfShortestCommonSupersequence(b.ToList(), a.ToList()));
+            Assert.IsTrue(expected.ToList().Contains(new string(Utils.ShortestCommonSupersequence(a.ToList(), b.ToList()).ToArray())));
+            Assert.IsTrue(expected.ToList().Contains(new string(Utils.ShortestCommonSupersequence(b.ToList(), a.ToList()).ToArray())));
         }
 
     }

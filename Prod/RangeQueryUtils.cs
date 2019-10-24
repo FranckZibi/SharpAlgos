@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-// ReSharper disable UnusedMember.Global
 
 namespace SharpAlgos
 {
-
     /*
      * 
      *Range Min/Max Query
@@ -25,11 +23,11 @@ namespace SharpAlgos
     public class SparseTable
     {
         #region private fields
-        private readonly Func<int, int, int> computeParent;
+        private readonly Func<int, int, int> _computeParent;
         //sparseTable[i,powerOf2] = precomputed value for interval starting at i and of length 2^powerOf2
-        private readonly int[,] sparseTable;
+        private readonly int[,] _sparseTable;
         //log2[n] : the maximum allowed power such as 2^log2[n] <= n
-        private readonly int[] log2;
+        private readonly int[] _log2;
         #endregion
         //Compute min in interval of length N in o(1) time  (and o(N*log(N)) memory and o(N*log(N)) preparation time)
         public static SparseTable Min(int[] data) { return new SparseTable(data, Math.Min, idx => data[idx]); }
@@ -39,29 +37,30 @@ namespace SharpAlgos
         public static SparseTable IndexOfMin(int[] data) { return new SparseTable(data, (i, j) => data[i] <= data[j] ? i : j, idx => idx); }
         //Compute index of max in interval of length N in o(1) time  (and o(N*log(N)) memory and o(N*log(N)) preparation time)
         public static SparseTable IndexOfMax(int[] data) { return new SparseTable(data, (i, j) => data[i] >= data[j] ? i : j, idx => idx); }
-        public SparseTable(int[] data, Func<int, int, int> computeParent, Func<int, int> singleElementValue)
+
+        private SparseTable(int[] data, Func<int, int, int> computeParent, Func<int, int> singleElementValue)
         {
-            this.computeParent = computeParent;
-            var N = data.Length;
-            log2 = new int[1 + N]; // precompute all log values
-            log2[0] = -1;
-            for (int i = 1; i <= N; i++)
+            _computeParent = computeParent;
+            var n = data.Length;
+            _log2 = new int[1 + n]; // precompute all log values
+            _log2[0] = -1;
+            for (int i = 1; i <= n; i++)
             {
-                log2[i] = log2[i / 2] + 1;
+                _log2[i] = _log2[i / 2] + 1;
             }
-            sparseTable = new int[1 + N, 1 + log2[N]];
-            for (int i = 0; i < N; i++) //precompute results for all intervals of length 1 (= 2^0)
+            _sparseTable = new int[1 + n, 1 + _log2[n]];
+            for (int i = 0; i < n; i++) //precompute results for all intervals of length 1 (= 2^0)
             {
-                sparseTable[i, 0] = singleElementValue(i); //data[i];
+                _sparseTable[i, 0] = singleElementValue(i); //data[i];
             }
             int powerOf2 = 1;
             int currentLength = 2;
-            while (currentLength <= N)
+            while (currentLength <= n)
             {
                 //we compute results for all intervals of length 'currentLength' (we have already computed results for all interval of length: currentLength/2)
-                for (int i = 0; i + currentLength <= N; ++i)
+                for (int i = 0; i + currentLength <= n; ++i)
                 {
-                    sparseTable[i, powerOf2] = computeParent(sparseTable[i, powerOf2 - 1], sparseTable[i + currentLength / 2, powerOf2 - 1]);
+                    _sparseTable[i, powerOf2] = computeParent(_sparseTable[i, powerOf2 - 1], _sparseTable[i + currentLength / 2, powerOf2 - 1]);
                 }
                 currentLength *= 2;
                 ++powerOf2;
@@ -70,36 +69,36 @@ namespace SharpAlgos
         //we look at the 2 longest precomputed intervals (starting at 'start' for the 1st and ending at 'end' for the 2nd)
         public int Query(int start, int end)
         {
-            int powerOf2 = log2[end - start + 1];
-            return computeParent(sparseTable[start, powerOf2], sparseTable[end - (1 << powerOf2) + 1, powerOf2]);
+            int powerOf2 = _log2[end - start + 1];
+            return _computeParent(_sparseTable[start, powerOf2], _sparseTable[end - (1 << powerOf2) + 1, powerOf2]);
         }
     }
     #endregion
 
     #region Cartesian Tree
-    //a Min Cartesion Tree is a Min Heap, where:
+    //a Min Cartesian Tree is a Min Heap, where:
     //  (*) the root id is the index of the minimum in the initial array
     //  (*) the left child of a node is the index of the minimum in the left part of the array (left to the current node)
     //  (*) the right child of a node is the index of the minimum in the right part of the array (right to the current node)
     public class CartesianTree
     {
-        public int RootIndex { get; }
-        public int[] LeftChild { get; } //leftChild[i] : vertex at left of vertex 'i' , or -1 if no such vertex exists
-        public int[] RightChild { get; } //rightChild[i] : vertex at right of vertex 'i' , or -1 if no such vertex exists
+        private int RootIndex { get; }
+        private int[] LeftChild { get; } //leftChild[i] : vertex at left of vertex 'i' , or -1 if no such vertex exists
+        private int[] RightChild { get; } //rightChild[i] : vertex at right of vertex 'i' , or -1 if no such vertex exists
 
         public CartesianTree(int[] data, bool isMinCartesianTree)
         {
-            int N = data.Length;
-            var parent = new int[N];
-            LeftChild = new int[N];
-            RightChild = new int[N];
-            for (int i = 0; i < N; ++i)
+            int n = data.Length;
+            var parent = new int[n];
+            LeftChild = new int[n];
+            RightChild = new int[n];
+            for (int i = 0; i < n; ++i)
             {
                 parent[i] = LeftChild[i] = RightChild[i] = -1;
             }
 
             int root = 0;
-            for (int i = 1; i <= N - 1; i++)
+            for (int i = 1; i <= n - 1; i++)
             {
                 var last = i - 1;
                 RightChild[i] = -1;
@@ -140,11 +139,11 @@ namespace SharpAlgos
     public class SegmentTree
     {
         #region private fields
-        private readonly bool isSumQuery;
+        private readonly bool _isSumQuery;
         //from the value of 2 consecutive segment, compute the value of the 2 segments merged
-        private readonly Func<int, int, int> computeParent; 
-        private readonly int dataLength;
-        private readonly int[] heap; // heap[0] : root value
+        private readonly Func<int, int, int> _computeParent; 
+        private readonly int _dataLength;
+        private readonly int[] _heap; // heap[0] : root value
         #endregion
 
         //Compute the min in an interval of length N in o(log(N)) time  (and o(N) memory and o(N) preparation time)
@@ -157,13 +156,13 @@ namespace SharpAlgos
         #region setting a value to an entire range
         public void SetValueInInterval(int newValue, int startIndex, int endIndex)
         {
-            if (value_to_set_to_each_element_in_segment == null)
+            if (_valueToSetToEachElementInSegment == null)
             {
-                value_to_set_to_each_element_in_segment = new int?[heap.Length];
+                _valueToSetToEachElementInSegment = new int?[_heap.Length];
             }
-            SetValueInInterval(0, 0, dataLength - 1, newValue, Math.Max(startIndex, 0), Math.Min(endIndex, dataLength - 1));
+            SetValueInInterval(0, 0, _dataLength - 1, newValue, Math.Max(startIndex, 0), Math.Min(endIndex, _dataLength - 1));
         }
-        private int?[] value_to_set_to_each_element_in_segment;
+        private int?[] _valueToSetToEachElementInSegment;
         private void SetValueInInterval(int segmentId, int segmentStartIndex, int segmentEndIndex, int newValue, int startIndex, int endIndex)
         {
             LazyPropagateSetValueInInterval(segmentId, segmentStartIndex, segmentEndIndex);
@@ -179,31 +178,31 @@ namespace SharpAlgos
             int mid = (segmentStartIndex + segmentEndIndex) / 2;
             SetValueInInterval(2 * segmentId + 1, segmentStartIndex, mid, newValue, startIndex, endIndex);
             SetValueInInterval(2 * segmentId + 2, mid + 1, segmentEndIndex, newValue, startIndex, endIndex);
-            heap[segmentId] = computeParent(heap[2 * segmentId + 1], heap[2 * segmentId + 2]);
+            _heap[segmentId] = _computeParent(_heap[2 * segmentId + 1], _heap[2 * segmentId + 2]);
         }
         private void LazyPropagateSetValueInInterval(int segmentId, int segmentStartIndex, int segmentEndIndex)
         {
-            if (value_to_set_to_each_element_in_segment?[segmentId] == null)
+            if (_valueToSetToEachElementInSegment?[segmentId] == null)
             {
                 return;
             }
-            SetValueToSegmentAndLazyPropagateToChildren(segmentId, segmentStartIndex, segmentEndIndex, value_to_set_to_each_element_in_segment[segmentId].Value);
-            value_to_set_to_each_element_in_segment[segmentId] = null;
+            SetValueToSegmentAndLazyPropagateToChildren(segmentId, segmentStartIndex, segmentEndIndex, _valueToSetToEachElementInSegment[segmentId].Value);
+            _valueToSetToEachElementInSegment[segmentId] = null;
         }
         private void SetValueToSegmentAndLazyPropagateToChildren(int segmentId, int segmentStartIndex, int segmentEndIndex, int newValueForEachElementOfSegment)
         {
-            if (isSumQuery)
+            if (_isSumQuery)
             {
-                heap[segmentId] = (segmentEndIndex - segmentStartIndex + 1) * newValueForEachElementOfSegment;
+                _heap[segmentId] = (segmentEndIndex - segmentStartIndex + 1) * newValueForEachElementOfSegment;
             }
             else //min or max
             {
-                heap[segmentId] = newValueForEachElementOfSegment;
+                _heap[segmentId] = newValueForEachElementOfSegment;
             }
             if (segmentStartIndex != segmentEndIndex) //not a leaf
             {
-                value_to_set_to_each_element_in_segment[2 * segmentId + 1] = newValueForEachElementOfSegment;
-                value_to_set_to_each_element_in_segment[2 * segmentId + 2] = newValueForEachElementOfSegment;
+                _valueToSetToEachElementInSegment[2 * segmentId + 1] = newValueForEachElementOfSegment;
+                _valueToSetToEachElementInSegment[2 * segmentId + 2] = newValueForEachElementOfSegment;
             }
         }
         #endregion
@@ -211,13 +210,13 @@ namespace SharpAlgos
         #region adding a value in an entire range
         public void AddValueInInterval(int toAdd, int startIndex, int endIndex)
         {
-            if (value_to_add_to_each_element_in_segment == null)
+            if (_valueToAddToEachElementInSegment == null)
             {
-                value_to_add_to_each_element_in_segment = new int[heap.Length];
+                _valueToAddToEachElementInSegment = new int[_heap.Length];
             }
-            AddValueInInterval(0, 0, dataLength - 1, toAdd, Math.Max(startIndex, 0), Math.Min(endIndex, dataLength - 1));
+            AddValueInInterval(0, 0, _dataLength - 1, toAdd, Math.Max(startIndex, 0), Math.Min(endIndex, _dataLength - 1));
         }
-        private int[] value_to_add_to_each_element_in_segment;
+        private int[] _valueToAddToEachElementInSegment;
         private void AddValueInInterval(int segmentId, int segmentStartIndex, int segmentEndIndex, int toAdd, int startIndex, int endIndex)
         {
             LazyPropagateAddValueInInterval(segmentId, segmentStartIndex, segmentEndIndex);
@@ -233,31 +232,31 @@ namespace SharpAlgos
             int mid = (segmentStartIndex + segmentEndIndex) / 2;
             AddValueInInterval(2 * segmentId + 1, segmentStartIndex, mid, toAdd, startIndex, endIndex);
             AddValueInInterval(2 * segmentId + 2, mid + 1, segmentEndIndex, toAdd, startIndex, endIndex);
-            heap[segmentId] = computeParent(heap[2 * segmentId + 1], heap[2 * segmentId + 2]);
+            _heap[segmentId] = _computeParent(_heap[2 * segmentId + 1], _heap[2 * segmentId + 2]);
         }
         private void LazyPropagateAddValueInInterval(int segmentId, int segmentStartIndex, int segmentEndIndex)
         {
-            if (value_to_add_to_each_element_in_segment == null || value_to_add_to_each_element_in_segment[segmentId] == 0)
+            if (_valueToAddToEachElementInSegment == null || _valueToAddToEachElementInSegment[segmentId] == 0)
             {
                 return;
             }
-            AddValueToSegmentAndLazyPropagateToChildren(segmentId, segmentStartIndex, segmentEndIndex, value_to_add_to_each_element_in_segment[segmentId]);
-            value_to_add_to_each_element_in_segment[segmentId] = 0;
+            AddValueToSegmentAndLazyPropagateToChildren(segmentId, segmentStartIndex, segmentEndIndex, _valueToAddToEachElementInSegment[segmentId]);
+            _valueToAddToEachElementInSegment[segmentId] = 0;
         }
         private void AddValueToSegmentAndLazyPropagateToChildren(int segmentId, int segmentStartIndex, int segmentEndIndex, int toAdd)
         {
-            if (isSumQuery)
+            if (_isSumQuery)
             {
-                heap[segmentId] += (segmentEndIndex - segmentStartIndex + 1) * toAdd;
+                _heap[segmentId] += (segmentEndIndex - segmentStartIndex + 1) * toAdd;
             }
             else //min or max
             {
-                heap[segmentId] += toAdd;
+                _heap[segmentId] += toAdd;
             }
             if (segmentStartIndex != segmentEndIndex) //not a leaf
             {
-                value_to_add_to_each_element_in_segment[2 * segmentId + 1] += toAdd;
-                value_to_add_to_each_element_in_segment[2 * segmentId + 2] += toAdd;
+                _valueToAddToEachElementInSegment[2 * segmentId + 1] += toAdd;
+                _valueToAddToEachElementInSegment[2 * segmentId + 2] += toAdd;
             }
         }
         #endregion
@@ -268,7 +267,7 @@ namespace SharpAlgos
         /// <param name="startIndex">start index of the interval</param>
         /// <param name="endIndex">end index of the interval</param>
         /// <returns>the interval value (min/max/sum)</returns>
-        public int Query(int startIndex, int endIndex) { return Query(0, 0, dataLength - 1, Math.Max(0, startIndex), Math.Min(dataLength - 1, endIndex)); }
+        public int Query(int startIndex, int endIndex) { return Query(0, 0, _dataLength - 1, Math.Max(0, startIndex), Math.Min(_dataLength - 1, endIndex)); }
         //return the contribution of segment 'segmentId' to compute the value for interval [startIndex, endIndex]
         private int Query(int segmentId, int segmentStartIndex, int segmentEndIndex, int startIndex, int endIndex)
         {
@@ -276,7 +275,7 @@ namespace SharpAlgos
             LazyPropagateAddValueInInterval(segmentId, segmentStartIndex, segmentEndIndex);
             if (segmentStartIndex >= startIndex && segmentEndIndex <= endIndex)
             {
-                return heap[segmentId]; // 'segmentId' is entirely in [startIndex, endIndex] : so it contributes at 100%
+                return _heap[segmentId]; // 'segmentId' is entirely in [startIndex, endIndex] : so it contributes at 100%
             }
             int mid = (segmentStartIndex + segmentEndIndex) / 2;
             if (mid < startIndex) //only right part of 'segmentId' intersects [startIndex, endIndex] and contributes to the result
@@ -288,18 +287,18 @@ namespace SharpAlgos
                 return Query(2 * segmentId + 1, segmentStartIndex, mid, startIndex, endIndex);
             }
             //both left part and right part of 'segmentId' contribute to the result
-            return computeParent(Query(2 * segmentId + 1, segmentStartIndex, mid, startIndex, endIndex), Query(2 * segmentId + 2, mid + 1, segmentEndIndex, startIndex, endIndex));
+            return _computeParent(Query(2 * segmentId + 1, segmentStartIndex, mid, startIndex, endIndex), Query(2 * segmentId + 2, mid + 1, segmentEndIndex, startIndex, endIndex));
         }
 
 
         private SegmentTree(int[] data, Func<int, int, int> computeParent)
         {
-            this.computeParent = computeParent;
-            isSumQuery = computeParent(-5, 5) == 0;
-            dataLength = data.Length;
+            _computeParent = computeParent;
+            _isSumQuery = computeParent(-5, 5) == 0;
+            _dataLength = data.Length;
             int power = 1 + (int)Math.Ceiling(Math.Log(data.Length) / Math.Log(2));
             int heapLength = (int)Math.Pow(2, power);
-            heap = new int[1 + heapLength];
+            _heap = new int[1 + heapLength];
             ComputeHeap(0, 0, data.Length - 1, data);
         }
 
@@ -311,14 +310,14 @@ namespace SharpAlgos
             }
             if (segmentStartIndex == segmentEndIndex)
             {
-                heap[segmentId] = data[segmentStartIndex];
+                _heap[segmentId] = data[segmentStartIndex];
             }
             else
             {
                 var mid = (segmentStartIndex + segmentEndIndex) / 2;
-                heap[segmentId] = computeParent(ComputeHeap(2 * segmentId + 1, segmentStartIndex, mid, data), ComputeHeap(2 * segmentId + 2, mid + 1, segmentEndIndex, data));
+                _heap[segmentId] = _computeParent(ComputeHeap(2 * segmentId + 1, segmentStartIndex, mid, data), ComputeHeap(2 * segmentId + 2, mid + 1, segmentEndIndex, data));
             }
-            return heap[segmentId];
+            return _heap[segmentId];
         }
     }
     #endregion
@@ -328,39 +327,41 @@ namespace SharpAlgos
     public class SegmentTreeCountInferiorToK
     {
         #region private fields
-        private readonly int dataLength;
-        private readonly List<int>[] sortedElementsAtEachNode; // sortedElementsAtEachNode[0]: all sorted elements
+        private readonly int _dataLength;
+        private readonly List<int>[] _sortedElementsAtEachNode; // sortedElementsAtEachNode[0]: all sorted elements
         #endregion
 
         public SegmentTreeCountInferiorToK(int[] data)
         {
-            dataLength = data.Length;
+            _dataLength = data.Length;
             int power = 1 + (int)Math.Ceiling(Math.Log(data.Length) / Math.Log(2));
             int heapLength = (int)Math.Pow(2, power);
-            sortedElementsAtEachNode = new List<int>[1 + heapLength];
+            _sortedElementsAtEachNode = new List<int>[1 + heapLength];
             ComputeHeapForNbInfToK(0, 0, data.Length - 1, data);
         }
 
         /// <summary>
-        /// retrieve the number of elements in interval [startIndex, endIndex] less or equal to  K in o(log^2(N)) time
+        /// retrieve the number of elements in interval [startIndex, endIndex] less or equal to K
+        /// Complexity: o(log^2(N))
         /// </summary>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
-        /// <param name="K"></param>
+        /// <param name="k"></param>
         /// <returns></returns>
-        public int Query(int startIndex, int endIndex, int K) { return Query(0, 0, dataLength - 1, K, startIndex, endIndex); }
+        public int Query(int startIndex, int endIndex, int k) { return Query(0, 0, _dataLength - 1, k, startIndex, endIndex); }
 
 
         /// <summary>
-        /// retrieve the number of elements in interval [startIndex, endIndex] equals to  K in o(log^2(N)) time
+        /// retrieve the number of elements in interval [startIndex, endIndex] equals to K
+        /// Complexity: o(log^2(N))
         /// </summary>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
-        /// <param name="K"></param>
+        /// <param name="k"></param>
         /// <returns>the number of elements equals to K in interval</returns>
-        public int QueryEqualsToK(int startIndex, int endIndex, int K)
+        public int QueryEqualsToK(int startIndex, int endIndex, int k)
         {
-            return Query(startIndex, endIndex, K) - Query(startIndex, endIndex, K-1);
+            return Query(startIndex, endIndex, k) - Query(startIndex, endIndex, k-1);
         }
 
 
@@ -368,14 +369,14 @@ namespace SharpAlgos
         {
             if (segmentStartIndex == segmentEndIndex)
             {
-                sortedElementsAtEachNode[segmentId] = new List<int> { data[segmentStartIndex] };
+                _sortedElementsAtEachNode[segmentId] = new List<int> { data[segmentStartIndex] };
             }
             else
             {
                 var mid = (segmentStartIndex + segmentEndIndex) / 2;
-                sortedElementsAtEachNode[segmentId] = MergeSort(ComputeHeapForNbInfToK(2 * segmentId + 1, segmentStartIndex, mid, data), ComputeHeapForNbInfToK(2 * segmentId + 2, mid + 1, segmentEndIndex, data));
+                _sortedElementsAtEachNode[segmentId] = MergeSort(ComputeHeapForNbInfToK(2 * segmentId + 1, segmentStartIndex, mid, data), ComputeHeapForNbInfToK(2 * segmentId + 2, mid + 1, segmentEndIndex, data));
             }
-            return sortedElementsAtEachNode[segmentId];
+            return _sortedElementsAtEachNode[segmentId];
         }
         //we have 2 lists in increasing order : ' a' & 'b', and we want to merge the 2 list to a single increasing list
         private static List<int> MergeSort(List<int> a, List<int> b)
@@ -409,28 +410,28 @@ namespace SharpAlgos
             }
         }
         //return the contribution of segment 'segmentId' to compute the value for interval [startIndex, endIndex]
-        private int Query(int segmentId, int segmentStartIndex, int segmentEndIndex, int K, int startIndex, int endIndex)
+        private int Query(int segmentId, int segmentStartIndex, int segmentEndIndex, int k, int startIndex, int endIndex)
         {
             if (segmentStartIndex >= startIndex && segmentEndIndex <= endIndex)
             {
-                var sortedElementsInSegment = sortedElementsAtEachNode[segmentId];
-                if (sortedElementsInSegment[0] > K)
+                var sortedElementsInSegment = _sortedElementsAtEachNode[segmentId];
+                if (sortedElementsInSegment[0] > k)
                 {
                     return 0;
                 }
-                return 1 + Utils.MaximumValidIndex(0, sortedElementsInSegment.Count - 1, x => sortedElementsInSegment[x] <= K);
+                return 1 + Utils.MaximumValidIndex(0, sortedElementsInSegment.Count - 1, x => sortedElementsInSegment[x] <= k);
             }
             int mid = (segmentStartIndex + segmentEndIndex) / 2;
             if (mid < startIndex) //only right part of 'segmentId' intersects [startIndex, endIndex] and contributes to the result
             {
-                return Query(2 * segmentId + 2, mid + 1, segmentEndIndex, K, startIndex, endIndex);
+                return Query(2 * segmentId + 2, mid + 1, segmentEndIndex, k, startIndex, endIndex);
             }
             if (mid >= endIndex) //only left part of 'segmentId' intersects [startIndex, endIndex] and contributes to the result
             {
-                return Query(2 * segmentId + 1, segmentStartIndex, mid, K, startIndex, endIndex);
+                return Query(2 * segmentId + 1, segmentStartIndex, mid, k, startIndex, endIndex);
             }
             //both left part and right part of 'segmentId' contribute to the result
-            return Query(2 * segmentId + 1, segmentStartIndex, mid, K, startIndex, endIndex) + Query(2 * segmentId + 2, mid + 1, segmentEndIndex, K, startIndex, endIndex);
+            return Query(2 * segmentId + 1, segmentStartIndex, mid, k, startIndex, endIndex) + Query(2 * segmentId + 2, mid + 1, segmentEndIndex, k, startIndex, endIndex);
         }
     }
     #endregion
@@ -439,19 +440,19 @@ namespace SharpAlgos
     public class EulerTourOnBinaryTree<T>
     {
         //list of vertices found during an Euler Tour: (starting&ending at root) and visiting all vertices (from left to right)
-        public List<T> EulerTour { get; }
+        private List<T> EulerTour { get; }
         //EulerTourHeight[i]: distance between root and vertex 'EulerTour[i]'  (= 0 if vertex is the root of the tree)
-        public List<int> EulerTourHeight;
+        private readonly List<int> _eulerTourHeight;
         //FirstIndexInEulerTour[v]: first time we met vertex 'v' in euler path
-        public IDictionary<T, int> FirstIndexInEulerTour { get; }
-        private SparseTable lazySparseTableIndexOfMin; //only used to compute Lowest Common Ancestor 
+        private IDictionary<T, int> FirstIndexInEulerTour { get; }
+        private SparseTable _lazySparseTableIndexOfMin; //only used to compute Lowest Common Ancestor 
 
         public EulerTourOnBinaryTree(Graph<T> tree, T rootId)
         {
-            // get euler tour & indices of first occurences
+            // get euler tour & indices of first occurence
             FirstIndexInEulerTour = new Dictionary<T, int>();
             EulerTour = new List<T>();
-            EulerTourHeight = new List<int>();
+            _eulerTourHeight = new List<int>();
 
             var toVisit = new Stack<T>();
             var visited = new HashSet<T>();
@@ -464,7 +465,7 @@ namespace SharpAlgos
                 var vertexId = toVisit.Pop();
                 var h = heightQueue.Pop();
                 EulerTour.Add(vertexId);
-                EulerTourHeight.Add(h);
+                _eulerTourHeight.Add(h);
                 if (FirstIndexInEulerTour.ContainsKey(vertexId))
                 {
                     continue;
@@ -497,16 +498,16 @@ namespace SharpAlgos
             {
                 return default(T);
             }
-            if (lazySparseTableIndexOfMin == null)
+            if (_lazySparseTableIndexOfMin == null)
             {
-                lazySparseTableIndexOfMin = SparseTable.IndexOfMin(EulerTourHeight.ToArray());
+                _lazySparseTableIndexOfMin = SparseTable.IndexOfMin(_eulerTourHeight.ToArray());
             }
-            var idxOfMinHeightInEulerPath = lazySparseTableIndexOfMin.Query(Math.Min(id1, id2), Math.Max(id1, id2));
+            var idxOfMinHeightInEulerPath = _lazySparseTableIndexOfMin.Query(Math.Min(id1, id2), Math.Max(id1, id2));
             return EulerTour[idxOfMinHeightInEulerPath];
         }
-        public int NearestToRoot(int iInEulerTour, int jInEuleurTour)
+        public int NearestToRoot(int iInEulerTour, int jInEulerTour)
         {
-            return EulerTourHeight[iInEulerTour] < EulerTourHeight[jInEuleurTour] ? iInEulerTour : jInEuleurTour;
+            return _eulerTourHeight[iInEulerTour] < _eulerTourHeight[jInEulerTour] ? iInEulerTour : jInEulerTour;
         }
     }
     #endregion

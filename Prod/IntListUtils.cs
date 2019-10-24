@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-// ReSharper disable StringCompareToIsCultureSpecific
-// ReSharper disable UnusedMember.Global
 
 namespace SharpAlgos
 {
     public static partial class Utils
     {
         /// <summary>
-        /// Compute the max sub sum from 'T' in o(N) time and o(1) memory
+        /// Compute the max sub sum from 'T'
+        /// Complexity:         o( T.Length ) 
+        /// Memory Complexity:  o( 1 ) 
         /// the sub array indexes are stored in [startIndexMasSubSum,endIndexMaxSubSum]
         /// </summary>
         /// <param name="T"></param>
@@ -49,7 +49,9 @@ namespace SharpAlgos
 
 
         /// <summary>
-        /// Compute max subsequence without using adjacent item in o(N) time (and o(N) memory)
+        /// Compute max subsequence without using adjacent item
+        /// Complexity:         o( m.Length ) 
+        /// Memory Complexity:  o( m.Length ) 
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
@@ -65,10 +67,12 @@ namespace SharpAlgos
             return res.Last();
         }
 
-       
+
         /// <summary>
-        /// Compute the largest rectangle inside an histogram in o(N) time (and o(N) memory)
+        /// Compute the largest rectangle inside an histogram
         /// the start & end indexes are stored in [startIndex,endIndex]
+        /// Complexity:         o( heights.Length ) 
+        /// Memory Complexity:  o( heights.Length ) 
         /// </summary>
         /// <param name="heights">list height in the histogram</param>
         /// <param name="startIndex">start index of the largest rectangle</param>
@@ -103,31 +107,36 @@ namespace SharpAlgos
             return maxArea;
         }
 
-        //compute max of 'm[i]-m[j]+m[k]-m[l]' with i>j>k>l in o(n) time
+        /// <summary>
+        /// Compute max of 'm[i]-m[j]+m[k]-m[l]' with i>j>k>l
+        /// Complexity:         o( m.Length ) 
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
         public static int MaximizeValueOfTheExpression(int[] m)
         {
-            var L1 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L1[t] : max of m[i] for i>=t
-            L1[m.Length - 1] = m.Last();
+            var l1 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L1[t] : max of m[i] for i>=t
+            l1[m.Length - 1] = m.Last();
             for (int i = m.Length - 2; i >= 0; --i)
             {
-                L1[i] = Math.Max(L1[i + 1], m[i]);
+                l1[i] = Math.Max(l1[i + 1], m[i]);
             }
-            var L2 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L2[t] : max of m[i]-m[j] for j>=t & i>j
+            var l2 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L2[t] : max of m[i]-m[j] for j>=t & i>j
             for (int i = m.Length - 2; i >= 0; --i)
             {
-                L2[i] = Math.Max(L2[i + 1], L1[i + 1] - m[i]);
+                l2[i] = Math.Max(l2[i + 1], l1[i + 1] - m[i]);
             }
-            var L3 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L3[t] : max of m[i]-m[j]+m[k] for k>=t & i>j>k
+            var l3 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L3[t] : max of m[i]-m[j]+m[k] for k>=t & i>j>k
             for (int i = m.Length - 3; i >= 0; --i)
             {
-                L3[i] = Math.Max(L3[i + 1], L2[i + 1] + m[i]);
+                l3[i] = Math.Max(l3[i + 1], l2[i + 1] + m[i]);
             }
-            var L4 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L4[t] : max of m[i]-m[j]+m[k]-m[l] for l>=t & i>j>k>l
+            var l4 = Enumerable.Repeat(int.MinValue, m.Length).ToArray(); //L4[t] : max of m[i]-m[j]+m[k]-m[l] for l>=t & i>j>k>l
             for (int i = m.Length - 4; i >= 0; --i)
             {
-                L4[i] = Math.Max(L4[i + 1], L3[i + 1] - m[i]);
+                l4[i] = Math.Max(l4[i + 1], l3[i + 1] - m[i]);
             }
-            return L4.First();
+            return l4.First();
         }
 
         //try to 2 divide 'm' into 2 parts so the difference of the sum of elements in each part is minimum
@@ -135,17 +144,17 @@ namespace SharpAlgos
         {
             return MinimumSumPartition_Helper(m, m.Length, 0, 0, new Dictionary<string, int>());
         }
-        private static int MinimumSumPartition_Helper(int[] m, int nbRemaining, int S1, int S2, IDictionary<string, int> cache)
+        private static int MinimumSumPartition_Helper(int[] m, int nbRemaining, int s1, int s2, IDictionary<string, int> cache)
         {
             if (nbRemaining <= 0)
             {
-                return Math.Abs(S1 - S2);
+                return Math.Abs(s1 - s2);
             }
-            string key = nbRemaining + "|" + S1;
+            string key = nbRemaining + "|" + s1;
             if (!cache.ContainsKey(key))
             {
-                var minimumSumIfAddedInS1 = MinimumSumPartition_Helper(m, nbRemaining - 1, S1 + m[nbRemaining - 1], S2, cache);
-                var minimumSumIfAddedInS2 = MinimumSumPartition_Helper(m, nbRemaining - 1, S1, S2 + m[nbRemaining - 1], cache);
+                var minimumSumIfAddedInS1 = MinimumSumPartition_Helper(m, nbRemaining - 1, s1 + m[nbRemaining - 1], s2, cache);
+                var minimumSumIfAddedInS2 = MinimumSumPartition_Helper(m, nbRemaining - 1, s1, s2 + m[nbRemaining - 1], cache);
                 cache[key] = Math.Min(minimumSumIfAddedInS1, minimumSumIfAddedInS2);
             }
             return cache[key];
@@ -482,7 +491,7 @@ namespace SharpAlgos
             return string.Join("", elements);
         }
 
-        //find the biggest number using a subsequence of k elements from 'parts'  in o(?) time
+        //find the biggest number using a subsequence of k elements from 'parts'
         public static List<int> BuildBiggestNumberUsingSubsequenceOfKElements(int[] parts, int k)
         {
             var result = new List<int>();
@@ -499,6 +508,5 @@ namespace SharpAlgos
             }
             return result; //to return the biggest number: return string.Join("", result);
         }
-
     }
 }

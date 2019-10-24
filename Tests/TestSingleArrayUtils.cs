@@ -77,10 +77,7 @@ namespace SharpAlgosTests
             {
                 return false;
             }
-            //return allDuplicatesIndexes.Max();
             return true;
         }
-
-
     }
 }

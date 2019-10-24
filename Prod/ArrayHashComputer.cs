@@ -5,9 +5,10 @@ using System.Diagnostics;
 namespace SharpAlgos
 {
     /// <summary>
-    /// computes the hash of a any sub array of 'array' in o(1) time (+ o(array.Length) preparation time + o(array.Length) memory )
+    /// Computes the hash of a any sub array of 'array' 
+    /// Complexity:         o(1) time (+ o(array.Length) preparation time)
+    /// Memory complexity:  o(array.Length)
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class ArrayHashComputer<T>
     {
         #region private fields
@@ -22,7 +23,7 @@ namespace SharpAlgos
         /// _hashEndingAtIndex[i] =  un normalized hash of the array starting at array[0] and ending at array[i] 
         /// To compute the normalized hash for an array starting at index 'i', we'll have to multiply it by '_powerModulo[_powerModulo.Length-1-i]'
         /// </summary>
-        private readonly long[] _unormalizedHashEndingAtIndex;
+        private readonly long[] _unnormalizedHashEndingAtIndex;
         #endregion
 
         public ArrayHashComputer(IList<T> array, Func<T, long> toLong, int maxPowerForNormalization = -1, long multiplier = 257, long modulo = 1000000007L /*3367900313L*/)
@@ -39,14 +40,12 @@ namespace SharpAlgos
             {
                 _powerModulo[i] =  i==0?1L: ((_powerModulo[i - 1] * multiplier) % _modulo);
             }
-            _unormalizedHashEndingAtIndex = new long[array.Count];
-            for (int i = 0; i < _unormalizedHashEndingAtIndex.Length; ++i)
+            _unnormalizedHashEndingAtIndex = new long[array.Count];
+            for (int i = 0; i < _unnormalizedHashEndingAtIndex.Length; ++i)
             {
-                _unormalizedHashEndingAtIndex[i] = ((i==0?0L:_unormalizedHashEndingAtIndex[i - 1])+_powerModulo[i]*toLong(array[i])) % _modulo;
+                _unnormalizedHashEndingAtIndex[i] = ((i==0?0L:_unnormalizedHashEndingAtIndex[i - 1])+_powerModulo[i]*toLong(array[i])) % _modulo;
             }
         }
-
-        private int Length => _unormalizedHashEndingAtIndex.Length;
 
         /// <summary>
         /// computes the hash of the sub array starting at 'startIndex' and ending at 'endIndexIncluded' in o(1) time
@@ -56,7 +55,7 @@ namespace SharpAlgos
         /// <returns>the (normalized) hash of the sub array</returns>
         public long Hash(int startIndex, int endIndexIncluded)
         {
-            var unormalizedHash = (_unormalizedHashEndingAtIndex[endIndexIncluded] + _modulo - (startIndex == 0 ? 0 : _unormalizedHashEndingAtIndex[startIndex - 1])) % _modulo;
+            var unormalizedHash = (_unnormalizedHashEndingAtIndex[endIndexIncluded] + _modulo - (startIndex == 0 ? 0 : _unnormalizedHashEndingAtIndex[startIndex - 1])) % _modulo;
             var normalizerMultiplier = _powerModulo[_powerModulo.Length -1 - startIndex];
             var normalizedHash =  (unormalizedHash * normalizerMultiplier) % _modulo;
             return normalizedHash >= 0 ? normalizedHash : normalizedHash + _modulo;
@@ -243,6 +242,6 @@ namespace SharpAlgos
             return -1;
         }
         #endregion
-
+        private int Length => _unnormalizedHashEndingAtIndex.Length;
     }
- }
+}

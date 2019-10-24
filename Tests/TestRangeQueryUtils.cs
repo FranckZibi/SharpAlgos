@@ -111,10 +111,10 @@ namespace SharpAlgosTests
                 for (int startIndex = 0; startIndex < ints.Length; ++startIndex)
                     for (int endIndex = startIndex; endIndex < ints.Length; ++endIndex)
                     {
-                        foreach (var K in new[] { r.Next(-2000, 2000), ints[startIndex], ints[endIndex], ints[(startIndex + endIndex) / 2], ints[startIndex] - 1, ints[endIndex] - 1, ints[startIndex] + 1, ints[endIndex] + 1 })
+                        foreach (var k in new[] { r.Next(-2000, 2000), ints[startIndex], ints[endIndex], ints[(startIndex + endIndex) / 2], ints[startIndex] - 1, ints[endIndex] - 1, ints[startIndex] + 1, ints[endIndex] + 1 })
                         {
-                            Assert.AreEqual(SlowCountInferiorOrEqualToKInInterval(ints, startIndex, endIndex, K), st.Query(startIndex, endIndex, K));
-                            Assert.AreEqual(SlowCountEqualToKInInterval(ints, startIndex, endIndex, K), st.QueryEqualsToK(startIndex, endIndex, K));
+                            Assert.AreEqual(SlowCountInferiorOrEqualToKInInterval(ints, startIndex, endIndex, k), st.Query(startIndex, endIndex, k));
+                            Assert.AreEqual(SlowCountEqualToKInInterval(ints, startIndex, endIndex, k), st.QueryEqualsToK(startIndex, endIndex, k));
                         }
                     }
             }
@@ -141,6 +141,7 @@ namespace SharpAlgosTests
                     }
             }
         }
+
         private static int SlowMinIndexInInterval(int[] data, int startIndex, int endIndex)
         {
             int result = startIndex;
@@ -154,6 +155,7 @@ namespace SharpAlgosTests
 
             return result;
         }
+
         private static int SlowMaxIndexInInterval(int[] data, int startIndex, int endIndex)
         {
             int result = startIndex;
@@ -179,13 +181,13 @@ namespace SharpAlgosTests
         {
             return data.Skip(startIndex).Take(endIndex - startIndex + 1).Sum();
         }
-        private static int SlowCountInferiorOrEqualToKInInterval(int[] data, int startIndex, int endIndex, int K)
+        private static int SlowCountInferiorOrEqualToKInInterval(int[] data, int startIndex, int endIndex, int k)
         {
-            return data.Skip(startIndex).Take(endIndex - startIndex + 1).Count(i => i <= K);
+            return data.Skip(startIndex).Take(endIndex - startIndex + 1).Count(i => i <= k);
         }
-        private static int SlowCountEqualToKInInterval(int[] data, int startIndex, int endIndex, int K)
+        private static int SlowCountEqualToKInInterval(int[] data, int startIndex, int endIndex, int k)
         {
-            return data.Skip(startIndex).Take(endIndex - startIndex + 1).Count(i => i == K);
+            return data.Skip(startIndex).Take(endIndex - startIndex + 1).Count(i => i == k);
         }
     }
 }

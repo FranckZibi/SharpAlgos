@@ -6,11 +6,23 @@ namespace SharpAlgos
 {
     public static partial class Utils
     {
-        //compute the Edit Distance between 'source' and 'target' in o (source.Length*target.Length) time
+        /// <summary>
+        /// Compute the Edit Distance between 'source' and 'target' in o (source.Length*target.Length) time,
+        /// taking into account the cost of insertion/deletion/substitution and transposition
+        /// Complexity:         o( source.Length * target.Length )
+        /// Memory Complexity:  o( source.Length * target.Length )
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="insertionCost">insertion cost</param>
+        /// <param name="deletionCost">deletion cost</param>
+        /// <param name="substitutionCost">substitution cost</param>
+        /// <param name="transpositionCost">transposition cost</param>
+        /// <returns>minimum edit distance between 'a' and 'b'</returns>
         public static int EditDistance(string source, string target, int insertionCost, int deletionCost, int substitutionCost, int transpositionCost)
         {
             var matrix = new int[1 + source.Length, 1 + target.Length];
-            //matrix[x,y] : edit distance from the first 'x' caracters of source to the first 'y' caracters of target
+            //matrix[x,y] : edit distance from the first 'x' characters of source to the first 'y' characters of target
             for (var targetLength = 0; targetLength <= target.Length; ++targetLength)
             {
                 matrix[0, targetLength] = targetLength * insertionCost;
@@ -26,10 +38,10 @@ namespace SharpAlgos
 
                     var costForDeletion = deletionCost + matrix[sourceLength - 1, targetLength]; //remove last character from source then take above distance ('source minus last character' to 'target')
                     var costForInsertion = matrix[sourceLength, targetLength - 1] + insertionCost; //take left distance ('source' to 'target minus last character') then insert last character from source
-                    var sameCaracter = source[sourceLength - 1] == target[targetLength - 1];
-                    var costForSubstitution = matrix[sourceLength - 1, targetLength - 1] + (sameCaracter ? 0 : substitutionCost);
+                    var sameCharacter = source[sourceLength - 1] == target[targetLength - 1];
+                    var costForSubstitution = matrix[sourceLength - 1, targetLength - 1] + (sameCharacter ? 0 : substitutionCost);
                     var costForTransposition = ((targetLength >= 2) && (sourceLength >= 2) && (source[sourceLength - 1] == target[targetLength - 2]) && (source[sourceLength - 2] == target[targetLength - 1]))
-                                                ? (matrix[sourceLength - 2, targetLength - 2] + (sameCaracter ? 0 : transpositionCost))
+                                                ? (matrix[sourceLength - 2, targetLength - 2] + (sameCharacter ? 0 : transpositionCost))
                                                 : int.MaxValue;
                     matrix[sourceLength, targetLength] = Math.Min(Math.Min(costForSubstitution, costForInsertion), Math.Min(costForDeletion, costForTransposition));
                 }
@@ -41,7 +53,7 @@ namespace SharpAlgos
         /// <summary>
         /// given 2 strings,
         /// finds a smaller string that is the longest sub sequence of both strings
-        /// in: o (a.Length * b.Length ) time
+        /// Complexity: o (a.Length * b.Length )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
@@ -142,8 +154,8 @@ namespace SharpAlgos
 
         #region Longest Common Substring
         /// <summary>
-        /// given 2 strings, finds a smaller string that is the longest substring they have in common
-        /// in o (a.Length * log(a.Length)) ) time using hash
+        /// given 2 strings, finds a smaller string that is the longest substring they have in common (using hash)
+        /// Complexity: o( a.Length * log(a.Length)) )
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -154,8 +166,8 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// given 2 strings, finds a smaller string that is the longest substring they have in common
-        /// in o (a.Length * b.Length) time using Dynamic Programming
+        /// given 2 strings, finds a smaller string that is the longest substring they have in common (using Dynamic Programming)
+        /// Complexity: o ( a.Length * b.Length )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
@@ -206,7 +218,7 @@ namespace SharpAlgos
         /// <summary>
         /// given 2 strings 'a'&'b', find (the smallest) bigger string 'scs'
         /// so that 'a'&'b' are subsequence of 'scs'
-        /// in: o (a.Length * b.Length ) time
+        /// Complexity: o(a.Length * b.Length )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>

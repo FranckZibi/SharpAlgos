@@ -8,7 +8,8 @@ namespace SharpAlgos
     {
         /// <summary>
         /// return a matrix where matrix[row,col] = sum of all elements in m from top left to (row,col)
-        /// in o(N*M) time (& memory)
+        /// Complexity:         o( N*M )
+        /// Memory Complexity:  o( N*M )
         /// </summary>
         /// <param name="m"></param>
         /// <returns>the count matrix</returns>
@@ -27,7 +28,16 @@ namespace SharpAlgos
             return countMatrix;
         }
 
-        //create sum of element in a sub matrix in o(1) time (after pre processing that takes o(n*m) time)
+        /// <summary>
+        /// Compute the sum of element in a sub matrix in o(1) time
+        /// Complexity:         o( 1 ) (after a pre processing that takes o(N*M) time and memory)
+        /// </summary>
+        /// <param name="countMatrix"></param>
+        /// <param name="row0"></param>
+        /// <param name="col0"></param>
+        /// <param name="row1"></param>
+        /// <param name="col1"></param>
+        /// <returns></returns>
         public static int SubMatrixSumInCountMatrix(int[,] countMatrix, int row0, int col0, int row1, int col1)
         {
             return countMatrix[row1, col1] - Default(countMatrix, row0 - 1, col1, 0) -
@@ -35,7 +45,9 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// find the minimum cost to go from top left to bottom right on matrix in o(N*M) time (& memory)
+        /// Compute the minimum cost to go from top left to bottom right on matrix
+        /// Complexity:         o( N*M )
+        /// Memory Complexity:  o( N*M )
         /// </summary>
         /// <param name="m">the matrix with the cost in each cell</param>
         /// <returns>the minimum cost</returns>
@@ -60,7 +72,13 @@ namespace SharpAlgos
             return cost[nbRows - 1, nbCols - 1];
         }
 
-        //Find the number of path (from top left to bottom right) with total cost equal 'givenCost' in o (m.Height * m.Width) time
+        /// <summary>
+        /// Find the number of path (from top left to bottom right) with total cost equal 'givenCost'
+        /// Complexity: o( m.Height * m.Width )
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="givenCost"></param>
+        /// <returns></returns>
         public static int NumberOfPathsToGoFromTopLeftToBottomRightOfMatrixWithGivenCost(int[,] m, int givenCost)
         {
             return NumberOfPathsToGoFromTopLeftToBottomRightOfMatrixWithGivenCost(m, new Dictionary<string, int>(), m.GetLength(0) - 1, m.GetLength(1) - 1, givenCost);
@@ -163,13 +181,13 @@ namespace SharpAlgos
                     var newCol = col - delta;
                     var colScore = (newCol >= 0 && newCol < m.GetLength(1)) ? score[row, newCol] : -1;
                     var topScore = (row == 0) ? -1 : score[row - 1, col];
-                    var neighbourScore = Math.Max(colScore, topScore);
-                    if (neighbourScore == -1)
+                    var neighborScore = Math.Max(colScore, topScore);
+                    if (neighborScore == -1)
                     {
                         score[row, col] = -1;
                         continue;
                     }
-                    score[row, col] += neighbourScore;
+                    score[row, col] += neighborScore;
                 }
                 colStart = m.GetLength(1) - 1 - colStart;
                 delta *= -1;
@@ -182,7 +200,6 @@ namespace SharpAlgos
             return res;
         }
 
-
         public static long TrapRainWater3D(int[,] heightMap)
         {
             if (heightMap.Length == 0)
@@ -194,7 +211,7 @@ namespace SharpAlgos
             var visited = new bool[w, h];
             var priority = new PriorityQueue<Point>(true);
 
-            //we are building the wall around the waterpool
+            //we are building the wall around the water-pool
             foreach (var p in AllPoints(heightMap))
             {
                 if ((p.X == 0) || (p.Y == 0) || (p.X == w - 1) || (p.Y == h - 1))
@@ -208,27 +225,28 @@ namespace SharpAlgos
             while (priority.Count != 0)
             {
                 var lowestInWall = priority.Dequeue();
-                foreach (var neighbour in AllPointsHorizontalVertical(heightMap, lowestInWall.X, lowestInWall.Y))
+                foreach (var neighbor in AllPointsHorizontalVertical(heightMap, lowestInWall.X, lowestInWall.Y))
                 {
-                    if (visited[neighbour.X,neighbour.Y])
+                    if (visited[neighbor.X,neighbor.Y])
                     {
                         continue;
                     }
-                    visited[neighbour.X,neighbour.Y] = true;
-                    if (heightMap[neighbour.X,neighbour.Y] < heightMap[lowestInWall.X,lowestInWall.Y])
+                    visited[neighbor.X,neighbor.Y] = true;
+                    if (heightMap[neighbor.X,neighbor.Y] < heightMap[lowestInWall.X,lowestInWall.Y])
                     {
-                        //the neighbour will be filled with water, and concataned to the waterpool wall
-                        result += heightMap[lowestInWall.X,lowestInWall.Y] - heightMap[neighbour.X,neighbour.Y];
-                        heightMap[neighbour.X,neighbour.Y] = heightMap[lowestInWall.X,lowestInWall.Y];
+                        //the neighbor will be filled with water, and concatenated to the water-pool wall
+                        result += heightMap[lowestInWall.X,lowestInWall.Y] - heightMap[neighbor.X,neighbor.Y];
+                        heightMap[neighbor.X,neighbor.Y] = heightMap[lowestInWall.X,lowestInWall.Y];
                     }
-                    priority.Enqueue(neighbour, heightMap[neighbour.X,neighbour.Y]);
+                    priority.Enqueue(neighbor, heightMap[neighbor.X,neighbor.Y]);
                 }
             }
             return result;
         }
 
         /// <summary>
-        ///  compute the max sum from a sub matrix of a N*M 'matrix' in o(N^2*M) time
+        /// Compute the max sum from a sub matrix of a N*M 'matrix'
+        /// Complexity: o(N^2*M)
         /// </summary>
         /// <param name="matrix"></param>
         /// <param name="coordinates">4 integers coordinates where the max sum is located:  rowStart, colStart, rowEnd, colEnd </param>
@@ -267,7 +285,8 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// compute the product of 2 matrices 'a' (N,M) and 'b' (M,K) in o(N*M*K) time
+        /// compute the product of 2 matrices 'a' (N,M) and 'b' (M,K)
+        /// Complexity: o( N*M*K )
         /// each cell of the resulting matrix will be computed '% modulo'
         /// </summary>
         /// <param name="a"></param>
@@ -293,7 +312,8 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// Compute a square matrix of size (N*N) to power 'exp' in O (N^3 * log(exp) ) time
+        /// Compute a square matrix of size (N*N) to power 'exp'
+        /// Complexity: o( N^3 * log(exp) )
         /// each cell of the matrix will be computed '% modulo'
         /// </summary>
         /// <param name="mat"></param>

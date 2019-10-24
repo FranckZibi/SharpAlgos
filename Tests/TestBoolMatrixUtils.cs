@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using SharpAlgos;
 using NUnit.Framework;
 
@@ -17,8 +13,6 @@ namespace SharpAlgosTests
             matrix[5, 5] = matrix[5, 6] = matrix[6, 5] = matrix[6, 6] = true;
             Assert.AreEqual(4, Utils.MaximalRectangleArea(matrix));
         }
-
-
 
         [Test]
         public void TestIdentifyAllSegments()
@@ -47,7 +41,5 @@ namespace SharpAlgosTests
             matrix[1, 1] = true;
             Assert.AreEqual(2, Utils.MaximalSquareWidth(matrix));
         }
-        
-
     }
 }

@@ -34,7 +34,7 @@ namespace SharpAlgosTests
         }
 
         [Test]
-        public void TestSolve2SAT()
+        public void TestSolve2Sat()
         {
             bool AreValidAtSameTime(int x, int y) => (x != -y);
 
@@ -93,13 +93,13 @@ namespace SharpAlgosTests
             }
         }
 
-        private static bool IsValidSolution<T>(IReadOnlyList<T> solution, Func<T,T,bool> AreValidAtSameTime)
+        private static bool IsValidSolution<T>(IReadOnlyList<T> solution, Func<T,T,bool> areValidAtSameTime)
         {
             for (int firstClause = 0; firstClause < solution.Count; ++firstClause)
             {
                 for (int secondClause = firstClause + 1; secondClause < solution.Count; ++secondClause)
                 {
-                    if (!AreValidAtSameTime(solution[firstClause], solution[secondClause]))
+                    if (!areValidAtSameTime(solution[firstClause], solution[secondClause]))
                     {
                         return false;
                     }
@@ -182,16 +182,16 @@ namespace SharpAlgosTests
             g.Add("H", "G", 1);
             TestStronglyConnectedComponents(new[] { "ABE", "FG", "CDH" }, g.ExtractStronglyConnectedComponents());
         }
-        private void TestStronglyConnectedComponents(string[] expectedSCC, List<List<string>> observedSCC)
+        private void TestStronglyConnectedComponents(string[] expectedScc, List<List<string>> observedScc)
         {
             var observed = new List<string>();
-            foreach (var l in observedSCC)
+            foreach (var l in observedScc)
             {
                 l.Sort();
                 observed.Add(string.Join("", l.ToArray()));
             }
             observed.Sort();
-            var expected = new List<string>(expectedSCC);
+            var expected = new List<string>(expectedScc);
             expected.Sort();
 
             Assert.AreEqual(expected.Count, observed.Count);
@@ -408,11 +408,12 @@ namespace SharpAlgosTests
             }
         }
 
-        public static string ToStringNormalizedCycle(List<string> cycle)
+        private static string ToStringNormalizedCycle(List<string> cycle)
         {
             return string.Join("", NormalizeCycle(cycle));
         }
-        public static string ToStringNormalizedCycle(List<int> cycle)
+
+        private static string ToStringNormalizedCycle(List<int> cycle)
         {
             return ToStringNormalizedCycle(cycle.Select(x=>x.ToString()).ToList());
         }
@@ -440,7 +441,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(10.0, minimumMean, 1e-9);
             minimumMean = g.CycleWithMinimumAverageWeight().Item2;
             Assert.AreEqual(10.0, minimumMean, 1e-9);
-
 
             g = new Graph<string>(true);
             g.Add("v1","v3",10);
@@ -470,7 +470,6 @@ namespace SharpAlgosTests
             //Assert.AreEqual("abs", ToStringNormalizedCycle(res.Item1));
             Assert.AreEqual(1.0, res.Item2, 1e-9);
         }
-
 
         [Test]
         public void TestExtractNegativeCycleIfAny()
@@ -579,7 +578,7 @@ namespace SharpAlgosTests
 
 
         [Test]
-        public void TestTravellingSalesmanProblem()
+        public void TestTravelingSalesmanProblem()
         {
             var g = new Graph<string>(true);
             g.Add("0", "1", 1001);
@@ -605,32 +604,17 @@ namespace SharpAlgosTests
 
             observed = g.TravellingSalesmanProblem("0");
             Assert.IsTrue(observed.SequenceEqual(new[] { "0", "2", "3", "1", "0" }));
-
-
         }
 
         [Test]
-        public void TestMinimumSpaningTree()
+        public void TestMinimumSpanningTree()
         {
             var g = new Graph<string>(false);
             g.Add("0", "1", 1);
             g.Add("1", "2", 1);
             g.Add("2", "0", 1000);
-            var expectedMSTree = new[] { "0", "1", "1", "2" };
-            TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMSTree);
-
-            //g = new Graph<string>(true);
-            //g.Add("0", "1", 1);
-            //g.Add("1", "2", 1);
-            //g.Add("2", "0", 1000);
-            //expectedMSTree = new[] { "0", "1", "1", "2" };
-            //TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMSTree);
-
-            //g = new Graph<string>();
-            //g.Add("0", "1", 1000);
-            //g.Add("2", "3", 1);
-            //expectedMSTree = new[] {"0", "1"};
-            //TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMSTree);
+            var expectedMsTree = new[] { "0", "1", "1", "2" };
+            TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMsTree);
 
             g = new Graph<string>(false);
             g.Add("1", "2", 57);
@@ -639,8 +623,8 @@ namespace SharpAlgosTests
             g.Add("2", "4", 1);
             g.Add("3", "4", 78);
             g.Add("3", "5", 200);
-            expectedMSTree = new[] { "1", "2", "2", "4", "3", "4", "3", "5" };
-            TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMSTree);
+            expectedMsTree = new[] { "1", "2", "2", "4", "3", "4", "3", "5" };
+            TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMsTree);
 
             g = new Graph<string>(false);
             g.Add("4", "5", 35);
@@ -659,28 +643,12 @@ namespace SharpAlgosTests
             g.Add("3", "6", 52);
             g.Add("6", "0", 58);
             g.Add("6", "4", 93);
-            expectedMSTree = new[] { "1", "7", "0", "2", "2", "3", "4", "5", "5", "7", "6", "2", "0", "7" };
-            TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMSTree);
-
-
-
-            //g = new Graph<string>(false);
-            //g.Add("A", "B", 1);
-            //g.Add("A", "D", 4);
-            //g.Add("A", "E", 3);
-            //g.Add("B", "E", 2);
-            //g.Add("B", "D", 4);
-            //g.Add("C", "E", 4);
-            //g.Add("C", "F", 5);
-            //g.Add("D", "E", 4);
-            //g.Add("E", "F", 7);
-            //expectedMSTree = new[] {"A", "B", "B", "E", "E", "D", "E", "C", "C", "F"};
-            //TestConnection(g.MinimumSpanningTree(), expectedMSTree);
-
+            expectedMsTree = new[] { "1", "7", "0", "2", "2", "3", "4", "5", "5", "7", "6", "2", "0", "7" };
+            TestConnectionInUndirectedGraph(g.MinimumSpanningTree(), expectedMsTree);
         }
 
         [Test]
-        public void TestVerticeCount()
+        public void TestVerticesCount()
         {
             foreach (var isDirected in new[] {true, false})
             {
@@ -688,7 +656,7 @@ namespace SharpAlgosTests
                 g.Add(0, 1, 1);
                 g.Add(1, 2, 12);
                 g.Add(3, 4, 34);
-                Assert.AreEqual(5, g.VerticeCount);
+                Assert.AreEqual(5, g.VerticesCount);
             }
         }
 
@@ -721,37 +689,8 @@ namespace SharpAlgosTests
             }
         }
 
-
-
-        /*
-        [Test]
-        public void TestLongestPathInConnectedGraph_BFS_speed()
-        {
-            var rand = new Random(0);
-            var g = CreateRandomUndirectedTree(50000, 1, 1, rand);
-
-            var sp = new Stopwatch();
-            sp.Start();
-            for (int test = 0; test < 50; ++test)
-            {
-                //var s1 = g.AllReachable_ByDepth_BFS(rand.Next(0,g.Vertices.Count).ToString());
-                var s1 = g.LongestPathInConnectedGraph_DFS();
-                //var s1 = g.AllReachable_ByDepth_BFS_V2(rand.Next(0, g.Vertices.Count).ToString());
-                Console.Write(s1.Count+" ");
-            }
-            sp.Stop();
-            Console.WriteLine(sp.Elapsed.TotalSeconds);
-        }*/
-
         private static Graph<int> SampleTree1()
         {
-            /*
-          0
-      1      2     
-   11   12
-      121 122
-     1211
-            */
             var g = new Graph<int>(false);
             int cost = 1;
             g.Add(0, 1, cost);
@@ -776,7 +715,6 @@ namespace SharpAlgosTests
 
             return g;
         }
-
 
         [Test]
         public void Test_BestPath_in_TREE()
@@ -839,7 +777,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(5, reachable.Count);
         }
 
-
         [Test]
         public void TestLongestPathInConnectedGraph_DFS()
         {
@@ -883,24 +820,6 @@ namespace SharpAlgosTests
             }
             Assert.AreEqual(7, g.LongestPathInNotConnectedGraph_DFS().Count);
         }
-
-
-        [Test]
-        public void TestLoadMaze()
-        {
-            /*
-            var maze = Utils.ToIntMatrix(new List<string> {"1 1 1 1 0", "1 0 1 1 1", "1 1 1 1 0", "1 1 1 1 1"});
-            var g = Graph<Point>.LoadMaze(maze);
-            var result = g.BestPathBreadthFirstSearch(new Point(0, 0), new Point(maze.Length-1, maze[0].Length-1));
-            Assert.AreEqual(8, result.Count);
-
-            maze = Utils.ToIntMatrix(new List<string> { "1 0 1 1 0", "0 0 1 1 1", "1 1 1 1 0", "1 1 1 1 1" });
-            g = Graph<Point>.LoadMaze(maze);
-            result = g.BestPathBreadthFirstSearch(new Point(0, 0), new Point(maze.Length - 1, maze[0].Length - 1));
-            Assert.AreEqual(null, result); */
-        }
-
-
 
         [Test]
         public void BestPathFromStart_DFS()
@@ -962,15 +881,10 @@ namespace SharpAlgosTests
             g.Add("3", "4", 11);
             g.Add("4", "5", 6);
             g.Add("5", "6", 9);
-
-
             var result = g.ShortestPath_Dijkstra("1", "5");
             Assert.IsTrue(result.SequenceEqual(new[] { "1", "3", "6", "5" }));
-
             result = g.ShortestPath_Dijkstra("6", "1");
             Assert.IsTrue(result.SequenceEqual(new[] { "6", "3", "1" }));
-
-
             g.Add("7", "8", 9);
             result = g.ShortestPath_Dijkstra("6", "7");
             Assert.AreEqual(null, result);
@@ -1145,9 +1059,6 @@ namespace SharpAlgosTests
             return g;
         }
 
-
-
-
         private static Graph<string> GraphFourVertices()
         {
             /*
@@ -1245,9 +1156,8 @@ namespace SharpAlgosTests
             return g;
         }
 
-
         [Test]
-        public void TestMaximumFlowUsingEdmongKarp()
+        public void TestMaximumFlowUsingEdmondsKarp()
         {
             var g = GraphTwoVertices();
             var maxFlow = g.MaximumFlowUsingEdmondsKarp("A", "B", out _);
@@ -1270,9 +1180,8 @@ namespace SharpAlgosTests
             Assert.AreEqual(15, maxFlow, 1e-6);
         }
 
-
         [Test]
-        public void TestMinCutUsingEdmondKarp()
+        public void TestMinCutUsingEdmondsKarp()
         {
             var g = GraphTwoVertices();
             List<KeyValuePair<string, string>> deletedEdges;
@@ -1355,7 +1264,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(0, minimumCostOfEdgesToDeleteToRemovePathFromSourceToDestination, 1e-6);
             Assert.AreEqual(0, deletedEdges.Count);
         }
-
 
         [Test]
         public void Test_Maximize_SumCost_ForPerfectMatching_InBipartiteGraph()
@@ -1459,7 +1367,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(null, result);
         }
 
-
         [Test]
         public void TestBestPathFromStartToEnd_DFS()
         {
@@ -1518,111 +1425,21 @@ namespace SharpAlgosTests
             Assert.IsTrue(result.SequenceEqual(new[] { "1" }));
         }
 
-        private static Graph<string> CreateRandomUndirectedTree(int nbVertices, int minCost, int maxCost, Random rand)
-        {
-            var g = new Graph<string>(false);
-            for (int end = 1; end < nbVertices; ++end)
-            {
-                int start = rand.Next(0, end);
-                int cost = rand.Next(minCost, maxCost+1);
-                g.Add(start.ToString(), end.ToString(), cost);
-            }
-            return g;
-        }
-
-        public static Graph<int> CreateRandomGraph(int nbVertices, int nbEdgesByVertex, bool isDirectedGraph, bool isConnectedGraph, int minCost, int maxCost)
-        {
-            var rand = new Random(0);
-            var g = new Graph<int>(isDirectedGraph);
-            var allVertices = Enumerable.Range(0, nbVertices).ToList();
-            foreach (var v in allVertices)
-            {
-                g.AddVertex(v);
-            }
-
-            foreach (int i in allVertices)
-            {
-                var allNeighbours = GetFromRandom(allVertices.Count, allVertices, rand);
-
-                if ((i > 0) && isConnectedGraph)
-                {
-                    allNeighbours = GetFromRandom(i, allVertices.GetRange(0, i), rand);
-                }
-
-
-                int nbEdgedsAdded = 0;
-                for (int j = 0; j < allNeighbours.Count; ++j)
-                {
-                    if (nbEdgedsAdded >= nbEdgesByVertex)
-                    {
-                        break;
-                    }
-
-                    if (i == j)
-                    {
-                        continue;
-                    }
-
-                    if (AreNeighbours(g, i, j))
-                    {
-                        continue;
-                    }
-
-                    int cost = rand.Next(minCost, maxCost+1);
-                    g.Add(i, j, cost);
-                    ++nbEdgedsAdded;
-                }
-            }
-
-            if (isConnectedGraph)
-            {
-                var forrests = g.AllForrests();
-                for (int i = 1; i < forrests.Count; ++i)
-                {
-                    var from = GetFromRandom(1, forrests[i - 1], rand)[0];
-                    var to = GetFromRandom(1, forrests[i], rand)[0];
-                    int cost = rand.Next(minCost, maxCost);
-                    g.Add(from, to, cost);
-                }
-            }
-
-            return g;
-        }
-
-        public static List<T> GetFromRandom<T>(int nbToRetrieve, IEnumerable<T> data, Random rand)
-        {
-            var dataList = new List<T>(data);
-            if (nbToRetrieve >= dataList.Count)
-            {
-                return dataList;
-            }
-
-            for (var i = 0; i < nbToRetrieve; ++i)
-            {
-                Utils.Swap(dataList, i, rand.Next(i, dataList.Count - 1));
-            }
-
-            return dataList.GetRange(0, nbToRetrieve);
-        }
-
-
-
         private static void TestConnectionInUndirectedGraph<T>(Graph<T> g, T[] connections)
         {
             Assert.AreEqual(0, connections.Length % 2);
             Assert.AreEqual(connections.Length / 2, g.EdgeCount);
             for (int i = 0; i < connections.Length; i += 2)
             {
-                Assert.IsTrue(AreNeighbours(g, connections[i], connections[i + 1]),
-                    "should be neighbours:" + connections[i] + " => " + connections[i + 1]);
+                Assert.IsTrue(AreNeighbors(g, connections[i], connections[i + 1]),
+                    "should be neighbors:" + connections[i] + " => " + connections[i + 1]);
             }
         }
 
-        public static bool AreNeighbours<T>(Graph<T> g, T a, T b)
+        private static bool AreNeighbors<T>(Graph<T> g, T a, T b)
         {
             return g.HasEdge(a, b) || g.HasEdge(b, a);
         }
-
 
         private static string TestDataDirectory => Path.Combine(ExecutablePath, "../../Data");
         private static string ExecutablePath => new Uri(Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase) ?? "").LocalPath;

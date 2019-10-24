@@ -90,9 +90,7 @@ namespace SharpAlgos
                         heights[y] = 0;
                     }
                 }
-                int startIndex;
-                int endIndex;
-                maxArea = Math.Max(maxArea, LargestRectangleArea(heights, out startIndex, out endIndex));
+                maxArea = Math.Max(maxArea, LargestRectangleArea(heights, out _, out _));
             }
             return maxArea;
         }
@@ -101,7 +99,7 @@ namespace SharpAlgos
         //so the area of the square is 'the return value' * 'the return value'
         public static int MaximalSquareWidth(bool[,] maze)
         {
-            int maxixmalWidth = 0;
+            int maximalWidth = 0;
             var count = new int[maze.GetLength(0), maze.GetLength(1)]; //width of the biggest rectangle ending (bottom right) at (row,col)
             for (var row = 0; row < maze.GetLength(0); ++row)
                 for (var col = 0; col < maze.GetLength(1); ++col)
@@ -111,9 +109,9 @@ namespace SharpAlgos
                         continue;
                     }
                     count[row, col] = 1 + new[] { Default(count, row, col - 1, 0), Default(count, row - 1, col, 0), Default(count, row - 1, col - 1, 0) }.Min();
-                    maxixmalWidth = Math.Max(maxixmalWidth, count[row, col]);
+                    maximalWidth = Math.Max(maximalWidth, count[row, col]);
                 }
-            return maxixmalWidth;
+            return maximalWidth;
         }
 
 

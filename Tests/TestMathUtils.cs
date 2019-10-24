@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SharpAlgos;
 using NUnit.Framework;
 
@@ -21,9 +18,6 @@ namespace SharpAlgosTests
                 Assert.AreEqual(Utils.Factorial(i) % modulo, result[i]);
             }
         }
-
-
-
 
         [Test]
         public void TestFactorialsModularMultiplicativeInverse()
@@ -88,9 +82,9 @@ namespace SharpAlgosTests
         [TestCase(7, 7, 21)]
         [TestCase(1, 17, (int)(1e9 + 7))]
         [TestCase(2, 124578, 57848)]
-        public void TestPGCD(int expectedResult, int a, int b)
+        public void TestGreatestCommonDivisor(int expectedResult, int a, int b)
         {
-            Assert.AreEqual(expectedResult, Utils.PGCD(a, b));
+            Assert.AreEqual(expectedResult, Utils.GreatestCommonDivisor(a, b));
         }
 
 
@@ -119,7 +113,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(expected, Utils.Combination(n, p));
         }
 
-
         [TestCase(100, 2, 1009)]
         [TestCase(15, 5, 17)]
         [TestCase(13, 7, 17)]
@@ -134,12 +127,11 @@ namespace SharpAlgosTests
         {
             var expected = Utils.Combination(n, p) % primeModulo;
             Assert.AreEqual(expected, Utils.Combination_with_PrimeModulo(n, p, primeModulo));
-            var factorials_with_PrimeModulo_up_to_n = Utils.FactorialsModulo(n, primeModulo);
-            var factorialsModularMultiplicativeInverse_up_to_n = Utils.FactorialsModularMultiplicativeInverse(factorials_with_PrimeModulo_up_to_n, primeModulo);
-            Assert.AreEqual(expected, Utils.Combination_with_PrimeModulo(n, p, primeModulo, factorials_with_PrimeModulo_up_to_n, factorialsModularMultiplicativeInverse_up_to_n));
+            var factorialsWithPrimeModuloUpToN = Utils.FactorialsModulo(n, primeModulo);
+            var factorialsModularMultiplicativeInverseUpToN = Utils.FactorialsModularMultiplicativeInverse(factorialsWithPrimeModuloUpToN, primeModulo);
+            Assert.AreEqual(expected, Utils.Combination_with_PrimeModulo(n, p, primeModulo, factorialsWithPrimeModuloUpToN, factorialsModularMultiplicativeInverseUpToN));
         }
 
-      
         [Test]
         public void TestPrimeDetection()
         {
@@ -149,7 +141,5 @@ namespace SharpAlgosTests
                 Assert.AreEqual(Utils.IsPrime(i), primes[i]);
             }
         }
-
-
     }
 }

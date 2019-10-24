@@ -12,8 +12,8 @@ namespace SharpAlgos
     {
         private char C { get; set; }
         private bool IsLeaf { get; set; }
-        private readonly TernarySearchTreeNode[] Children = new TernarySearchTreeNode[3];
-        //Children[0]: Left / Children[1]: Center / Children[2]: Right
+        private readonly TernarySearchTreeNode[] _children = new TernarySearchTreeNode[3];
+        //_children[0]: Left / _children[1]: Center / _children[2]: Right
 
         public TernarySearchTreeNode(char c = (char)0) { C = c; }
         public void Add(string key)
@@ -30,11 +30,11 @@ namespace SharpAlgos
                 {
                     break;
                 }
-                if (current.Children[childIndex] == null)
+                if (current._children[childIndex] == null)
                 {
-                    current.Children[childIndex] = new TernarySearchTreeNode(key[index]);
+                    current._children[childIndex] = new TernarySearchTreeNode(key[index]);
                 }
-                current = current.Children[childIndex];
+                current = current._children[childIndex];
             }
             current.IsLeaf = true;
         }
@@ -44,8 +44,8 @@ namespace SharpAlgos
             return node != null && node.IsLeaf;
         }
         public void Delete(string key) { DeleteHelper(key, 0); }
-        public int NodeCount => 1 + Children.Sum(x => x == null ? 0 : x.NodeCount);
-        public int WordCount => (IsLeaf ? 1 : 0) + Children.Sum(x => x == null ? 0 : x.WordCount);
+        public int NodeCount => 1 + _children.Sum(x => x == null ? 0 : x.NodeCount);
+        public int WordCount => (IsLeaf ? 1 : 0) + _children.Sum(x => x == null ? 0 : x.WordCount);
 
         //return true if we can safely delete the node (it has no interesting info)
         private bool DeleteHelper(string key, int index)
@@ -57,12 +57,12 @@ namespace SharpAlgos
             }
             else // Recursive case
             {
-                if (Children[childIndex].DeleteHelper(key, index))
+                if (_children[childIndex].DeleteHelper(key, index))
                 {
-                    Children[childIndex] = null;
+                    _children[childIndex] = null;
                 }
             }
-            return !IsLeaf && Children.All(x => x == null);
+            return !IsLeaf && _children.All(x => x == null);
         }
         private TernarySearchTreeNode GetNode(string key)
         {
@@ -75,7 +75,7 @@ namespace SharpAlgos
                 {
                     return current; //found
                 }
-                current = current.Children[childIndex];
+                current = current._children[childIndex];
             }
             return null; //not found
         }
@@ -89,31 +89,31 @@ namespace SharpAlgos
     /// </summary>
     public class TrieNode
     {
-        private const int FIRST_CHAR = 0; private const int LAST_CHAR = 255;
-        //private const int FIRST_CHAR = 'a';private const int LAST_CHAR = 'z';
-        private TrieNode[] Children;
+        private const int FirstChar = 0; private const int LastChar = 255;
+        //private const int FirstChar = 'a';private const int LastChar = 'z';
+        private TrieNode[] _children;
         /// <summary>
         /// true if a word is ending at this node
         /// </summary>
         private bool IsLeaf { get; set; }
 
-        private int GetChildrenIndex(int c) { return c - FIRST_CHAR; }
-        private TrieNode GetChildren(int c) { return Children?[GetChildrenIndex(c)]; }
+        private int GetChildrenIndex(int c) { return c - FirstChar; }
+        private TrieNode GetChildren(int c) { return _children?[GetChildrenIndex(c)]; }
         public void Add(string word)
         {
             var current = this;
             foreach (var c in word)
             {
                 var idx = GetChildrenIndex(c);
-                if (current.Children == null)
+                if (current._children == null)
                 {
-                    current.Children = new TrieNode[LAST_CHAR-FIRST_CHAR+1];
+                    current._children = new TrieNode[LastChar-FirstChar+1];
                 }
-                if (current.Children[idx] == null)
+                if (current._children[idx] == null)
                 {
-                    current.Children[idx] = new TrieNode();
+                    current._children[idx] = new TrieNode();
                 }
-                current = current.Children[idx];
+                current = current._children[idx];
             }
             current.IsLeaf = true;
         }
@@ -122,8 +122,8 @@ namespace SharpAlgos
             var node = GetNode(word);
             return node != null && node.IsLeaf;
         }
-        public int NodeCount => 1 + (Children?.Sum(x => x?.NodeCount ?? 0) ?? 0);
-        public int WordCount => (IsLeaf ? 1 : 0) + (Children?.Sum(x => x?.WordCount ?? 0) ?? 0);
+        public int NodeCount => 1 + (_children?.Sum(x => x?.NodeCount ?? 0) ?? 0);
+        public int WordCount => (IsLeaf ? 1 : 0) + (_children?.Sum(x => x?.WordCount ?? 0) ?? 0);
         public void Delete(string word) { DeleteHelper(word, 0); }
         //return true if we can safely delete the node (it has no interesting info)
         private bool DeleteHelper(string word, int depth)
@@ -135,21 +135,21 @@ namespace SharpAlgos
             else // Recursive case
             {
                 var index = GetChildrenIndex(word[depth]);
-                if (Children[index].DeleteHelper(word, depth + 1))
+                if (_children[index].DeleteHelper(word, depth + 1))
                 {
-                    Children[index] = null;
+                    _children[index] = null;
                 }
             }
-            return !IsLeaf && (Children == null || Children.All(x => x == null));
+            return !IsLeaf && (_children == null || _children.All(x => x == null));
         }
 
         public string FirstWord()
         {
-            if (IsLeaf || Children == null)
+            if (IsLeaf || _children == null)
             {
                 return "";
             }
-            for (int c = FIRST_CHAR; c <= LAST_CHAR; ++c)
+            for (int c = FirstChar; c <= LastChar; ++c)
             {
                 if (GetChildren(c) != null)
                 {
@@ -209,7 +209,7 @@ namespace SharpAlgos
             {
                 return true;
             }
-            if (T.Children == null)
+            if (T._children == null)
             {
                 return false;
             }
@@ -223,7 +223,7 @@ namespace SharpAlgos
                 }
                 currentSolution.RemoveAt(currentSolution.Count-1);
             }
-            for (int c = FIRST_CHAR; c <= LAST_CHAR; ++c)
+            for (int c = FirstChar; c <= LastChar; ++c)
             {
                 //we insert at index 'i' the character 'c' (insertion)
                 currentSolution.Add((char)c);
@@ -260,7 +260,7 @@ namespace SharpAlgos
             var current = this;
             foreach (var c in wordPrefix)
             {
-                var child = current.Children?[c - FIRST_CHAR];
+                var child = current._children?[c - FirstChar];
                 if (child == null)
                 {
                     return null;
@@ -289,7 +289,7 @@ namespace SharpAlgos
             IDictionary<char, char> encoding,
             IDictionary<string, int> weights)
         {
-            var prefix_to_MaxHeight = new Dictionary<string, int>();
+            var prefixToMaxHeight = new Dictionary<string, int>();
             var result = new Dictionary<string, List<string>>();
 
             foreach (var wordAndWeight in weights)
@@ -300,9 +300,9 @@ namespace SharpAlgos
                 {
                     var prefix = word.Substring(0, l);
                     int currentWeight;
-                    if (!prefix_to_MaxHeight.TryGetValue(prefix, out currentWeight) || wordWeight>currentWeight)
+                    if (!prefixToMaxHeight.TryGetValue(prefix, out currentWeight) || wordWeight>currentWeight)
                     {
-                        prefix_to_MaxHeight[prefix] = wordWeight;
+                        prefixToMaxHeight[prefix] = wordWeight;
                         result[EncodeWord(prefix, encoding)] = new List<string> { word };
                     }
                     else if (currentWeight == wordWeight)

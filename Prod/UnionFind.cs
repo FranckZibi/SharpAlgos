@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 
 namespace SharpAlgos
 {
@@ -13,7 +14,8 @@ namespace SharpAlgos
         #endregion
 
         /// <summary>
-        /// join the set containing 'a' with the one containing 'b' in o(1) time. 
+        /// join the set containing 'a' with the one containing 'b'
+        /// Complexity: o(1)
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -45,8 +47,9 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// finds the root of the set containing 't' in o(1) time
+        /// finds the root of the set containing 't'
         /// (so it will be 't' itself if 't' is alone in the set)
+        /// Complexity: o(1)
         /// </summary>
         /// <param name="t">the item we want to extract the root</param>
         /// <returns>the root of 't'</returns>
@@ -68,6 +71,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// Add element 't' in the structure
+        /// Complexity: o(1)
         /// </summary>
         /// <param name="t">the element to add</param>
         /// <returns>true if the element was successfully added

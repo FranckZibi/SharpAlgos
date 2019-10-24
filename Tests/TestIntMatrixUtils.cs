@@ -59,7 +59,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(3, Utils.TrapRainWater3D(heighMap));
         }
 
-
         [Test]
         public void TestMaximumSubmatrixSum()
         {
@@ -76,8 +75,5 @@ namespace SharpAlgosTests
             Assert.AreEqual(35, Utils.MaximumSubmatrixSum(matrix, out coordinates));
             Assert.IsTrue(coordinates.SequenceEqual(new[] { 1, 1, 4, 3 }));
         }
-
-
-
     }
 }

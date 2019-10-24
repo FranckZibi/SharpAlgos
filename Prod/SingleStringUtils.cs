@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SharpAlgos
 {
     public static partial class Utils
     {
         #region Longest Palindromic Subsequence using LCS(word, word.Reverse())
-        //given a string, finds a smaller string that is the longest palindromic subsequence it contains in o (length(a) * length(a) ) time
+        /// <summary>
+        /// Given a string, finds a smaller string that is the longest palindromic subsequence it contains
+        /// Complexity: o( a.Length * a.Length )
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="a"></param>
+        /// <returns></returns>
         public static List<T> LongestPalindromicSubsequence<T>(List<T> a)
         {
             return LongestCommonSubsequence(a, Enumerable.Reverse(a).ToList());
@@ -23,7 +28,9 @@ namespace SharpAlgos
         #region Longest Palindrome
 
         /// <summary>
-        /// Find longest palindrome in string 's' in o(Length) time (+o(Length) memory) using Manacher algo
+        /// Find longest palindrome in string 's' (using Manacher algo)
+        /// Complexity:        o( a.Length )
+        /// Memory Complexity: o( a.Length )
         /// </summary>
         /// <param name="s">input string where we want to find the longest palindrome</param>
         /// <returns>
@@ -73,13 +80,14 @@ namespace SharpAlgos
                     d = i + p[i];
                 }
             }
-
             var longestPalindromeLength = p[maxIndex];
             return Tuple.Create(longestPalindromeLength, (maxIndex - 1 - longestPalindromeLength) / 2);
         }
 
         /// <summary>
-        /// Find longest palindrome in 's' in o (a.Length * Log(a.Length)  time
+        /// Find longest palindrome in 's' (using hash)
+        /// Complexity:        o( a.Length * Log(a.Length) )
+        /// Memory Complexity: o( a.Length )
         /// </summary>
         /// <returns>
         /// Item1: length od the maximum palindrome

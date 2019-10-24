@@ -71,9 +71,9 @@ namespace SharpAlgos
             }
 
             /// <summary>
-            /// return the number of intervals containing 'x' in o(log(n)) time
-            /// (+ o(n log(n) ) preparation time
-            /// (where 'n' is the total number of interval)
+            /// return the number of intervals containing 'x' in 
+            /// Complexity:     o(log(n))  (+ o(n log(n) ) preparation time)
+            ///                 (where 'n' is the total number of interval)
             /// </summary>
             /// <param name="x"></param>
             /// <returns>number of intervals containing x</returns>
@@ -111,7 +111,7 @@ namespace SharpAlgos
 
 
                 var left = new List<Tuple<int, int>>();
-                var C = new List<Tuple<int, int>>();
+                var c = new List<Tuple<int, int>>();
                 var right = new List<Tuple<int, int>>();
                 var center = intervals[intervals.Count / 2].Item1;
 
@@ -127,11 +127,11 @@ namespace SharpAlgos
                     }
                     else
                     {
-                        C.Add(i);
+                        c.Add(i);
                     }
                 }
 
-                return new IntervalTree(C, 
+                return new IntervalTree(c, 
                     endOfIntervalIsIncludedInInterval, 
                     center,
                     ValueOf(left, endOfIntervalIsIncludedInInterval, true),
@@ -180,7 +180,8 @@ namespace SharpAlgos
 
 
         /// <summary>
-        /// return the minimum point need to have at least one point in each interval in o(n) time
+        /// return the minimum point need to have at least one point in each interval
+        /// Complexity:     o( n )
         /// </summary>
         /// <param name="intervals"></param>
         /// <param>
@@ -189,7 +190,7 @@ namespace SharpAlgos
         /// <name>bothStartAndEndAreExcludedFromInterval</name>
         /// </param>
         /// <returns>
-        /// minimum list of point coordinates to have at leats one point in each interval
+        /// minimum list of point coordinates to have at least one point in each interval
         /// </returns>
         public static List<int> MinimumPointsToCoverAllIntervals(List<Tuple<int, int>> intervals)
         {
@@ -214,17 +215,18 @@ namespace SharpAlgos
         }
 
         /// <summary>
-            /// merge all intervals that intersect and return the new list of all intervals (with merged intervals) in o(n) time
-            /// </summary>
-            /// <param name="intervals"></param>
-            /// <param name="bothStartAndEndAreExcludedFromInterval">
-            /// true if open interval (where start and end of interval are not included in interval (ex: ]a,b[ )
-            /// false for closed or semi open interval : [a,b] or ]a,b] or [a;b[
-            /// </param>
-            /// <returns>
-            /// merged intervals
-            /// </returns>
-            public static List<Tuple<int, int>> IntervalsUnion(List<Tuple<int, int>> intervals, bool bothStartAndEndAreExcludedFromInterval = false)
+        /// merge all intervals that intersect and return the new list of all intervals (with merged intervals)
+        /// Complexity:     o( n )
+        /// </summary>
+        /// <param name="intervals"></param>
+        /// <param name="bothStartAndEndAreExcludedFromInterval">
+        /// true if open interval (where start and end of interval are not included in interval (ex: ]a,b[ )
+        /// false for closed or semi open interval : [a,b] or ]a,b] or [a;b[
+        /// </param>
+        /// <returns>
+        /// merged intervals
+        /// </returns>
+        public static List<Tuple<int, int>> IntervalsUnion(List<Tuple<int, int>> intervals, bool bothStartAndEndAreExcludedFromInterval = false)
         {
             var result  =new List<Tuple<int, int>>();
             var tmp = intervals.Select(x=> Tuple.Create(x.Item1, true)).ToList();

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-// ReSharper disable UnusedMember.Global
 
 namespace SharpAlgos
 {
@@ -58,11 +57,11 @@ namespace SharpAlgos
             return result;
         }
 
-        //compute the PGCD of 'a' & 'b' in o(?) time
-        public static int PGCD(int a, int b)
+        //compute the Greatest Common Divisor of 'a' & 'b'
+        public static int GreatestCommonDivisor(int a, int b)
         {
             var temp = a % b;
-            return temp == 0 ? b : PGCD(b, temp);
+            return temp == 0 ? b : GreatestCommonDivisor(b, temp);
         }
 
         // compute 'a^power%modulo' in o(log(power)) time
@@ -79,7 +78,7 @@ namespace SharpAlgos
 
         // compute ' (aNotMultipleOfPrimeModulo ^ power) % primeModulo' in o(log(min(power,primeModulo))) time
         //Only works if aNotMultipleOfPrimeModulo is not a multiple of primeModulo
-        //Uses Euler Thoerem who states that if a & m are coprime, then:
+        //Uses Euler Theorem who states that if a & m are co-prime, then:
         //  (a^power)%m = a^(power % EulerTotient(m)) % m
         //if m is prime, then EulerTotient(m) = m-1 and (if a is not a multiple of primeModulo) :
         //  (a^power)%primeModulo = a^(power % (primeModulo-1)) % primeModulo
@@ -91,7 +90,7 @@ namespace SharpAlgos
 
 
         //compute the multiplicative inverse of 'a' in o(log(modulo)) time
-        //it is the number X verifying: (a*X)%modulo = 1 and it only exists if 'a' & 'modulo' are coprimes (<=> PGCD(a, modulo) = 1 )
+        //it is the number X verifying: (a*X)%modulo = 1 and it only exists if 'a' & 'modulo' are co-primes (<=> GreatestCommonDivisor(a, modulo) = 1 )
         public static int ModularMultiplicativeInverse(int a, int modulo)
         {
             if (modulo == 1)
@@ -141,10 +140,10 @@ namespace SharpAlgos
 
         //compute C(n,p) % primeModulo in o(1) time
         //requirement: 'primeModulo is a prime > n
-        //needs a precomputation that takes o(n) time and o(n) memory (the 2 arrays in parameters):
+        //needs a pre computation that takes o(n) time and o(n) memory (the 2 arrays in parameters):
         //      var factorialsModulo_up_to_n = FactorialsModulo(n, primeModulo);
         //      var factorialsModularMultiplicativeInverse_up_to_n = FactorialsModularMultiplicativeInverse(factorialsModulo_up_to_n, primeModulo);
-        public static int Combination_with_PrimeModulo(int n, int p, int primeModulo, int[] factorialsModulo_up_to_n, int[] factorialsModularMultiplicativeInverse_up_to_n)
+        public static int Combination_with_PrimeModulo(int n, int p, int primeModulo, int[] factorialsModuloUpToN, int[] factorialsModularMultiplicativeInverseUpToN)
         {
             if (p == 0 || n == p)
             {
@@ -154,9 +153,9 @@ namespace SharpAlgos
             {
                 return 0;
             }
-            long result = factorialsModulo_up_to_n[n];
-            result = (result * factorialsModularMultiplicativeInverse_up_to_n[p]) % primeModulo;
-            result = (result * factorialsModularMultiplicativeInverse_up_to_n[n - p]) % primeModulo;
+            long result = factorialsModuloUpToN[n];
+            result = (result * factorialsModularMultiplicativeInverseUpToN[p]) % primeModulo;
+            result = (result * factorialsModularMultiplicativeInverseUpToN[n - p]) % primeModulo;
             return (int)result;
         }
 
@@ -174,7 +173,7 @@ namespace SharpAlgos
         }
 
 
-        //returns the multiplicative inverse of all factoriels between 0 and n (=alreadyComputedFactorielModulo.Length) in o(n) time and o(n) memory
+        //returns the multiplicative inverse of all factorials between 0 and n (=alreadyComputedFactorialModulo.Length) in o(n) time and o(n) memory
         //  (n! * multiplicativeInverse[n]) % primeModulo = 1
         //requirement: 'primeModulo' is a prime > n
         public static int[] FactorialsModularMultiplicativeInverse(int[] alreadyComputedFactorialModulo, int primeModulo)

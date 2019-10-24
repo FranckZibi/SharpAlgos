@@ -5,36 +5,37 @@ namespace SharpAlgos
 {
     public class PriorityQueue<T>
     {
-        private readonly bool isMinPriorityQueue;
-        private int count;
-        private readonly SortedDictionary<double, HashSet<T>> q = new SortedDictionary<double, HashSet<T>>();
+        private readonly bool _isMinPriorityQueue;
+        private int _count;
+        private readonly SortedDictionary<double, HashSet<T>> _q = new SortedDictionary<double, HashSet<T>>();
 
         public PriorityQueue(bool isMinPriorityQueue)
         {
-            this.isMinPriorityQueue = isMinPriorityQueue;
+            _isMinPriorityQueue = isMinPriorityQueue;
         }
-        public int Count {get {return count;}}
+        public int Count => _count;
+
         public void Enqueue(T t, double priority)
         {
-            if (!isMinPriorityQueue)
+            if (!_isMinPriorityQueue)
             {
                 priority = InvertPriority(priority);
             }
-            if (!q.ContainsKey(priority))
+            if (!_q.ContainsKey(priority))
             {
-                q.Add(priority, new HashSet<T>());
+                _q.Add(priority, new HashSet<T>());
             }
-            q[priority].Add(t);
-            ++count;
+            _q[priority].Add(t);
+            ++_count;
         }
         public void UpdatePriority(T t, double oldPriority, double newPriority)
         {
-            if (!isMinPriorityQueue)
+            if (!_isMinPriorityQueue)
             {
                 oldPriority = InvertPriority (oldPriority);
             }
-            q[oldPriority].Remove(t);
-            --count;
+            _q[oldPriority].Remove(t);
+            --_count;
             Enqueue(t, newPriority);
         }
         private static double InvertPriority(double priority)
@@ -51,13 +52,13 @@ namespace SharpAlgos
         }
         public T Dequeue()
         {
-            foreach (var e in q.Values)
+            foreach (var e in _q.Values)
             {
                 if (e.Count != 0)
                 {
                     var result = e.First();
                     e.Remove(result);
-                    --count;
+                    --_count;
                     return result;
                 }
             }

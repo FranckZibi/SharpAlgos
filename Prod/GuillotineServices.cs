@@ -12,10 +12,8 @@ namespace SharpAlgos
             int pizzaSize = pizzaWidth * pizzaHeight;
             int cacheLength = pizzaSize * pizzaSize;
             var cache = new int[cacheLength];
-            //int nbCpus = Environment.ProcessorCount; var splitted_X = MathServices.SplitData(pizzaWidth, nbCpus);
             for (int sliceSize = 1; sliceSize <= pizzaSize; ++sliceSize)
             {
-                //ThreadManager<int>.ComputeForAllDatas(splitted_X, x => ComputeScoreForAllSlicesOfSliceSize(x, pizzaWidth, pizzaHeight, scoreFunction, sliceSize, cache), nbCpus);
                 ComputeScoreForAllSlicesOfSliceSize(new[] { 0, pizzaWidth - 1 }, pizzaWidth, pizzaHeight, scoreFunction, sliceSize, cache);
                 if ((sliceSize%1000) == 1)
                 {
@@ -38,15 +36,15 @@ namespace SharpAlgos
             int x = id1 / pizzaHeight;
             int y = id1 % pizzaHeight;
             int id2 = sliceId / (pizzaHeight * pizzaWidth);
-            int x_end = id2 / pizzaHeight;
-            int y_end = id2 % pizzaHeight;
-            return new Rectangle(x, y, x_end - x + 1, y_end - y + 1);
+            int xEnd = id2 / pizzaHeight;
+            int yEnd = id2 % pizzaHeight;
+            return new Rectangle(x, y, xEnd - x + 1, yEnd - y + 1);
         }
 
         //we have already computed score for all slices of size < sliceSize
         //We will compute score for all slices of size exactly = 'sliceSize'
 	    // ReSharper disable once UnusedMethodReturnValue.Local
-        private static int ComputeScoreForAllSlicesOfSliceSize(int[] splitted_X, int pizzaWidth, int pizzaHeight, Func<int,int,int,int, int> scoreFunction, int sliceSize, int[] cache)
+        private static int ComputeScoreForAllSlicesOfSliceSize(int[] splittedX, int pizzaWidth, int pizzaHeight, Func<int,int,int,int, int> scoreFunction, int sliceSize, int[] cache)
         {
             var validWidths = new List<int>();
             for (int w = 1; w <= sliceSize; ++w)
@@ -58,7 +56,7 @@ namespace SharpAlgos
             }
 
             int bestScore = 0;
-            for (int x = splitted_X[0]; x <= splitted_X[1]; ++x)
+            for (int x = splittedX[0]; x <= splittedX[1]; ++x)
             {
                 int maxWidth = Math.Min(pizzaWidth - x, sliceSize);
                 foreach (var width in validWidths)
@@ -72,8 +70,7 @@ namespace SharpAlgos
                     {
                         Debug.Assert(width*height == sliceSize);
                         int scoreIfNoSubSplit = scoreFunction(x, y, width, height);
-                        int bestLeftIndex;int bestRightIndex;
-                        int scoreWithSubSplit = BestSubSplitScore(x, y, width, height, pizzaWidth, pizzaHeight, cache, out bestLeftIndex, out bestRightIndex);
+                        int scoreWithSubSplit = BestSubSplitScore(x, y, width, height, pizzaWidth, pizzaHeight, cache, out _, out _);
                         var score = Math.Max(scoreIfNoSubSplit, scoreWithSubSplit);
                         cache[ToSliceId(x, y, width, height, pizzaWidth, pizzaHeight)] = score;
                         bestScore = Math.Max(bestScore, score);

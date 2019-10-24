@@ -54,17 +54,6 @@ namespace SharpAlgos
                     Debug.Assert(Utils.IsValidCoordinate(target,rowNum, colNum));
                     int currentValue = current[rowNum,colNum];
                     Debug.Assert(currentValue >= 0);
-
-                    /*if (currentValue != 0) continue; //gris
-                    if (target[rowNum,colNum]) //target = paint
-                        ++N;
-                    else
-                        ++B;
-                    continue;*/
-
-
-
-
                     if (target[rowNum,colNum]) //target = paint
                     {
                         if (currentValue == 0)
@@ -137,9 +126,6 @@ namespace SharpAlgos
 
     }
 
-
-
-
     public static class ArtOptimal
     {
         public static KeyValuePair<double, Paint> ComputeBestPossibleScore(int row, int y, bool[,] target, int[,] current)
@@ -170,7 +156,7 @@ namespace SharpAlgos
             return new KeyValuePair<double, Paint>(currentMaxScore, paint);
         }
 
-        public static KeyValuePair<double, Paint> ChooseNextBestPaint(bool[,] target, int[,] current, int nbAllowedTries, Random rand, HashSet<Point> alreadyProcessedPoints)
+        private static KeyValuePair<double, Paint> ChooseNextBestPaint(bool[,] target, int[,] current, int nbAllowedTries, Random rand, HashSet<Point> alreadyProcessedPoints)
         {
             var bestPointScore = new KeyValuePair<double, Paint>(0.0, null);
 
@@ -185,23 +171,11 @@ namespace SharpAlgos
                     points.Add(point);
                 }
             }
-            /*
-            var pointScores = ThreadManager<KeyValuePair<double, Paint>>.ComputeForAllDatas(points, p => ComputeBestPossibleScore(p.X, p.Y, target, current));
-            var bestPointScore = pointScores[0];
-            foreach (var pointScore in pointScores)
-                if (pointScore.Key > bestPointScore.Key)
-                    bestPointScore = pointScore;
-            return bestPointScore;
-            */
-
-            //Parallel.For
-
             foreach (var p in points)
             {
                 var pointScore = ComputeBestPossibleScore(p.X, p.Y, target, current);
                 if (pointScore.Key > bestPointScore.Key)
                 {
-                    //bestPointScore = pointScore;
                     bestPointScore = ChooseNextBestPaint(target, current, nbAllowedTries, p.X, p.Y, pointScore, rand, alreadyProcessedPoints);
                 }
             }
@@ -289,8 +263,6 @@ namespace SharpAlgos
             System.IO.File.WriteAllText(filePath + "." + DateTime.Now.Ticks, string.Join(Environment.NewLine, actions.Select(x => x.ToString()).ToArray()));
         }
 
-
-
         public static bool[,] LoadDrawing(string filePath)
         {
             var lines = System.IO.File.ReadAllLines(filePath);
@@ -341,9 +313,5 @@ namespace SharpAlgos
                 }
             return missingActions;
         }
-
-
-
-
     }
 }

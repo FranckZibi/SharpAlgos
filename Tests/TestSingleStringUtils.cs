@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpAlgos;
@@ -33,7 +32,6 @@ namespace SharpAlgosTests
             Assert.AreEqual(expected, new string(Utils.LongestRepeatedSubsequence(a.ToList()).ToArray()));
         }
 
-
         [Test]
         public void TestLongestPalindrome()
         {
@@ -56,7 +54,6 @@ namespace SharpAlgosTests
             }
         }
 
-
         private static string RandomString(int length, Random rand, int nbDistinctCharacters)
         {
             var sb = new StringBuilder();
@@ -66,7 +63,6 @@ namespace SharpAlgosTests
             }
             return sb.ToString();
         }
-
 
         private static bool SlowIsPalindrome(int startIndex, int length, string s)
         {
@@ -80,6 +76,7 @@ namespace SharpAlgosTests
             }
             return true;
         }
+
         private static Tuple<int,int> MaxPalindrome(string s)
         {
             for (int length = s.Length; length>=1;--length)
@@ -94,8 +91,5 @@ namespace SharpAlgosTests
             }
             return Tuple.Create(0,0);
         }
-
-
-
     }
 }

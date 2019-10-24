@@ -1,15 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SharpAlgos
 {
     public static partial class Utils
     {
-        //returns the minimum number of coins (among 'coinsWithDuplicates') to make exactly amount 'amount'  in o(amount*coins.Length) time
-        //returns -1 if there is no way to achieve 'amount'
-        //'coinsWithDuplicates' is the list of available coins, and may include duplicates
-        public static int MinimumCoinChangeMakingWithDuplicateCoins(int[] coinsWithDuplicates, int amount)
+        /// <summary>
+        /// Compute the minimum number of coins (among 'coinsWithDuplicates') to make exactly amount 'amount'
+        /// Complexity:         o( amount * coinsWithDuplicates.Length)
+        /// Memory Complexity:  o( amount * coinsWithDuplicates.Length)
+        /// </summary>
+        /// <param name="amount">amount to achieve</param>
+        /// <param name="coinsWithDuplicates">list of available coins (some of them may have the same face value (duplicates)</param>
+        /// <returns> minimum number of coins (among 'coinsWithDuplicates') to make exactly amount 'amount'
+        /// -1 if there is no way to achieve 'amount'
+        /// </returns>
+        public static int MinimumCoinChangeMakingWithDuplicateCoins(int amount, int[] coinsWithDuplicates)
         {
             return MinimumCoinChangeMakingWithDuplicateCoins_Helper(coinsWithDuplicates, coinsWithDuplicates.Length, amount, new int?[1 + amount, 1 + coinsWithDuplicates.Length]);
         }
@@ -42,54 +48,25 @@ namespace SharpAlgos
             return result;
         }
 
-
-        //return the minimum number of coins needed to achieve exactly 'amount' given an infinite number of coins of face 'coins'
-        // (return -1 if it is not possible)
-        public static int CoinChange(int[] coins, int amount)
+        /// <summary>
+        /// Solve minimum Coin change-making problem to achieve exactly 'amount' given an infinite number of coins of face 'coins'
+        /// Complexity:         o( amount * coins.Length)
+        /// Memory Complexity:  o( amount)
+        /// </summary>
+        /// <param name="amount">the amount to achieve</param>
+        /// <param name="coins">list of coin face values</param>
+        /// <returns>
+        /// minimum number of coins needed to achieve exactly 'amount'
+        /// -1 if it is not possible
+        /// </returns>
+        public static int MinimumCoinChangeMaking(int amount, int[] coins)
         {
-            return CoinChange_Helper(coins, amount, new Dictionary<int, int>());
-        }
-        public static int CoinChange_Helper(int[] coins, int remainingAmount, Dictionary<int, int> cache)
-        {
-            if (remainingAmount == 0)
-            {
-                return 0;
-            }
-            if (remainingAmount < 0)
-            {
-                return -1;
-            }
-
-            if (cache.ContainsKey(remainingAmount))
-            {
-                return cache[remainingAmount];
-            }
-
-            int currentMin = int.MaxValue;
-            foreach (var face in coins)
-            {
-                int result = CoinChange_Helper(coins, remainingAmount - face, cache);
-                if (result != -1)
-                {
-                    currentMin = Math.Min(currentMin, 1 + result);
-                }
-            }
-            if (currentMin == int.MaxValue)
-            {
-                currentMin = -1;
-            }
-            cache[remainingAmount] = currentMin;
-            return currentMin;
-        }
-        //Solve minimum Coin change-making problem (unlimited supply of coins) in o(target*values.Length) time
-        public static int MinimumCoinChangeMaking(int target, int[] values)
-        {
-            Array.Sort(values);
-            int[] minimumCoins = new int[1 + target];
+            Array.Sort(coins);
+            int[] minimumCoins = new int[1 + amount];
             for (int targetValue = 1; targetValue < minimumCoins.Length; ++targetValue)
             {
                 minimumCoins[targetValue] = int.MaxValue;
-                foreach (var face in values)
+                foreach (var face in coins)
                 {
                     if (face > targetValue)
                     {
@@ -101,14 +78,22 @@ namespace SharpAlgos
                     }
                 }
             }
-            if (minimumCoins[target] == int.MaxValue)
+            if (minimumCoins[amount] == int.MaxValue)
             {
                 return -1; // not possible
             }
-            return minimumCoins[target];
+            return minimumCoins[amount];
         }
-        //count the number of ways to achieve 'amount' given an infinite number of coins of face 'coins'
-        //for instance, there are 3 ways to achieve 4 cents with coins of 1cent and 2cents (2*2cents, 4*1cent, 2*1cent+2cent)
+
+        /// <summary>
+        /// Count the number of ways to achieve 'amount' given an infinite number of coins of face 'coins'
+        /// for instance, there are 3 ways to achieve 4 cents with coins of 1cent and 2cents (2*2cents, 4*1cent, 2*1cent+2cent)
+        /// Complexity:         o( amount * coins.Length)
+        /// Memory Complexity:  o( amount )
+        /// </summary>
+        /// <param name="amount">the amount to achieve</param>
+        /// <param name="coins">list of coin face values</param>
+        /// <returns>the number of ways to achieve the amount 'amount'</returns>
         public static int CountWaysToAchieveAmount(int amount, int[] coins)
         {
             var numberOfWays = new int[1 + amount];
@@ -130,29 +115,5 @@ namespace SharpAlgos
             }
             return numberOfWays.Last();
         }
-
-        public static int TotalNumberOfWaysToGetTheDenominationOfCoins(int target, int[] values)
-        {
-            var hashValues = new HashSet<int>(values);
-            Array.Sort(values);
-            int[] numberOfWays = new int[1 + target];
-            numberOfWays[0] = 1;
-            for (int targetValue = 1; targetValue < numberOfWays.Length; ++targetValue)
-            {
-                for (var leftVal = 1; leftVal < targetValue; leftVal++)
-                {
-                    numberOfWays[targetValue] = Math.Max(numberOfWays[targetValue], numberOfWays[leftVal] * numberOfWays[targetValue - leftVal]);
-                }
-                if (hashValues.Contains(targetValue))
-                {
-                    ++numberOfWays[targetValue];
-                }
-            }
-            return numberOfWays[target];
-        }
-
-
-     
-
     }
 }
