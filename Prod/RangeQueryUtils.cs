@@ -30,17 +30,22 @@ namespace SharpAlgos
         private readonly int[] _log2;
         #endregion
 
+
         /// <summary>
         /// Return a SparseTable that will be used to compute min in interval
+        /// </summary>
         public static SparseTable Min(int[] data) { return new SparseTable(data, Math.Min, idx => data[idx]); }
         /// <summary>
         /// Return a SparseTable that will be used to compute max in interval
+        /// </summary>
         public static SparseTable Max(int[] data) { return new SparseTable(data, Math.Max, idx => data[idx]); }
         /// <summary>
         /// Return a SparseTable that will be used to compute the index of min in interval
+        /// </summary>
         public static SparseTable IndexOfMin(int[] data) { return new SparseTable(data, (i, j) => data[i] <= data[j] ? i : j, idx => idx); }
         /// <summary>
         /// Return a SparseTable that will be used to compute the index of max in interval
+        /// </summary>
         public static SparseTable IndexOfMax(int[] data) { return new SparseTable(data, (i, j) => data[i] >= data[j] ? i : j, idx => idx); }
 
         /// <summary>
@@ -420,14 +425,7 @@ namespace SharpAlgos
                     result.AddRange(a.Skip(newIndexInA));
                     return result;
                 }
-                if (a[newIndexInA] <= b[newIndexInB])
-                {
-                    result.Add(a[newIndexInA++]);
-                }
-                else
-                {
-                    result.Add(b[newIndexInB++]);
-                }
+                result.Add(a[newIndexInA] <= b[newIndexInB] ? a[newIndexInA++] : b[newIndexInB++]);
             }
         }
         //return the contribution of segment 'segmentId' to compute the value for interval [startIndex, endIndex]

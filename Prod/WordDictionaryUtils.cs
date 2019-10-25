@@ -6,7 +6,8 @@ namespace SharpAlgos
 {
     #region Ternary search tree
     /// <summary>
-    /// search/add/remove a word in a dictionary of 'n' words in o(n log(n) ) time
+    /// search/add/remove a word in a dictionary of 'n' words
+    /// Complexity:         o( n log(n) ) (n :  number of words in dictionary)
     /// </summary>
     public class TernarySearchTreeNode
     {
@@ -85,7 +86,8 @@ namespace SharpAlgos
 
     #region TRIE Structure
     /// <summary>
-    /// search/add/remove a word in a dictionary of 'n' words in o(W) time (W = length of the longest word in the dictionary)
+    /// search/add/remove a word in a dictionary of 'n' words
+    /// Complexity:         o( W ) (W = length of the longest word in the dictionary)
     /// </summary>
     public class TrieNode
     {
@@ -130,7 +132,7 @@ namespace SharpAlgos
         {
             if (depth == word.Length) // Base case
             {
-                IsLeaf = false; // Unmark leaf node
+                IsLeaf = false; // unmark leaf node
             }
             else // Recursive case
             {
@@ -160,7 +162,8 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// Find the nearest word in the dictionary from 'word' in o( log(W) * W) time
+        /// Find the nearest word in the dictionary from 'word'
+        /// Complexity:         o( log(W) * W) (W = length of the longest word in the dictionary)
         /// </summary>
         /// <param name="word"></param>
         /// <param name="insertionCost"></param>
@@ -173,23 +176,23 @@ namespace SharpAlgos
         /// </returns>
         public Tuple<string,int>  NearestWord(string word, int insertionCost = 1, int deletionCost = 1, int substitutionCost = 1, int transpositionCost = 1)
         {
-            int minLength = 0;
+            int min = 0;
             int maximumCost = word.Length * deletionCost + FirstWord().Length * insertionCost+1;
-            int maxLength = maximumCost;
-            while (minLength < maxLength)
+            int max = maximumCost;
+            while (min < max)
             {
-                var middle = (minLength + maxLength + 1) / 2;
+                var middle = (min + max + 1) / 2;
                 if (SearchWordAtMostAtDistance(this, maximumCost-middle, word, 0, new List<char>(),insertionCost, deletionCost, substitutionCost, transpositionCost))
                 {
-                    minLength = middle;
+                    min = middle;
                 }
                 else
                 {
-                    maxLength = middle - 1;
+                    max = middle - 1;
                 }
             }
             var result = new List<char>();
-            var minimumCost = maximumCost - minLength;
+            var minimumCost = maximumCost - min;
             SearchWordAtMostAtDistance(this, minimumCost, word, 0, result,insertionCost, deletionCost, substitutionCost, transpositionCost);
             return Tuple.Create(new string(result.ToArray()), minimumCost);
         }
@@ -317,6 +320,5 @@ namespace SharpAlgos
         {
             return new string(word.Select(x => encoding[x]).ToArray());
         }
-
     }
 }

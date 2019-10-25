@@ -9,7 +9,7 @@ namespace SharpAlgos
         #region Longest Palindromic Subsequence using LCS(word, word.Reverse())
         /// <summary>
         /// Given a string, finds a smaller string that is the longest palindromic subsequence it contains
-        /// Complexity: o( a.Length * a.Length )
+        /// Complexity:         o( a.Length * a.Length )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
@@ -28,9 +28,9 @@ namespace SharpAlgos
         #region Longest Palindrome
 
         /// <summary>
-        /// Find longest palindrome in string 's' (using Manacher algo)
-        /// Complexity:        o( a.Length )
-        /// Memory Complexity: o( a.Length )
+        /// Find longest palindrome in string 's' (using Manacher algorithm)
+        /// Complexity:         o( a.Length )
+        /// Memory Complexity:  o( a.Length )
         /// </summary>
         /// <param name="s">input string where we want to find the longest palindrome</param>
         /// <returns>
@@ -137,7 +137,7 @@ namespace SharpAlgos
         {
             var prevLine = new int[1 + a.Count];
             var currentLine = new int[1 + a.Count];
-            for (var lengthV1 = 1; lengthV1 <= a.Count; ++lengthV1) //for each sub sequence of 'a' (starting from 1st to 'aLength' caracter)
+            for (var lengthV1 = 1; lengthV1 <= a.Count; ++lengthV1) //for each sub sequence of 'a' (starting from 1st to 'aLength' character)
             {
                 var tmp = currentLine; currentLine = prevLine; prevLine = tmp; //We swap previous and current line
                 for (var lengthV2 = 1; lengthV2 <= a.Count; ++lengthV2)

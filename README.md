@@ -20,11 +20,9 @@ Your contribution is welcome.
 * [Sparse Table](Prod/RangeQueryUtils.cs)
 * [Segment Tree (with range updates)](Prod/RangeQueryUtils.cs)
 
-#### Search Structures:
+#### Others:
 * [TRIE](Prod/WordDictionaryUtils.cs)
 * [Ternary Search Tree](Prod/WordDictionaryUtils.cs)
-
-#### Others:
 * [Interval Tree](Prod/IntervalUtils.cs)
 * [Union Find](Prod/UnionFind.cs)
 * [Cartesian Tree](Prod/RangeQueryUtils.cs)
@@ -65,6 +63,7 @@ Your contribution is welcome.
   
 #### Strings:
   * [Edit Distance (with insertion, deletion, substitution and transposition)](Prod/TwoStringsUtils.cs)
+  * [Nearest word in a dictionary](Prod/WordDictionaryUtils.cs)
   * [Longest Common Subsequence (LCS)](Prod/TwoStringsUtils.cs)
   * [All Longest Common Subsequence](Prod/TwoStringsUtils.cs)
   * [Shortest Common Supersequence (SCS)](Prod/TwoStringsUtils.cs)
@@ -99,14 +98,23 @@ Your contribution is welcome.
     
 #### Math:
   * [Greatest Common Divisor](Prod/MathUtils.cs)
+  * [Multiplicative Inverse](Prod/MathUtils.cs)
   * [Prime Check](Prod/MathUtils.cs)
-  * [Sieve of Eratosthenis](Prod/MathUtils.cs)
+  * [Prime Factorization](Prod/MathUtils.cs)
+  * [Sieve of Eratosthenes](Prod/MathUtils.cs)
 
+#### Board Games:
+  * [N Queen Problem](Prod/BoardUtils.cs)
+  * [Knight Probability](Prod/BoardUtils.cs)
+
+#### Arrays:
+  * [Duplicate detection in intervals](Prod/SingleArrayUtils.cs)
+  
 #### Coin changes:
   * [Minimum Coin change-making problem](Prod/CoinsUtils.cs)
   * [Same but with infinite number of coins](Prod/CoinsUtils.cs)
   * [Number of distinct ways to achieve a target amount](Prod/CoinsUtils.cs)
-  
+
 #### Stock Prices:
   * [Max Profit if only 1 transaction allowed](Prod/StockUtils.cs)
   * [Max Profit with infinite number of transactions](Prod/StockUtils.cs)

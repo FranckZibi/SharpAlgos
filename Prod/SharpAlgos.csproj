@@ -45,29 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayHashComputer.cs" />
-    <Compile Include="ArtOptimal.cs" />
-    <Compile Include="BoolMatrixUtils.cs" />
-    <Compile Include="CoinsUtils.cs" />
-    <Compile Include="GeometryUtils.cs" />
-    <Compile Include="GraphUtils.cs" />
-    <Compile Include="GuillotineServices.cs" />
-    <Compile Include="IntervalUtils.cs" />
-    <Compile Include="IntListUtils.cs" />
-    <Compile Include="IntMatrixUtils.cs" />
-    <Compile Include="LeetCodeUtils.cs" />
-    <Compile Include="MathUtils.cs" />
-    <Compile Include="PriorityQueue.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RangeQueryUtils.cs" />
-    <Compile Include="SingleArrayUtils.cs" />
-    <Compile Include="SingleStringUtils.cs" />
-    <Compile Include="StockUtils.cs" />
-    <Compile Include="TwoStringsUtils.cs" />
-    <Compile Include="UnionFind.cs" />
-    <Compile Include="Utils.cs" />
-    <Compile Include="WordDictionaryUtils.cs" />
+    <Compile Include="**\*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

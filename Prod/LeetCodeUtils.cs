@@ -7,7 +7,6 @@ namespace SharpAlgos
 {
     public static class LeetCodeUtils
     {
-
         public static int[] TwoSum(int[] nums, int target)
         {
             if ((nums == null) || (nums.Length < 2))
@@ -57,40 +56,6 @@ namespace SharpAlgos
         }
         */
 
-        public static double KnightProbability(int N, int K, int r, int c)
-        {
-            var moves = new List<int[]>
-                        {
-                            new[] {1, 2},
-                            new[] {2, 1},
-                            new[] {1, -2},
-                            new[] {2, -1},
-                            new[] {-1, 2},
-                            new[] {-2, 1},
-                            new[] {-1, -2},
-                            new[] {-2, -1}
-                        };
-            double totalOk = KnightProbabilityCount(N, K, r, c, moves, Enumerable.Repeat(-1.0, 1 + N*N*100).ToArray());
-            double total = Math.Pow(8, K);
-            return totalOk/total;
-        }
-
-        private static double KnightProbabilityCount(int N, int K, int r, int c, List<int[]> moves, double[] cache)
-        {
-            if (Math.Min(r, c) < 0) return 0;
-            if (Math.Max(r, c) >= N) return 0;
-            if (K < 0) return 0;
-            if (K == 0) return 1;
-            var key = (N*r + c)*100 + (K - 1);
-            if (cache[key] >= 0)
-                return cache[key];
-            double result = 0;
-            foreach (var m in moves)
-                result += KnightProbabilityCount(N, K - 1, r + m[0], c + m[1], moves, cache);
-            cache[key] = result;
-            return result;
-
-        }
 
         public static bool IsUgly(int num)
         {
@@ -127,7 +92,6 @@ namespace SharpAlgos
             if (n <= 1) return n;
             return n/2 + 1 + 2*LastRemaining(n/2);
         }
-
       
         public static List<int> AllMaximumBorderLength(string w)
         {
@@ -177,28 +141,6 @@ namespace SharpAlgos
             if (t.Length%remaining == 0)
                 return remaining;
             return t.Length;
-        }
-
-        public static string LongestCommonPrefix(string[] strs)
-        {
-            if ((strs == null) || (strs.Length == 0))
-                return "";
-            var currentResult = strs[0];
-            for (int i = 1; i < strs.Length; ++i)
-            {
-                int endIndex = Math.Min(currentResult.Length - 1, strs[i].Length - 1);
-                int commonPrefixLength = 0;
-                for (int j = 0; j <= endIndex; ++j)
-                {
-                    if (strs[i][j] != currentResult[j])
-                        break;
-                    commonPrefixLength = j + 1;
-                }
-                if (commonPrefixLength <= 0)
-                    return "";
-                currentResult = currentResult.Substring(0, commonPrefixLength);
-            }
-            return currentResult;
         }
 
         public static int ClimbStairs(int n)
@@ -361,39 +303,6 @@ namespace SharpAlgos
                 FindWordsHelper(around, board, words, allSubWords, subWord, result);
             board[p.X,p.Y] = backup;
         }
- 
-        public static string LongestWord(string[] words)
-        {
-            var cache = new Dictionary<string, bool>();
-            Array.Sort(words, (x,y)=> (x.Length!=y.Length)?y.Length.CompareTo(x.Length):string.Compare(x, y, StringComparison.Ordinal)  );
-            var set = new HashSet<string>(words);
-
-            foreach (var w in words)
-            {
-                if (w.Length <= 1)
-                    return "";
-                if (IsOk(w, set, cache))
-                    return w;
-            }
-            return "";
-        }
-
-        private static bool IsOk(string word, HashSet<string> allWords, Dictionary<string, bool> cache)
-        {
-            if (cache.ContainsKey(word))
-                return cache[word];
-            if (!allWords.Contains(word))
-            {
-                cache[word] = false;
-                return false;
-            }
-            if (word.Length <= 1)
-            {
-                cache[word] = true;
-                return true;
-            }
-            return IsOk(word.Substring(0, word.Length - 1), allWords, cache);
-        }
 
         public static int TotalHammingDistance(int[] nums)
         {
@@ -442,7 +351,7 @@ namespace SharpAlgos
                 frequenciesToIndexes[frequencies[i]].Add(i);
             }
 
-            PriorityQueue<TreeNode> p = new PriorityQueue<TreeNode>(true);
+            var p = new PriorityQueue<TreeNode>(true);
 
             foreach (var f in frequencies)
                 p.Enqueue(new TreeNode(f), f);
@@ -480,53 +389,6 @@ namespace SharpAlgos
                 CreateHuffmanCode_Helper(root.right, currentPrefix + "1", frequencyWithCode);
             if (root.left != null)
                 CreateHuffmanCode_Helper(root.left, currentPrefix + "0", frequencyWithCode);
-        }
-
-        //number of ways to place K Bishops on a NxN board
-        // https://cp-algorithms.com/combinatorics/bishops-on-chessboard.html
-
-        public static IList<IList<string>> SolveNQueens(int n)
-        {
-            var result = new List<IList<string>>();
-            var visited = new bool[n];
-            SolveNQueens_Helper(n, visited, new List<int>(), result);
-            return result;
-        }
-
-        private static void SolveNQueens_Helper(int n, bool[] visited, List<int> path, List<IList<string>> result)
-        {
-            if (path.Count >= n)
-            {
-                var solution = new List<string>();
-                foreach (var p in path)
-                {
-                    var line = Enumerable.Repeat('.', n).ToArray();
-                    line[p] = 'Q';
-                    solution.Add(new string(line));
-                }
-                result.Add(solution);
-            }
-
-            for (int i = 0; i < n; ++i)
-            {
-                if (visited[i])
-                    continue;
-                if (!SolveNQueens_Helper_IsValid(path, i))
-                    continue;
-                visited[i] = true;
-                path.Add(i);
-                SolveNQueens_Helper(n, visited, path, result);
-                visited[i] = false;
-                path.RemoveAt(path.Count - 1);
-            }
-        }
-
-        private static bool SolveNQueens_Helper_IsValid(List<int> path, int newColumn)
-        {
-            for (int i = 0; i < path.Count; ++i)
-                if (Math.Abs(path[i] - newColumn) == (path.Count - i))
-                    return false;
-            return true;
         }
     }
 }

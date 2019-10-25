@@ -15,7 +15,7 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// compute all combinations of 'IList<List<T>> allItems' containing exactly one element of each sub list
+        /// compute all combinations of 'allItems' containing exactly one element of each sub list
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="allItems"></param>
@@ -174,20 +174,20 @@ namespace SharpAlgos
         //
         //
         /// <summary>
-        /// find the max index for which IsValid is true using dichotomy search
+        /// Find the max index for which IsValid is true using dichotomy search
         /// hypothesis: IsValid[min] is true and will always be true for an interval [min, y] then always false after y
         /// Complexity:         o( log(N) ) 
         /// </summary>
         /// <param name="minLength"></param>
         /// <param name="maxLength"></param>
-        /// <param name="IsValid"></param>
+        /// <param name="isValid"></param>
         /// <returns></returns>
-        public static int MaximumValidIndex(int minLength, int maxLength, Func<int, bool> IsValid)
+        public static int MaximumValidIndex(int minLength, int maxLength, Func<int, bool> isValid)
         {
             while (minLength < maxLength)
             {
                 var middle = (minLength + maxLength + 1) / 2;
-                if (IsValid(middle))
+                if (isValid(middle))
                 {
                     minLength = middle;
                 }
@@ -240,16 +240,28 @@ namespace SharpAlgos
             return currentMatching;
         }
 
-        public static int MaxKnapsackValue(int knapSackCapacity, int[] weights, int[] values, int penaltyForNotFillingBag, out List<int> takenIndexes)
+        /// <summary>
+        /// Solve Knapsack problem: optimal way to fill a bag of capacity 'knapsackCapacity' with a list of objects (each object has its own weight and value)
+        /// The goal is to maximize the value in the bag
+        /// Complexity:         o( weights.Length * knapsackCapacity )
+        /// Memory Complexity:  o( weights.Length * knapsackCapacity )
+        /// </summary>
+        /// <param name="knapsackCapacity">the capacity of the bag</param>
+        /// <param name="weights">weight of each object</param>
+        /// <param name="values">value of each object</param>
+        /// <param name="penaltyForNotFillingBag">penalty for not filling the bag entirely (the penalty is multiplied by: 'knapsackCapacity' - 'total weight the bag')</param>
+        /// <param name="takenIndexes">list of indexes of object to maximize the value in the bag</param>
+        /// <returns>maximum value we can fill in the bag</returns>
+        public static int MaxKnapsackValue(int knapsackCapacity, int[] weights, int[] values, int penaltyForNotFillingBag, out List<int> takenIndexes)
         {
             var nbItems = weights.Length;
-            var computedValues = new int?[nbItems, knapSackCapacity+1];
-            var takeIt = new bool[nbItems, knapSackCapacity+1];
-            var result = Knapsack(nbItems - 1, knapSackCapacity, weights, values, penaltyForNotFillingBag, computedValues, takeIt);
+            var computedValues = new int?[nbItems, knapsackCapacity+1];
+            var takeIt = new bool[nbItems, knapsackCapacity+1];
+            var result = Knapsack(nbItems - 1, knapsackCapacity, weights, values, penaltyForNotFillingBag, computedValues, takeIt);
 
             //We build 'takenIndexes'
             takenIndexes = new List<int>();
-            var remainingCapacity = knapSackCapacity;
+            var remainingCapacity = knapsackCapacity;
             for (var index = (nbItems - 1); index >= 0; --index)
             {
                 if (takeIt[index,remainingCapacity])
@@ -327,8 +339,13 @@ namespace SharpAlgos
             return computedValues[maxIndexOfItemToCheck,remainingCapacity].Value;
         }
 
-        //Compute all ways to select 'p' elements among 'n'
-        //Each combination is stored in a 64 bit array (a long) where exactly 'p' bits are set to 1
+        /// <summary>
+        /// Compute all ways to select 'p' elements among 'n' (with n less or equal then 64)
+        /// Each combination is stored in a 64 bit array (a long) where exactly 'p' bits are set to 1
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public static IEnumerable<long> AllCombinationMaskAsBitArray(int n, int p)
         {
             if (p == 0)
@@ -346,11 +363,19 @@ namespace SharpAlgos
         }
 
 
-        //Solve tower of Hanoi problem in o(2^nbDisks) time
-        //We have 'n' disks in 'source' , ordered from the smallest one (id == 1) at top, to the biggest one (id == n) at bottom.
-        //We want to move this entire tower (in the same order) to 'destination' moving one disk at a time, 
-        //and we are not allowed to put a bigger disk on top of a smaller one
-        //The number of moves required is exactly 2^n -1  ( move.Item1: disk to move / move.Item2:source / move.Item3:target)
+        /// <summary>
+        /// Solve tower of Hanoi problem
+        ///We have 'n' disks in 'source' , ordered from the smallest one (id == 1) at top, to the biggest one (id == n) at bottom.
+        ///We want to move this entire tower (in the same order) to 'destination' moving one disk at a time, 
+        ///and we are not allowed to put a bigger disk on top of a smaller one
+        ///The number of moves required is exactly 2^n -1  ( move.Item1: disk to move / move.Item2:source / move.Item3:target)
+        /// Complexity:         o(2^nbDisks)
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="notUsed"></param>
+        /// <param name="moves"></param>
         public static void TowerOfHanoi(int n, string source, string destination, string notUsed, List<Tuple<int,string,string>> moves)
         {
             if (n < 1)

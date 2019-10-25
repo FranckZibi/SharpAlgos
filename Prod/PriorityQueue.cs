@@ -15,6 +15,12 @@ namespace SharpAlgos
         }
         public int Count => _count;
 
+        /// <summary>
+        /// Add new element (with priority = 'priority') in the queue
+        /// Complexity:         o( log(n) )
+        /// </summary>
+        /// <param name="t">the element to add</param>
+        /// <param name="priority">the associate priority</param>
         public void Enqueue(T t, double priority)
         {
             if (!_isMinPriorityQueue)
@@ -28,6 +34,14 @@ namespace SharpAlgos
             _q[priority].Add(t);
             ++_count;
         }
+
+        /// <summary>
+        /// Update the priority of an existing element 't' from 'oldPriority' to 'newPriority'
+        /// Complexity:         o( log(n) )
+        /// </summary>
+        /// <param name="t">an existing element in the queue</param>
+        /// <param name="oldPriority">the old element priority</param>
+        /// <param name="newPriority">the new element priority</param>
         public void UpdatePriority(T t, double oldPriority, double newPriority)
         {
             if (!_isMinPriorityQueue)
