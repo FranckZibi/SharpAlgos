@@ -629,11 +629,12 @@ namespace SharpAlgos
         }
         #endregion
 
-        #region Tramp Streamer Problem : find the cycle with the optimal ratio (cycle edge sum) / (cycle duration)
+        #region Tramp Steamer Problem : find the cycle with the optimal ratio (cycle edge sum) / (cycle duration)
         /// <summary>
-        /// solve the tramp streamer problem in o ( log(sum(duration)) V E ) time
+        /// Solve the Tramp Steamer Problem
         /// each edge 'A' => 'B' has a given cost, and an associate duration (= duration(A,B) )
         /// the goal is to find a cycle minimizing the ratio (cycle cost)/(cycle duration)
+        /// Complexity:         o( log(sum(duration)) V E )
         /// </summary>
         /// <returns>
         /// null if there is no cycle in the graph
@@ -677,9 +678,11 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// solve the tramp streamer problem in o ( log(sum(duration)) V E ) time
+        /// Solve the Tramp Steamer Problem
         /// each edge 'A' => 'B' has a given profit, and an associate duration (= duration(A,B) )
-        /// the goal is to find a cycle maximizing the ratio (cycle profit)/(cycle duration) , so with the highest rentability 
+        /// the goal is to find a cycle maximizing the ratio (cycle profit)/(cycle duration)
+        /// Complexity:         o( log(sum(duration)) V E )
+        /// </summary>
         /// <returns>
         /// null if there is no cycle in the graph
         /// Tuple.Item1 : the highest ratio 'profit/duration' we can achieve in a cycle

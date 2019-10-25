@@ -42,7 +42,7 @@ Your contribution is welcome.
     + [All Cycles Detection (using Johnson Algo)](Prod/GraphUtils.cs)
     + [Negative Cycle Detection](Prod/GraphUtils.cs)
     + [Cycle with Minimum Average Weight](Prod/GraphUtils.cs)
-    + [Tramp Streamer Problem](Prod/GraphUtils.cs)
+    + [Tramp Steamer Problem](Prod/GraphUtils.cs)
   * [Strongly Connected Components](Prod/GraphUtils.cs)
   * [Minimum Spanning Tree](Prod/GraphUtils.cs)
   * [Topological Sort](Prod/GraphUtils.cs)
@@ -67,10 +67,10 @@ Your contribution is welcome.
   * [Longest Common Subsequence (LCS)](Prod/TwoStringsUtils.cs)
   * [All Longest Common Subsequence](Prod/TwoStringsUtils.cs)
   * [Shortest Common Supersequence (SCS)](Prod/TwoStringsUtils.cs)
-  * [Longest Common Substring](Prod/TwoStringsUtils.cs)
-  * [Longest Palindrome](Prod/SingleStringUtils.cs)
-  * [Longest Palindromic Subsequence](Prod/SingleStringUtils.cs)
   * [Longest Repeated Subsequence](Prod/SingleStringUtils.cs)
+  * [Longest Palindromic Subsequence](Prod/SingleStringUtils.cs)
+  * [Longest Palindrome](Prod/SingleStringUtils.cs)
+  * [Longest Common Substring](Prod/TwoStringsUtils.cs)
 
 #### Integer Array:
   * [Maximum Sub Sum](Prod/IntListUtils.cs)
@@ -84,8 +84,8 @@ Your contribution is welcome.
 #### Geometry:
   * [Convex Hull](Prod/GeometryUtils.cs)
   * [Area of a polygon](Prod/GeometryUtils.cs)
-  * [Minimum distance between a set of points (nearest points)](Prod/GeometryUtils.cs)
-  * [Maximum distance between a set of points (farthest points)](Prod/GeometryUtils.cs)
+  * [Nearest Points (minimum distance between a set of points)](Prod/GeometryUtils.cs)
+  * [Farthest Points (maximum distance between a set of points)](Prod/GeometryUtils.cs)
   * [Smallest circle including a set of points](Prod/GeometryUtils.cs)
 
 #### Boolean Matrix:
