@@ -72,8 +72,8 @@ namespace SharpAlgos
 
             /// <summary>
             /// return the number of intervals containing 'x' in 
-            /// Complexity:     o(log(n))  (+ o(n log(n) ) preparation time)
-            ///                 (where 'n' is the total number of interval)
+            /// Complexity:         o(log(n))  (+ o(n log(n) ) preparation time)
+            ///                     (where 'n' is the total number of interval)
             /// </summary>
             /// <param name="x"></param>
             /// <returns>number of intervals containing x</returns>
@@ -181,7 +181,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// return the minimum point need to have at least one point in each interval
-        /// Complexity:     o( n )
+        /// Complexity:         o( n )
         /// </summary>
         /// <param name="intervals"></param>
         /// <param>
@@ -216,7 +216,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// merge all intervals that intersect and return the new list of all intervals (with merged intervals)
-        /// Complexity:     o( n )
+        /// Complexity:         o( n )
         /// </summary>
         /// <param name="intervals"></param>
         /// <param name="bothStartAndEndAreExcludedFromInterval">

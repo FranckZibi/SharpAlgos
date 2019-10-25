@@ -29,14 +29,34 @@ namespace SharpAlgos
         //log2[n] : the maximum allowed power such as 2^log2[n] <= n
         private readonly int[] _log2;
         #endregion
-        //Compute min in interval of length N in o(1) time  (and o(N*log(N)) memory and o(N*log(N)) preparation time)
+
+        /// <summary>
+        /// Return a SparseTable that will be used to compute min in interval
         public static SparseTable Min(int[] data) { return new SparseTable(data, Math.Min, idx => data[idx]); }
-        //Compute max in interval of length N in o(1) time  (and o(N*log(N)) memory and o(N*log(N)) preparation time)
+        /// <summary>
+        /// Return a SparseTable that will be used to compute max in interval
         public static SparseTable Max(int[] data) { return new SparseTable(data, Math.Max, idx => data[idx]); }
-        //Compute index of min in interval of length N in o(1) time  (and o(N*log(N)) memory and o(N*log(N)) preparation time)
+        /// <summary>
+        /// Return a SparseTable that will be used to compute the index of min in interval
         public static SparseTable IndexOfMin(int[] data) { return new SparseTable(data, (i, j) => data[i] <= data[j] ? i : j, idx => idx); }
-        //Compute index of max in interval of length N in o(1) time  (and o(N*log(N)) memory and o(N*log(N)) preparation time)
+        /// <summary>
+        /// Return a SparseTable that will be used to compute the index of max in interval
         public static SparseTable IndexOfMax(int[] data) { return new SparseTable(data, (i, j) => data[i] >= data[j] ? i : j, idx => idx); }
+
+        /// <summary>
+        /// Min or Max Query for interval [start, end]
+        /// We look at the 2 longest precomputed intervals (starting at 'start' for the 1st and ending at 'end' for the 2nd)
+        /// Complexity:         o( 1 ) time  (+ o( N*log(N) ) preparation time paid once)
+        /// Memory Complexity:  o( N*log(N) )
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public int Query(int start, int end)
+        {
+            int powerOf2 = _log2[end - start + 1];
+            return _computeParent(_sparseTable[start, powerOf2], _sparseTable[end - (1 << powerOf2) + 1, powerOf2]);
+        }
 
         private SparseTable(int[] data, Func<int, int, int> computeParent, Func<int, int> singleElementValue)
         {
@@ -65,12 +85,6 @@ namespace SharpAlgos
                 currentLength *= 2;
                 ++powerOf2;
             }
-        }
-        //we look at the 2 longest precomputed intervals (starting at 'start' for the 1st and ending at 'end' for the 2nd)
-        public int Query(int start, int end)
-        {
-            int powerOf2 = _log2[end - start + 1];
-            return _computeParent(_sparseTable[start, powerOf2], _sparseTable[end - (1 << powerOf2) + 1, powerOf2]);
         }
     }
     #endregion
@@ -342,7 +356,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// retrieve the number of elements in interval [startIndex, endIndex] less or equal to K
-        /// Complexity: o(log^2(N))
+        /// Complexity:         o(log^2(N))
         /// </summary>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
@@ -353,7 +367,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// retrieve the number of elements in interval [startIndex, endIndex] equals to K
-        /// Complexity: o(log^2(N))
+        /// Complexity:         o( log^2(N) )
         /// </summary>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
@@ -378,7 +392,14 @@ namespace SharpAlgos
             }
             return _sortedElementsAtEachNode[segmentId];
         }
-        //we have 2 lists in increasing order : ' a' & 'b', and we want to merge the 2 list to a single increasing list
+
+        /// <summary>
+        /// we have 2 lists in increasing order : ' a' & 'b', and we want to merge the 2 list to a single increasing list
+        /// Complexity:         o(a.Length + b.Length)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         private static List<int> MergeSort(List<int> a, List<int> b)
         {
             int newIndexInA = 0;

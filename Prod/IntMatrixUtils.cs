@@ -74,7 +74,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// Find the number of path (from top left to bottom right) with total cost equal 'givenCost'
-        /// Complexity: o( m.Height * m.Width )
+        /// Complexity:         o( m.Height * m.Width )
         /// </summary>
         /// <param name="m"></param>
         /// <param name="givenCost"></param>
@@ -105,7 +105,14 @@ namespace SharpAlgos
             return cache[key];
         }
 
-        //Find the longest sequence satisfying a given constraint in o(M*N) time (& memory)
+        /// <summary>
+        /// Find the longest sequence satisfying a given constraint
+        /// Complexity:         o( M*N )
+        /// Memory Complexity:  o( M*N )
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="isOkToGoFromSourceValueToTargetValue"></param>
+        /// <returns></returns>
         public static List<int> LongestSequenceSatisfyingConstraints(int[,] m, Func<int, int, bool> isOkToGoFromSourceValueToTargetValue)
         {
             var score = new int[m.GetLength(0), m.GetLength(1)];
@@ -246,7 +253,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// Compute the max sum from a sub matrix of a N*M 'matrix'
-        /// Complexity: o(N^2*M)
+        /// Complexity:         o(N^2*M)
         /// </summary>
         /// <param name="matrix"></param>
         /// <param name="coordinates">4 integers coordinates where the max sum is located:  rowStart, colStart, rowEnd, colEnd </param>
@@ -286,7 +293,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// compute the product of 2 matrices 'a' (N,M) and 'b' (M,K)
-        /// Complexity: o( N*M*K )
+        /// Complexity:         o( N*M*K )
         /// each cell of the resulting matrix will be computed '% modulo'
         /// </summary>
         /// <param name="a"></param>
@@ -313,7 +320,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// Compute a square matrix of size (N*N) to power 'exp'
-        /// Complexity: o( N^3 * log(exp) )
+        /// Complexity:         o( N^3 * log(exp) )
         /// each cell of the matrix will be computed '% modulo'
         /// </summary>
         /// <param name="mat"></param>
@@ -336,6 +343,5 @@ namespace SharpAlgos
                 return ProductModulo(mat, PowerModulo(sq, exp / 2, modulo), modulo);
             }
         }
-
     }
 }

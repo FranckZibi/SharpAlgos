@@ -72,8 +72,14 @@ namespace SharpAlgos
 
         #region Matrix Chain Multiplication
 
-        //compute the optimal cost to multiply 'n' matrix together in o(n^3) time and o(n^2) memory
+        //compute the optimal cost to multiply 'n' matrix together
         // For 2 consecutive matrices (row1,col1) & (row2,col2) we always have col1=row2
+        /// <summary>
+        /// Complexity:         o( n^3 )
+        /// Memory Complexity:  o( n^2 )
+        /// </summary>
+        /// <param name="matrixDimensions"></param>
+        /// <returns></returns>
         public static int MatrixChainMultiplicationMinimalCost(IList<KeyValuePair<int, int>> matrixDimensions)
         {
             return MatrixChainMultiplicationMinimalCost_Helper(matrixDimensions, new int?[matrixDimensions.Count, matrixDimensions.Count], null, 0, matrixDimensions.Count-1);
@@ -129,13 +135,20 @@ namespace SharpAlgos
         }
         #endregion
 
-        //returns all possible ways to split the amount 'totalAmountToSplit' between 'nbRecipients' persons
-        //if allowZeroAmount is true
-        //  will allow some recipients to receive 0
-        //  Number of combinations =  C(totalAmountToSplit+nbRecipients-1,totalAmountToSplit) => C(n,p) = n! / [p! (n-p)!]
-        //else 
-        //  all recipients must receive at least '1' 
-        //  Number of combinations =  C(totalAmountToSplit-1, nbRecipients-1) => C(n,p) = n! / [p! (n-p)!]
+        /// <summary>
+        /// returns all possible ways to split the amount 'totalAmountToSplit' between 'nbRecipients' persons
+        /// </summary>
+        /// <param name="totalAmountToSplit"></param>
+        /// <param name="nbRecipients"></param>
+        /// <param name="allowZeroAmount">
+        /// if true
+        ///  will allow some recipients to receive 0
+        ///  Number of combinations =  C(totalAmountToSplit+nbRecipients-1,totalAmountToSplit) => C(n,p) = n! / [p! (n-p)!]
+        /// else 
+        ///  all recipients must receive at least '1' 
+        ///  Number of combinations =  C(totalAmountToSplit-1, nbRecipients-1) => C(n,p) = n! / [p! (n-p)!]
+        /// </param>
+        /// <returns></returns>
         public static List<List<int>> AllPossibleSplit(int totalAmountToSplit, int nbRecipients, bool allowZeroAmount)
         {
             var result = new List<List<int>>();
@@ -158,8 +171,17 @@ namespace SharpAlgos
             }
         }
 
-        //find the max index for which IsValid is true in o(log(N)) time (using dichotomy search)
-        //hypothesis: IsValid[min] is true and will always be true for an interval [min, y] then always false after y
+        //
+        //
+        /// <summary>
+        /// find the max index for which IsValid is true using dichotomy search
+        /// hypothesis: IsValid[min] is true and will always be true for an interval [min, y] then always false after y
+        /// Complexity:         o( log(N) ) 
+        /// </summary>
+        /// <param name="minLength"></param>
+        /// <param name="maxLength"></param>
+        /// <param name="IsValid"></param>
+        /// <returns></returns>
         public static int MaximumValidIndex(int minLength, int maxLength, Func<int, bool> IsValid)
         {
             while (minLength < maxLength)
@@ -178,7 +200,8 @@ namespace SharpAlgos
         }
 
         /// <summary>
-        /// Stable Mariage Matching using Gale-Shapley algo (in o (n^2)
+        /// Stable Mariage Matching using Gale-Shapley algo
+        /// Complexity:         o( n^2 )
         /// </summary>
         /// <param name="mPreference">for each m, the preferred w</param>
         /// <param name="wPreference">foreach w, the preferred m</param>
@@ -339,8 +362,15 @@ namespace SharpAlgos
             TowerOfHanoi(n - 1, notUsed, destination, source, moves);
         }
 
-        //solve 'le compte est bon' in o(3^N) time (N = length of allowed numbers)
-        // return a Tuple where Item1 is the best achievable result (nearest to target) & Item2 is a description to go there
+        /// <summary>
+        /// solve 'le compte est bon' game
+        /// Complexity:         o(3^N) time (N = length of allowed numbers)
+        /// </summary>
+        /// <param name="numbers"></param>
+        /// <param name="target"></param>
+        /// <returns>
+        /// a Tuple where Item1 is the best achievable result (nearest to target) & Item2 is a description to go there
+        /// </returns>
         public static Tuple<long,string> LeCompteEstBon(int[] numbers, int target)
         {
             // combinationMask => all achievable results using all elements of this combinationMask (+ a description string)

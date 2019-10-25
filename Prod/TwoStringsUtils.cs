@@ -53,7 +53,7 @@ namespace SharpAlgos
         /// <summary>
         /// given 2 strings,
         /// finds a smaller string that is the longest sub sequence of both strings
-        /// Complexity: o (a.Length * b.Length )
+        /// Complexity:         o(a.Length * b.Length )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
@@ -155,7 +155,7 @@ namespace SharpAlgos
         #region Longest Common Substring
         /// <summary>
         /// given 2 strings, finds a smaller string that is the longest substring they have in common (using hash)
-        /// Complexity: o( a.Length * log(a.Length)) )
+        /// Complexity:         o( a.Length * log(a.Length)) )
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -167,7 +167,7 @@ namespace SharpAlgos
 
         /// <summary>
         /// given 2 strings, finds a smaller string that is the longest substring they have in common (using Dynamic Programming)
-        /// Complexity: o ( a.Length * b.Length )
+        /// Complexity:         o( a.Length * b.Length )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
@@ -218,7 +218,7 @@ namespace SharpAlgos
         /// <summary>
         /// given 2 strings 'a'&'b', find (the smallest) bigger string 'scs'
         /// so that 'a'&'b' are subsequence of 'scs'
-        /// Complexity: o(a.Length * b.Length )
+        /// Complexity:         o(a.Length * b.Length )
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>

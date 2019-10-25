@@ -46,8 +46,6 @@ namespace SharpAlgos
             return maxSubSum;
         }
 
-
-
         /// <summary>
         /// Compute max subsequence without using adjacent item
         /// Complexity:         o( m.Length ) 
@@ -66,7 +64,6 @@ namespace SharpAlgos
             }
             return res.Last();
         }
-
 
         /// <summary>
         /// Compute the largest rectangle inside an histogram
@@ -161,7 +158,14 @@ namespace SharpAlgos
 
         }
 
-        //check if we can extract a subset of 'm' with sum = 'sum' in o(sum*m.Length) time (&memory)
+        /// <summary>
+        /// check if we can extract a subset of 'm' with sum = 'sum'
+        /// Complexity:         o( sum*m.Length )
+        /// Memory Complexity:  o( sum*m.Length )
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="sum"></param>
+        /// <returns></returns>
         public static bool CanExtractSubsetEqualToSum(int[] m, int sum)
         {
             var cache = new bool[1 + m.Length, 1 + sum];
@@ -199,7 +203,14 @@ namespace SharpAlgos
             return cache[remainingSumInFirstSubset, nbAuthorized].Value;
         }
 
-        //check if we can divide 'm' array into 'K' subset with equal sum in o(N^(K+1)) time
+        /// <summary>
+        /// Check if we can divide 'm' array into 'K' subset with equal sum
+        /// Complexity:         o( N^(K+1) )
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="K"></param>
+        /// <param name="valuesForEachSubset"></param>
+        /// <returns></returns>
         public static bool CanBeDividedInto_K_SubsetWithEqualSum(int[] m, int K, out List<int>[] valuesForEachSubset)
         {
             var sum = m.Sum();
@@ -258,34 +269,14 @@ namespace SharpAlgos
             return Math.Max(longestDown.Max(), longestUp.Max());
         }
 
-        #region Longest Increasing Subsequence (LIS)
-        //compute length of 'Longest Increasing Sub Sequence' in o( N*Log(N) ) (an o(N) memory)
-        public static int LengthOfLongestIncreasingSubsequence(IEnumerable<int> data)
-        {
-            var minValueEndingAt = new List<int>();
-            foreach (int t in data)
-            {
-                int idx = minValueEndingAt.BinarySearch(t);
-                //uncomment to allow equality in sub sequence
-                //if (idx == minValueEndingAt.Count - 1) ++idx; 
-                if (idx < 0)
-                {
-                    idx = ~idx;
-                }
-                if (idx >= minValueEndingAt.Count)
-                {
-                    minValueEndingAt.Add(t);
-                }
-                else
-                {
-                    minValueEndingAt[idx] = t;
-                }
-            }
-            return minValueEndingAt.Count;
-        }
-
-
-        //compute 'Longest Increasing Sub Sequence' in o( N*Log(N) ) (an o(N) memory)
+        /// <summary>
+        /// compute 'Longest Increasing Sub Sequence' (LIS)
+        /// Complexity:         o( N*Log(N) )
+        /// Memory Complexity:  o( N )
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="allowEquality"></param>
+        /// <returns></returns>
         public static List<int> LongestIncreasingSubsequence(IList<int> data, bool allowEquality)
         {
             var prevIndexes = new List<int>();
@@ -332,9 +323,43 @@ namespace SharpAlgos
             return result;
         }
 
-        #endregion
+        /// <summary>
+        /// Compute length of 'Longest Increasing Sub Sequence'
+        /// Complexity:         o( N*Log(N) )
+        /// Memory Complexity:  o( N )
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static int LengthOfLongestIncreasingSubsequence(IEnumerable<int> data)
+        {
+            var minValueEndingAt = new List<int>();
+            foreach (int t in data)
+            {
+                int idx = minValueEndingAt.BinarySearch(t);
+                //uncomment to allow equality in sub sequence
+                //if (idx == minValueEndingAt.Count - 1) ++idx; 
+                if (idx < 0)
+                {
+                    idx = ~idx;
+                }
+                if (idx >= minValueEndingAt.Count)
+                {
+                    minValueEndingAt.Add(t);
+                }
+                else
+                {
+                    minValueEndingAt[idx] = t;
+                }
+            }
+            return minValueEndingAt.Count;
+        }
 
-        #region Longest Bitonic Subsequence: find the longest increasing then decreasing subsequence in o(n^2) time
+        /// <summary>
+        /// Longest Bitonic Subsequence: Longest increasing then decreasing subsequence
+        /// Complexity:         o( n^2 )
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static List<int> LongestBitonicSubsequence(int[] data)
         {
             if (data.Length == 0)
@@ -398,9 +423,12 @@ namespace SharpAlgos
             return result;
         }
 
-        #endregion
-
-        #region Maximum Sum Increasing Subsequence: find the increasing subsequence with the maximum sum in o(n^2) time
+        /// <summary>
+        /// Maximum Sum Increasing Subsequence: increasing subsequence with the maximum sum
+        /// Complexity:         o( n^2 )
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static List<int> MaximumSumIncreasingSubsequence(int[] data)
         {
             if (data.Length == 0)
@@ -433,7 +461,6 @@ namespace SharpAlgos
             result.Reverse();
             return result;
         }
-        #endregion
 
         public static int TrapRainWater2D(int[] height)
         {
@@ -482,16 +509,26 @@ namespace SharpAlgos
             return false;
         }
 
-        //find the biggest number using alls 'parts' in o(n log(n)) time
-        // for exemple: from 12 56 3 , the biggest number is 56312
+        /// <summary>
+        /// find the biggest number using all 'parts' in o(n log(n)) time
+        /// for example: from 12 56 3 , the biggest number is 56312
+        /// Complexity:         o(n log(n))
+        /// </summary>
+        /// <param name="parts"></param>
+        /// <returns></returns>
         public static string BuildBiggestNumberUsingAllParts(int[] parts)
         {
             var elements = parts.Select(x => x.ToString()).ToList();
-            elements.Sort((x, y) => (y+x).CompareTo(x+y));
+            elements.Sort((x, y) => string.Compare((y+x), x+y, StringComparison.Ordinal));
             return string.Join("", elements);
         }
 
-        //find the biggest number using a subsequence of k elements from 'parts'
+        /// <summary>
+        /// find the biggest number using a subsequence of k elements from 'parts'
+        /// </summary>
+        /// <param name="parts"></param>
+        /// <param name="k"></param>
+        /// <returns></returns>
         public static List<int> BuildBiggestNumberUsingSubsequenceOfKElements(int[] parts, int k)
         {
             var result = new List<int>();

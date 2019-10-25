@@ -7,7 +7,7 @@ namespace SharpAlgos
     {
         /// <summary>
         /// return all longest intervals containing exactly 'k' distinct elements
-        /// Complexity: o( n )
+        /// Complexity:         o( n )
         /// </summary>
         /// <param name="data"></param>
         /// <param name="k"></param>
