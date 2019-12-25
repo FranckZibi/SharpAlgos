@@ -347,7 +347,7 @@ namespace SharpAlgosTests
         }
 
         [Test]
-        public void TestAllCycles()
+        public void TestAllCycles_DirectedGraph()
         {
             var g = new Graph<string>(true);
             TestAllCycles(new string[] { }, g.AllCycles());
@@ -360,16 +360,12 @@ namespace SharpAlgosTests
             g.Add("A", "B", 5);
             TestAllCycles(new string[] { }, g.AllCycles());
 
-            g = new Graph<string>(false);
-            g.Add("A", "B", 5);
-            TestAllCycles(new[] { "AB" }, g.AllCycles());
-
             g = new Graph<string>(true);
             g.Add("A", "B", 1);
             g.Add("B", "C", 1);
             g.Add("C", "A", 1);
             g.Add("C", "D", 1);
-            TestAllCycles(new[] { "ABC" }, g.AllCycles());
+            TestAllCycles(new[] {"ABC"}, g.AllCycles());
 
             //see: https://en.wikipedia.org/wiki/Strongly_connected_component
             g = new Graph<string>(true);
@@ -387,7 +383,58 @@ namespace SharpAlgosTests
             g.Add("G", "F", 1);
             g.Add("H", "D", 1);
             g.Add("H", "G", 1);
-            TestAllCycles(new[] { "ABE", "FG", "CD", "DH" }, g.AllCycles());
+            TestAllCycles(new[] {"ABE", "FG", "CD", "DH"}, g.AllCycles());
+        }
+
+        [Test]
+        public void TestAllCycles_UndirectedGraph()
+        {
+            var g = new Graph<string>(true);
+            g.Add("A", "B", 5);
+            //cycle of 2 nodes should  be discard on undirected graph
+            TestAllCycles(new string[] { }, g.AllCycles());
+
+            g = new Graph<string>(true);
+            g.Add("A", "B", 1);
+            g.Add("B", "C", 1);
+            g.Add("C", "A", 1);
+            TestAllCycles(new[] { "ABC" }, g.AllCycles());
+
+            g = new Graph<string>(false);
+            g.Add("A", "F", 1);
+            g.Add("A", "J", 1);
+            g.Add("A", "M", 1);
+            g.Add("B", "C", 1);
+            g.Add("B", "H", 1);
+            g.Add("B", "K", 1);
+            g.Add("C", "D", 1);
+            g.Add("C", "G", 1);
+            g.Add("D", "G", 1);
+            g.Add("D", "L", 1);
+            g.Add("E", "G", 1);
+            g.Add("E", "M", 1);
+            g.Add("E", "N", 1);
+            g.Add("F", "I", 1);
+            g.Add("F", "K", 1);
+            g.Add("H", "I", 1);
+            g.Add("H", "J", 1);
+            g.Add("I", "L", 1);
+            g.Add("J", "N", 1);
+            g.Add("K", "L", 1);
+            g.Add("M", "N", 1);
+            var observedCycles = g.AllCycles();
+
+            var twoNodesCycles = observedCycles.Where(x => x.Count == 2).ToList();
+            //2 node cycles are discarded in undirected graph
+            Assert.AreEqual(0, twoNodesCycles.Count);
+
+            var threeNodesCycles = observedCycles.Where(x => x.Count == 3).ToList();
+            Assert.AreEqual(2, threeNodesCycles.Count);
+
+            var fourNodesCycles = observedCycles.Where(x => x.Count == 4).ToList();
+            Assert.AreEqual(2, fourNodesCycles.Count);
+
+            Assert.AreEqual(165, observedCycles.Count);
         }
 
         private void TestAllCycles(string[] expectedCycles, List<List<string>> observedCycles)
@@ -400,7 +447,6 @@ namespace SharpAlgosTests
             observed.Sort();
             var expected = new List<string>(expectedCycles);
             expected.Sort();
-
             Assert.AreEqual(expected.Count, observed.Count);
             for (int i = 0; i < expected.Count; ++i)
             {
@@ -506,7 +552,9 @@ namespace SharpAlgosTests
         {
             var duration = new Dictionary<Tuple<int, int>, double>();
             for (int i = 0; i < 1000; ++i)
+            {
                 duration[Tuple.Create(-999, i)] = 0;
+            }
             var g = new Graph<int>(true);
             g.Add(0, 1, 1);
             duration[Tuple.Create(0, 1)] = 1;
@@ -1035,27 +1083,6 @@ namespace SharpAlgosTests
            */
             var g = new Graph<string>(true);
             g.Add("A", "B", 10);
-            return g;
-        }
-
-        public static Graph<int> CreateClique(int nbVertices, int minEdgeCost, int maxEdgeCost, bool isDirected, Random r)
-        {
-            var g = new Graph<int>(isDirected);
-            for (int i = 0; i < nbVertices; ++i)
-                for (int j = 0; j < nbVertices; ++j)
-                {
-                    if (i == j)
-                    {
-                        continue;
-                    }
-
-                    if (!isDirected && (j > i))
-                    {
-                        continue;
-                    }
-
-                    g.Add(i, j, r.Next(minEdgeCost, maxEdgeCost));
-                }
             return g;
         }
 

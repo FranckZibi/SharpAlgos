@@ -1016,37 +1016,60 @@ namespace SharpAlgos
             var allCycles = new List<List<T>>();
             foreach (var scc in ExtractStronglyConnectedComponents())
             {
-                var areAllowed = new HashSet<T>(scc);
+                var verticesToExploreInScc = new HashSet<T>(scc);
                 var allCyclesFromStronglyConnectedComponent = new List<List<T>>();
                 foreach (var vertex in scc)
                 {
-                    AllCyclesFromStronglyConnectedComponent(vertex, new List<T>(), new HashSet<T>(), new Dictionary<T, HashSet<T>>(), allCyclesFromStronglyConnectedComponent, areAllowed);
-                    areAllowed.Remove(vertex);
+                    AllCyclesFromStronglyConnectedComponent(vertex, new List<T>(), new HashSet<T>(), new Dictionary<T, HashSet<T>>(), allCyclesFromStronglyConnectedComponent, verticesToExploreInScc);
+                    verticesToExploreInScc.Remove(vertex);
                 }
                 allCycles.AddRange(allCyclesFromStronglyConnectedComponent);
             }
             return allCycles;
         }
-        private bool AllCyclesFromStronglyConnectedComponent(T currentVertex, IList<T> path, HashSet<T> blocked, Dictionary<T, HashSet<T>> blockedMap, List<List<T>> allCycles, HashSet<T> areAllowed)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentVertex">the current vertex we are exploring</param>
+        /// <param name="path">the path of vertices we are have explored</param>
+        /// <param name="blocked">tell whether a vertex is blocked or not</param>
+        /// <param name="blockedMap">the map that tells if the unblocking of one vertex should unblock other vertices</param>
+        /// <param name="allCycles"></param>
+        /// <param name="verticesToExploreInScc">list of remaining nodes to explore in the Strongly Connected Component</param>
+        /// <returns></returns>
+        private bool AllCyclesFromStronglyConnectedComponent(T currentVertex, IList<T> path, HashSet<T> blocked, Dictionary<T, HashSet<T>> blockedMap, List<List<T>> allCycles, HashSet<T> verticesToExploreInScc)
         {
-            path.Add(currentVertex);
             var foundCycles = false;
+            path.Add(currentVertex);
+            blocked.Add(currentVertex);
+
             foreach (var child in Children(currentVertex))
             {
-                if (!areAllowed.Contains(child))
+                if (!verticesToExploreInScc.Contains(child))
                 {
                     continue;
                 }
                 if (Equals(child, path[0]))
                 {
-                    allCycles.Add(new List<T>(path));
                     foundCycles = true;
-                    continue;
+                    if (!_isDirected )
+                    {
+                        var childList = Children(path[0]).ToList();
+                        if (path.Count == 2 || childList.IndexOf(path[1]) < childList.IndexOf(path.Last()))
+                        {
+                            //on an undirected graph:
+                            // 1. we discard cycle of 2 nodes (A=>B=>A)
+                            // 2. we consider that the direction of the cycle is not relevant
+                            //   (A=>B=>C=>A is the same cycle as A=>C=>B=>A)
+                            continue;
+                        }
+                    }
+                    allCycles.Add(new List<T>(path));
                 }
-                if (!blocked.Contains(child))
+                else if (!blocked.Contains(child))
                 {
-                    blocked.Add(child);
-                    foundCycles = foundCycles || AllCyclesFromStronglyConnectedComponent(child, path, blocked, blockedMap, allCycles, areAllowed);
+                    foundCycles = AllCyclesFromStronglyConnectedComponent(child, path, blocked, blockedMap, allCycles, verticesToExploreInScc) || foundCycles;
                 }
             }
 
@@ -1060,7 +1083,7 @@ namespace SharpAlgos
                 //vertex to their blockedMap. If any of those neighbors ever get unblocked then unblock current vertex as well.
                 foreach (var w in Children(currentVertex))
                 {
-                    if (!areAllowed.Contains(w))
+                    if (!verticesToExploreInScc.Contains(w))
                     {
                         continue;
                     }
@@ -1074,6 +1097,12 @@ namespace SharpAlgos
             path.RemoveAt(path.Count - 1);
             return foundCycles;
         }
+        /// <summary>
+        /// Unblocks recursively all blocked nodes, starting with a given node.
+        /// </summary>
+        /// <param name="u">the vertex to unblock</param>
+        /// <param name="blocked">tell whether a vertex is blocked or not</param>
+        /// <param name="blockedMap">the map that tells if the unblocking of one vertex should unblock other vertices</param>
         private static void Unblock(T u, HashSet<T> blocked, Dictionary<T, HashSet<T>> blockedMap)
         {
             blocked.Remove(u);
