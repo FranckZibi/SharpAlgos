@@ -1,10 +1,10 @@
+using NUnit.Framework;
+using SharpAlgos;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using SharpAlgos;
-using NUnit.Framework;
 
 namespace SharpAlgosTests
 {
@@ -22,7 +22,7 @@ namespace SharpAlgosTests
             g.Add(5, 4, 0);
             g.Add(4, 2, 0);
             var observed = g.TopolologicalSort();
-            Assert.AreEqual(new[]{3,1,5,4,2}, observed);
+            Assert.AreEqual(new[] { 3, 1, 5, 4, 2 }, observed);
 
             g = new Graph<int>(true);
             g.Add(1, 2, 0);
@@ -30,7 +30,7 @@ namespace SharpAlgosTests
             g.Add(10, 11, 0);
             g.Add(11, 12, 0);
             observed = g.TopolologicalSort();
-            Assert.IsTrue(new [] { 1, 2, 3, 10, 11,12 }.SequenceEqual(observed)|| new[] { 10, 11, 12, 1, 2, 3}.SequenceEqual(observed));
+            Assert.IsTrue(new[] { 1, 2, 3, 10, 11, 12 }.SequenceEqual(observed) || new[] { 10, 11, 12, 1, 2, 3 }.SequenceEqual(observed));
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace SharpAlgosTests
                 Tuple<List<Tuple<Tuple<int, int>, Tuple<int, int>>>, bool> entry = Load2SAT_BattleDev(index);
                 var hasSolution = entry.Item2;
                 var clauses = entry.Item1;
-                var solution = Graph<Tuple<int,int>>.Solve2SAT(clauses, x=>Tuple.Create(x.Item1,-x.Item2), AreValidAtSameTime_2SAT_BattleDev, false);
+                var solution = Graph<Tuple<int, int>>.Solve2SAT(clauses, x => Tuple.Create(x.Item1, -x.Item2), AreValidAtSameTime_2SAT_BattleDev, false);
                 if (!hasSolution)
                 {
                     Assert.IsNull(solution);
@@ -93,7 +93,7 @@ namespace SharpAlgosTests
             }
         }
 
-        private static bool IsValidSolution<T>(IReadOnlyList<T> solution, Func<T,T,bool> areValidAtSameTime)
+        private static bool IsValidSolution<T>(IReadOnlyList<T> solution, Func<T, T, bool> areValidAtSameTime)
         {
             for (int firstClause = 0; firstClause < solution.Count; ++firstClause)
             {
@@ -108,14 +108,14 @@ namespace SharpAlgosTests
             return true;
         }
 
-        private static bool AreValidAtSameTime_2SAT_BattleDev(Tuple<int,int> studentAndstartHour1, Tuple<int, int> studentAndstartHour2)
+        private static bool AreValidAtSameTime_2SAT_BattleDev(Tuple<int, int> studentAndstartHour1, Tuple<int, int> studentAndstartHour2)
         {
             var min = Math.Min(studentAndstartHour1.Item2, studentAndstartHour2.Item2);
             var max = Math.Max(studentAndstartHour1.Item2, studentAndstartHour2.Item2);
             return (max - min) > 60;
         }
 
-        private static Tuple<List<Tuple<Tuple<int,int>, Tuple<int, int>>>, bool> Load2SAT_BattleDev(int index)
+        private static Tuple<List<Tuple<Tuple<int, int>, Tuple<int, int>>>, bool> Load2SAT_BattleDev(int index)
         {
             var inputPath = Path.Combine(TestDataDirectory, "2SAT/input" + index + ".txt");
             var hourClauses = new List<Tuple<Tuple<int, int>, Tuple<int, int>>>();
@@ -124,7 +124,7 @@ namespace SharpAlgosTests
             {
                 var l = readAllLines[i];
                 var line = l.Split().Select(int.Parse).ToList();
-                hourClauses.Add(Tuple.Create(Tuple.Create(i-1, line[0]), Tuple.Create(i-1, line[1])));
+                hourClauses.Add(Tuple.Create(Tuple.Create(i - 1, line[0]), Tuple.Create(i - 1, line[1])));
             }
 
             var outputPath = Path.Combine(TestDataDirectory, "2SAT/output" + index + ".txt");
@@ -365,7 +365,7 @@ namespace SharpAlgosTests
             g.Add("B", "C", 1);
             g.Add("C", "A", 1);
             g.Add("C", "D", 1);
-            TestAllCycles(new[] {"ABC"}, g.AllCycles());
+            TestAllCycles(new[] { "ABC" }, g.AllCycles());
 
             //see: https://en.wikipedia.org/wiki/Strongly_connected_component
             g = new Graph<string>(true);
@@ -383,7 +383,7 @@ namespace SharpAlgosTests
             g.Add("G", "F", 1);
             g.Add("H", "D", 1);
             g.Add("H", "G", 1);
-            TestAllCycles(new[] {"ABE", "FG", "CD", "DH"}, g.AllCycles());
+            TestAllCycles(new[] { "ABE", "FG", "CD", "DH" }, g.AllCycles());
         }
 
         [Test]
@@ -461,14 +461,14 @@ namespace SharpAlgosTests
 
         private static string ToStringNormalizedCycle(List<int> cycle)
         {
-            return ToStringNormalizedCycle(cycle.Select(x=>x.ToString()).ToList());
+            return ToStringNormalizedCycle(cycle.Select(x => x.ToString()).ToList());
         }
 
         [Test]
         public void TestCycleWithMinimumAverageWeight()
         {
             var g = new Graph<string>(true);
-            g.Add("A", "B",1);
+            g.Add("A", "B", 1);
             g.Add("A", "C", 10);
             Assert.AreEqual(null, g.CycleWithMinimumAverageWeight("A"));
             Assert.AreEqual(null, g.CycleWithMinimumAverageWeight());
@@ -489,15 +489,15 @@ namespace SharpAlgosTests
             Assert.AreEqual(10.0, minimumMean, 1e-9);
 
             g = new Graph<string>(true);
-            g.Add("v1","v3",10);
-            g.Add("v1","v2",1);
+            g.Add("v1", "v3", 10);
+            g.Add("v1", "v2", 1);
             g.Add("v2", "v3", 3);
             g.Add("v3", "v4", 2);
             g.Add("v4", "v1", 8);
             g.Add("v4", "v2", 0);
             res = g.CycleWithMinimumAverageWeight();
             Assert.AreEqual("v2v3v4", ToStringNormalizedCycle(res.Item1));
-            Assert.AreEqual(5.0/3.0, res.Item2, 1e-9);
+            Assert.AreEqual(5.0 / 3.0, res.Item2, 1e-9);
 
 
 
@@ -521,9 +521,9 @@ namespace SharpAlgosTests
         public void TestExtractNegativeCycleIfAny()
         {
             var g = new Graph<int>(true);
-            g.Add(0,1,-1);
-            g.Add(1,2,-1);
-            g.Add(2,0,-1);
+            g.Add(0, 1, -1);
+            g.Add(1, 2, -1);
+            g.Add(2, 0, -1);
             var cycle = g.ExtractNegativeCycleIfAny(-999);
             Assert.AreEqual("012", ToStringNormalizedCycle(cycle));
 
@@ -567,10 +567,10 @@ namespace SharpAlgosTests
             res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
             Assert.AreEqual(null, res);
 
-            //signle cycle 0 => 1 => 2
+            //single cycle 0 => 1 => 2
             g.Add(2, 0, 1);
             duration[Tuple.Create(2, 0)] = 1;
-            res = g.CycleWithLowestRatioCostDuration(-999, (u,v)=> duration[Tuple.Create(u,v)]);
+            res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
             Assert.AreEqual(1, res.Item1, 1e-4);
             Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
             res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
@@ -585,13 +585,13 @@ namespace SharpAlgosTests
             Assert.AreEqual(1.0, res.Item1, 1e-4);
             Assert.AreEqual("012", ToStringNormalizedCycle(res.Item2));
             res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
-            Assert.AreEqual(21.0/3, res.Item1, 1e-4);
+            Assert.AreEqual(21.0 / 3, res.Item1, 1e-4);
             Assert.AreEqual("013", ToStringNormalizedCycle(res.Item2));
 
             g.Add(1, 3, 0.5);
             g.Add(3, 0, 0.5);
             res = g.CycleWithLowestRatioCostDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
-            Assert.AreEqual(2.0/3, res.Item1, 1e-4);
+            Assert.AreEqual(2.0 / 3, res.Item1, 1e-4);
             Assert.AreEqual("013", ToStringNormalizedCycle(res.Item2));
             res = g.CycleWithHighestRatioBenefitDuration(-999, (u, v) => duration[Tuple.Create(u, v)]);
             Assert.AreEqual(1.0, res.Item1, 1e-4);
@@ -698,7 +698,7 @@ namespace SharpAlgosTests
         [Test]
         public void TestVerticesCount()
         {
-            foreach (var isDirected in new[] {true, false})
+            foreach (var isDirected in new[] { true, false })
             {
                 var g = new Graph<int>(isDirected);
                 g.Add(0, 1, 1);
@@ -732,7 +732,7 @@ namespace SharpAlgosTests
                 g.Add(3, 4, 34);
                 var allEdgeCost = g.AllEdgeCost();
                 allEdgeCost.Sort();
-                var expected = isDirected ? new double[] {1, 12, 34} : new double[] {1, 1, 12, 12, 34, 34};
+                var expected = isDirected ? new double[] { 1, 12, 34 } : new double[] { 1, 1, 12, 12, 34, 34 };
                 Assert.IsTrue(allEdgeCost.SequenceEqual(expected));
             }
         }
@@ -756,7 +756,7 @@ namespace SharpAlgosTests
             var g = new Graph<int>(false);
             int cost = 1;
             for (int i = 0; i < 5; ++i)
-                for (int j = i+1; j < 5; ++j)
+                for (int j = i + 1; j < 5; ++j)
                 {
                     g.Add(i, j, cost);
                 }
@@ -769,9 +769,9 @@ namespace SharpAlgosTests
         {
             var g = SampleTree1();
             var path = g.ShortestPath_BFS(1211, 122);
-            Assert.IsTrue(path.SequenceEqual(new[] {1211, 121, 12, 122}));
+            Assert.IsTrue(path.SequenceEqual(new[] { 1211, 121, 12, 122 }));
             path = g.ShortestPath_DFS(1211, 122);
-            Assert.IsTrue(path.SequenceEqual(new[] {1211, 121, 12, 122}));
+            Assert.IsTrue(path.SequenceEqual(new[] { 1211, 121, 12, 122 }));
 
             //longest path in TREE: both by BFS (always in o(V)) & DFS (in o(V) because it is a TREE)
             path = g.LongestPathInConnectedGraph_BFS();
@@ -780,19 +780,19 @@ namespace SharpAlgosTests
                 path.Reverse();
             }
 
-            Assert.IsTrue(path.SequenceEqual(new[] {1211, 121, 12, 1, 0, 2}));
+            Assert.IsTrue(path.SequenceEqual(new[] { 1211, 121, 12, 1, 0, 2 }));
             path = g.LongestPathInConnectedGraph_DFS();
             if (path[0] == 2)
             {
                 path.Reverse();
             }
 
-            Assert.IsTrue(path.SequenceEqual(new[] {1211, 121, 12, 1, 0, 2}));
+            Assert.IsTrue(path.SequenceEqual(new[] { 1211, 121, 12, 1, 0, 2 }));
             //longest path starting at a specific vertex: both by BFS (always in o(V)) & DFS (in o(V) because it is a TREE)
             path = g.LongestPath_BFS(11);
-            Assert.IsTrue(path.SequenceEqual(new[] {11, 1, 12, 121, 1211}));
+            Assert.IsTrue(path.SequenceEqual(new[] { 11, 1, 12, 121, 1211 }));
             path = g.LongestPath_DFS(11);
-            Assert.IsTrue(path.SequenceEqual(new[] {11, 1, 12, 121, 1211}));
+            Assert.IsTrue(path.SequenceEqual(new[] { 11, 1, 12, 121, 1211 }));
         }
 
         [Test]
@@ -801,12 +801,12 @@ namespace SharpAlgosTests
             var g = SampleTree1();
             List<HashSet<int>> r = g.AllReachable_ByDepth(12, 0);
             Assert.AreEqual(1, r.Count);
-            Assert.IsTrue(r[0].SequenceEqual(new[] {12}));
+            Assert.IsTrue(r[0].SequenceEqual(new[] { 12 }));
             r = g.AllReachable_ByDepth(12, 2);
             Assert.AreEqual(3, r.Count);
-            Assert.IsTrue(r[0].SequenceEqual(new[] {12}));
-            Assert.IsTrue(r[1].ToList().OrderBy(x => x).SequenceEqual(new[] {1, 121, 122}));
-            Assert.IsTrue(r[2].ToList().OrderBy(x => x).SequenceEqual(new[] {0, 11, 1211}));
+            Assert.IsTrue(r[0].SequenceEqual(new[] { 12 }));
+            Assert.IsTrue(r[1].ToList().OrderBy(x => x).SequenceEqual(new[] { 1, 121, 122 }));
+            Assert.IsTrue(r[2].ToList().OrderBy(x => x).SequenceEqual(new[] { 0, 11, 1211 }));
             r = g.AllReachable_ByDepth(12);
             Assert.AreEqual(4, r.Count);
             Assert.AreEqual(8, r.Select(x => x.Count).Sum());
@@ -820,7 +820,7 @@ namespace SharpAlgosTests
             r = g.AllReachable_ByDepth(2, 2);
             Assert.AreEqual(2, r.Count);
             Assert.IsTrue(r[0].SequenceEqual(new[] { 2 }));
-            Assert.IsTrue(r[1].SequenceEqual(new[] {0,1,3,4 }));
+            Assert.IsTrue(r[1].SequenceEqual(new[] { 0, 1, 3, 4 }));
             reachable = g.AllReachable(2);
             Assert.AreEqual(5, reachable.Count);
         }
@@ -943,7 +943,7 @@ namespace SharpAlgosTests
         public void TestBestPathBellmanFordWithMaxDepth(int expectedResult, int nbVertices, string edgesString, int start, int end, int maxDepth)
         {
             var edges = edgesString.Split('|').Select(x => x.Split(',').Select(int.Parse).ToArray()).ToList();
-            var g =  new Graph<int>(true);
+            var g = new Graph<int>(true);
             foreach (var e in edges)
             {
                 g.Add(e[0], e[1], e[2]);
@@ -951,7 +951,7 @@ namespace SharpAlgosTests
 
             var observedResult = (int)g.BestPathBellmanFordWithMaxDepth(start, end, maxDepth);
             Assert.AreEqual(expectedResult, observedResult);
-}
+        }
         [Test]
         public void TestBestPathBellmanFord()
         {
@@ -1211,8 +1211,7 @@ namespace SharpAlgosTests
         public void TestMinCutUsingEdmondsKarp()
         {
             var g = GraphTwoVertices();
-            List<KeyValuePair<string, string>> deletedEdges;
-            var minimumCostOfEdgesToDeleteToRemovePathFromSourceToDestination = g.MinCut("A", "B", out deletedEdges);
+            var minimumCostOfEdgesToDeleteToRemovePathFromSourceToDestination = g.MinCut("A", "B", out var deletedEdges);
             Assert.AreEqual(10, minimumCostOfEdgesToDeleteToRemovePathFromSourceToDestination, 1e-6);
             var observedEdgeToDeleteToMinimizeCut = deletedEdges.Select(x => x.Key + ":" + x.Value).ToList();
             observedEdgeToDeleteToMinimizeCut.Sort();
@@ -1295,82 +1294,123 @@ namespace SharpAlgosTests
         [Test]
         public void Test_Maximize_SumCost_ForPerfectMatching_InBipartiteGraph()
         {
-            int[,] m1 = {{ 3, 3, 1, 2 },{ 0, 4, -8, 3 },{ 0, 2, 3, 0 },{ -1, 1, 2, -5 }};
-            int[] bestMatching;
-            int maxResult = Utils.Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(m1, out bestMatching);
+            double[,] m1 = { { 3, 3, 1, 2 }, { 0, 4, -8, 3 }, { 0, 2, 3, 0 }, { -1, 1, 2, -5 } };
+            var maxResult = Utils.Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(m1, out var bestMatching);
             Assert.AreEqual(10, maxResult);
             Assert.AreEqual(4, bestMatching.Length);
             Assert.AreEqual(0, bestMatching[0]);
             Assert.AreEqual(3, bestMatching[1]);
             Assert.AreEqual(1 + 2, bestMatching[2] + bestMatching[3]);
-            int minResult = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m1,  out bestMatching);
-            Assert.AreEqual(-10, minResult);
+            var minResult = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m1, out bestMatching);
+            Assert.AreEqual(-10.0, minResult, 1e-6);
             Assert.IsTrue(new[] { 1, 2, 0, 3 }.SequenceEqual(bestMatching));
+            var m1Transpose = Transpose(m1);
+            var minResultTranspose = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m1Transpose, out bestMatching);
+            Assert.AreEqual(-10.0, minResultTranspose, 1e-6);
 
-            int[,] m2 = {{ 17, 15, 9, 5, 12 },{ 16, 16, 10, 5, 10 },{ 12, 15, 14, 11, 5 },{ 4, 8, 14, 17, 13 },{ 13, 9, 8, 12, 17 }};
+
+            double[,] m2 = { { 17, 15, 9, 5, 12 }, { 16, 16, 10, 5, 10 }, { 12, 15, 14, 11, 5 }, { 4, 8, 14, 17, 13 }, { 13, 9, 8, 12, 17 } };
             maxResult = Utils.Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(m2, out bestMatching);
             Assert.AreEqual(81, maxResult);
             Assert.IsTrue(new[] { 0, 1, 2, 3, 4 }.SequenceEqual(bestMatching));
             minResult = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m2, out bestMatching);
-            Assert.AreEqual(32, minResult);
+            Assert.AreEqual(32.0, minResult, 1e-6);
             Assert.IsTrue(new[] { 2, 3, 4, 0, 1 }.SequenceEqual(bestMatching));
+            var m2Transpose = Transpose(m2);
+            minResultTranspose = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m2Transpose, out bestMatching);
+            Assert.AreEqual(32.0, minResultTranspose, 1e-6);
 
-            //3 sources, 4 target
-            int[,] m3 = { { 3, 3, 1, 2 }, { 0, 4, -8, 3 }, { 0, 2, 3, 0 }};
+            //3 sources, 4 destinations
+            double[,] m3 = { { 3, 3, 1, 2 }, { 0, 4, -8, 3 }, { 0, 2, 3, 0 } };
             maxResult = Utils.Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(m3, out bestMatching);
             Assert.AreEqual(10, maxResult);
-            Assert.IsTrue(new[] { 0, 1, 2}.SequenceEqual(bestMatching));
+            Assert.IsTrue(new[] { 0, 1, 2 }.SequenceEqual(bestMatching));
             minResult = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m3, out bestMatching);
-            Assert.AreEqual(-6, minResult);
-            Assert.IsTrue(new[] { 3, 2, 0}.SequenceEqual(bestMatching));
+            Assert.AreEqual(-6.0, minResult, 1e-6);
+            Assert.IsTrue(new[] { 3, 2, 0 }.SequenceEqual(bestMatching));
+            var m3Transpose = Transpose(m3);
+            minResultTranspose = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m3Transpose, out bestMatching);
+            Assert.AreEqual(-6.0, minResultTranspose, 1e-6);
 
-            //4 sources, 5 targets
-            int[,] m4 = { { 17, 15, 9, 5, 12 }, { 16, 16, 10, 5, 10 }, { 12, 15, 14, 11, 5 }, { 4, 8, 14, 17, 13 }};
+            //4 sources, 5 destinations
+            double[,] m4 = { { 17.0, 15, 9, 5, 12 }, { 16, 16, 10, 5, 10 }, { 12, 15, 14, 11, 5 }, { 4, 8, 14, 17, 13 } };
             maxResult = Utils.Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(m4, out bestMatching);
             Assert.AreEqual(64, maxResult);
-            Assert.IsTrue(new[] { 0, 1, 2, 3}.SequenceEqual(bestMatching));
+            Assert.IsTrue(new[] { 0, 1, 2, 3 }.SequenceEqual(bestMatching));
             minResult = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m4, out bestMatching);
-            Assert.AreEqual(23, minResult);
+            Assert.AreEqual(23.0, minResult, 1e-6);
             Assert.IsTrue(new[] { 2, 3, 4, 0 }.SequenceEqual(bestMatching));
+            var m4Transpose = Transpose(m4);
+            minResultTranspose = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m4Transpose, out bestMatching);
+            Assert.AreEqual(23.0, minResultTranspose, 1e-6);
+
+            //49 sources, 51 destinations
+            double[,] m5 = { { 16.0, 16, 13, 11, 11, 15, 16, 18, 10, 12, 9, 17, 15, 12, 11, 15, 16, 14, 10, 10, 9, 11, 8, 16, 11, 7, 12, 11, 12, 7, 11, 13, 9, 16, 15, 13, 12, 13, 10, 14, 12, 14, 8, 15, 14, 15, 13, 10, 13, 11, 8 }, { 9, 20, 17, 15, 13, 20, 23, 16, 12, 16, 14, 22, 20, 9, 12, 15, 17, 16, 14, 11, 11, 11, 17, 15, 17, 12, 20, 9, 14, 13, 22, 13, 13, 14, 17, 19, 13, 15, 15, 10, 13, 14, 14, 13, 17, 19, 18, 12, 19, 13, 10 }, { 12, 18, 16, 20, 14, 16, 15, 21, 11, 14, 14, 17, 19, 10, 11, 12, 19, 17, 12, 14, 10, 12, 14, 15, 15, 7, 15, 13, 13, 11, 18, 9, 9, 15, 13, 14, 14, 16, 11, 14, 13, 11, 11, 14, 15, 14, 15, 11, 16, 13, 12 }, { 15, 19, 13, 14, 10, 13, 15, 13, 11, 9, 15, 17, 16, 7, 15, 13, 15, 16, 13, 15, 14, 10, 12, 16, 11, 7, 18, 14, 11, 10, 11, 14, 8, 12, 15, 13, 11, 12, 16, 12, 11, 10, 15, 14, 12, 15, 13, 14, 15, 10, 10 }, { 11, 19, 14, 13, 9, 8, 13, 16, 12, 14, 12, 15, 11, 8, 11, 13, 14, 15, 15, 14, 11, 8, 11, 14, 12, 7, 15, 13, 12, 12, 16, 12, 13, 12, 14, 13, 9, 8, 12, 7, 10, 10, 11, 11, 15, 17, 10, 12, 16, 9, 8 }, { 8, 17, 15, 18, 14, 18, 21, 21, 13, 19, 17, 14, 23, 13, 13, 15, 17, 16, 12, 14, 15, 12, 14, 13, 14, 12, 14, 14, 12, 7, 21, 11, 13, 14, 19, 16, 11, 14, 15, 9, 12, 11, 9, 12, 17, 21, 11, 14, 16, 14, 17 }, { 10, 19, 16, 16, 11, 17, 16, 16, 12, 20, 11, 16, 20, 10, 13, 17, 16, 17, 15, 14, 12, 11, 15, 14, 13, 9, 19, 12, 12, 12, 15, 14, 12, 13, 16, 18, 12, 13, 13, 12, 10, 13, 13, 10, 17, 22, 16, 12, 12, 10, 13 }, { 9, 14, 15, 16, 13, 16, 18, 15, 12, 12, 16, 16, 12, 8, 7, 8, 14, 14, 17, 13, 11, 11, 18, 9, 11, 6, 13, 12, 13, 9, 15, 10, 13, 12, 12, 12, 10, 10, 11, 10, 10, 6, 9, 12, 14, 13, 14, 10, 11, 8, 6 }, { 10, 20, 14, 19, 10, 17, 16, 14, 14, 13, 16, 18, 17, 12, 13, 12, 15, 15, 15, 14, 12, 10, 12, 12, 13, 9, 18, 14, 14, 10, 18, 14, 10, 13, 17, 11, 14, 12, 13, 9, 13, 9, 14, 14, 16, 14, 14, 13, 20, 12, 11 }, { 16, 18, 21, 19, 15, 19, 20, 21, 10, 16, 19, 22, 22, 10, 9, 14, 18, 20, 18, 12, 11, 11, 14, 16, 16, 12, 15, 14, 16, 13, 20, 14, 14, 18, 20, 18, 17, 13, 15, 16, 13, 15, 19, 18, 17, 16, 20, 10, 17, 13, 13 }, { 10, 15, 12, 12, 10, 14, 19, 13, 14, 13, 17, 16, 16, 6, 12, 11, 14, 12, 10, 11, 7, 11, 15, 18, 11, 7, 12, 10, 12, 10, 18, 9, 13, 13, 10, 16, 10, 13, 8, 12, 7, 10, 13, 10, 11, 14, 13, 9, 15, 9, 8 }, { 8, 11, 15, 11, 12, 12, 11, 11, 8, 14, 14, 11, 9, 6, 6, 10, 12, 11, 12, 10, 8, 10, 10, 11, 10, 4, 10, 8, 9, 10, 13, 10, 8, 10, 11, 9, 9, 8, 11, 11, 9, 8, 12, 9, 10, 14, 12, 5, 13, 6, 7 }, { 9, 16, 17, 13, 11, 17, 11, 13, 17, 13, 12, 20, 11, 9, 10, 10, 11, 13, 9, 12, 9, 13, 13, 13, 7, 7, 11, 8, 14, 12, 14, 14, 10, 10, 17, 12, 12, 13, 12, 13, 9, 8, 12, 14, 12, 19, 14, 11, 18, 11, 9 }, { 13, 21, 17, 15, 12, 17, 16, 14, 18, 20, 13, 18, 18, 9, 12, 12, 13, 16, 21, 15, 11, 15, 11, 18, 12, 10, 13, 10, 14, 7, 17, 14, 12, 12, 19, 15, 13, 12, 15, 11, 13, 12, 15, 12, 15, 21, 12, 12, 20, 14, 11 }, { 10, 17, 12, 10, 12, 15, 13, 11, 11, 13, 10, 15, 16, 6, 13, 12, 17, 15, 15, 11, 8, 10, 10, 8, 11, 10, 16, 9, 14, 8, 12, 13, 8, 11, 10, 11, 11, 11, 12, 13, 6, 9, 11, 8, 13, 12, 14, 10, 13, 9, 9 }, { 10, 13, 18, 20, 15, 16, 17, 20, 10, 17, 15, 17, 16, 10, 14, 14, 22, 17, 12, 12, 10, 15, 9, 16, 14, 9, 16, 14, 12, 12, 18, 15, 11, 12, 15, 15, 11, 16, 15, 13, 11, 15, 13, 14, 14, 19, 14, 19, 20, 14, 14 }, { 9, 13, 14, 15, 9, 15, 15, 12, 12, 11, 17, 10, 13, 7, 13, 12, 15, 11, 9, 14, 9, 9, 11, 9, 14, 6, 15, 12, 7, 13, 13, 9, 11, 13, 15, 14, 10, 14, 12, 12, 6, 6, 11, 13, 10, 14, 13, 9, 19, 9, 10 }, { 8, 15, 14, 13, 13, 13, 17, 13, 12, 12, 15, 14, 16, 7, 13, 13, 12, 13, 12, 14, 12, 12, 11, 9, 13, 10, 13, 12, 11, 9, 16, 15, 12, 11, 15, 15, 10, 15, 11, 12, 9, 9, 7, 12, 16, 15, 14, 4, 13, 11, 8 }, { 10, 13, 14, 19, 10, 12, 13, 16, 11, 11, 7, 16, 17, 11, 7, 11, 11, 13, 13, 11, 8, 10, 11, 12, 11, 8, 13, 13, 9, 9, 12, 11, 9, 17, 11, 14, 11, 10, 8, 14, 13, 13, 10, 12, 14, 15, 11, 8, 11, 14, 12 }, { 17, 22, 17, 19, 14, 18, 20, 22, 10, 15, 20, 21, 22, 12, 11, 15, 14, 19, 14, 16, 16, 15, 14, 15, 16, 11, 14, 11, 9, 17, 21, 13, 10, 15, 19, 18, 11, 13, 13, 13, 14, 14, 15, 11, 14, 17, 16, 12, 17, 11, 16 }, { 7, 15, 15, 12, 11, 14, 15, 13, 9, 8, 7, 15, 14, 11, 8, 11, 13, 15, 13, 14, 6, 11, 11, 16, 8, 6, 12, 9, 5, 8, 15, 12, 6, 13, 10, 9, 9, 10, 12, 12, 7, 10, 10, 9, 10, 14, 11, 8, 15, 11, 8 }, { 15, 18, 14, 16, 7, 11, 15, 16, 9, 7, 10, 17, 15, 11, 11, 9, 13, 17, 14, 14, 14, 9, 6, 14, 5, 7, 14, 10, 12, 5, 10, 11, 11, 13, 14, 11, 10, 10, 12, 9, 10, 11, 11, 13, 13, 18, 13, 12, 12, 15, 13 }, { 12, 21, 16, 16, 12, 15, 20, 16, 14, 13, 13, 19, 22, 13, 13, 14, 13, 15, 18, 16, 10, 13, 11, 13, 12, 8, 17, 8, 13, 12, 16, 15, 9, 11, 18, 17, 14, 14, 10, 12, 11, 14, 15, 12, 18, 14, 16, 10, 16, 13, 9 }, { 13, 19, 12, 15, 9, 12, 16, 12, 10, 16, 15, 16, 16, 9, 9, 10, 14, 16, 19, 12, 11, 10, 14, 17, 12, 9, 14, 14, 11, 9, 14, 14, 11, 15, 14, 14, 11, 10, 11, 11, 8, 9, 16, 12, 15, 15, 13, 11, 16, 12, 8 }, { 15, 15, 15, 17, 13, 15, 12, 12, 10, 15, 15, 17, 16, 10, 11, 13, 16, 16, 12, 15, 10, 13, 8, 12, 15, 7, 16, 12, 11, 9, 13, 15, 13, 12, 14, 12, 10, 14, 12, 12, 10, 11, 13, 11, 15, 20, 16, 15, 17, 12, 11 }, { 14, 14, 16, 17, 12, 15, 10, 16, 11, 15, 10, 16, 16, 11, 11, 12, 14, 15, 14, 13, 13, 11, 12, 13, 9, 6, 14, 10, 10, 11, 13, 10, 10, 11, 11, 14, 9, 17, 7, 15, 12, 10, 9, 13, 14, 14, 16, 13, 13, 15, 11 }, { 12, 13, 9, 9, 15, 12, 16, 10, 11, 13, 12, 18, 16, 4, 13, 13, 12, 12, 10, 10, 11, 10, 13, 13, 10, 12, 11, 7, 12, 14, 12, 14, 12, 6, 15, 11, 12, 14, 10, 12, 10, 11, 8, 11, 10, 15, 13, 8, 18, 8, 9 }, { 8, 12, 12, 14, 10, 10, 14, 14, 10, 12, 11, 17, 16, 7, 9, 13, 13, 17, 12, 11, 7, 9, 11, 14, 10, 7, 15, 12, 7, 9, 12, 14, 7, 17, 13, 13, 11, 13, 13, 14, 8, 13, 12, 10, 13, 12, 12, 9, 11, 12, 8 }, { 16, 14, 14, 20, 13, 18, 16, 18, 13, 19, 10, 17, 14, 10, 8, 12, 14, 19, 13, 12, 11, 12, 14, 10, 11, 12, 19, 12, 13, 12, 14, 9, 10, 10, 17, 14, 12, 11, 14, 17, 14, 12, 12, 10, 12, 20, 15, 11, 13, 13, 14 }, { 16, 17, 12, 18, 11, 12, 19, 17, 11, 13, 10, 15, 17, 7, 9, 11, 15, 15, 10, 12, 13, 13, 14, 15, 14, 14, 15, 12, 15, 13, 17, 13, 12, 12, 15, 14, 15, 13, 11, 14, 7, 13, 12, 16, 13, 16, 16, 12, 16, 12, 8 }, { 8, 16, 11, 14, 7, 14, 14, 11, 10, 12, 9, 15, 15, 7, 7, 9, 14, 13, 14, 8, 4, 8, 9, 8, 10, 7, 14, 6, 8, 5, 9, 11, 8, 9, 9, 11, 7, 13, 10, 7, 9, 10, 5, 8, 11, 14, 13, 9, 12, 14, 10 }, { 14, 16, 11, 20, 15, 12, 20, 17, 15, 11, 16, 17, 16, 10, 9, 9, 14, 14, 14, 9, 9, 14, 14, 12, 12, 9, 12, 13, 14, 13, 14, 14, 15, 10, 14, 13, 17, 12, 12, 17, 10, 13, 12, 11, 14, 18, 15, 13, 14, 13, 12 }, { 11, 13, 17, 17, 18, 22, 24, 20, 12, 15, 13, 17, 23, 12, 12, 13, 13, 21, 11, 11, 15, 14, 14, 16, 14, 12, 15, 8, 10, 12, 18, 14, 11, 15, 17, 14, 14, 15, 11, 11, 14, 8, 16, 11, 16, 15, 15, 13, 15, 13, 16 }, { 13, 15, 15, 16, 15, 17, 16, 17, 11, 16, 15, 17, 18, 9, 9, 10, 15, 15, 9, 14, 9, 13, 13, 12, 15, 8, 14, 11, 9, 11, 20, 14, 16, 11, 15, 13, 13, 14, 11, 14, 13, 10, 8, 11, 13, 19, 15, 13, 13, 18, 9 }, { 10, 19, 11, 11, 13, 13, 12, 15, 10, 10, 10, 16, 18, 10, 13, 14, 16, 17, 15, 11, 12, 11, 8, 12, 13, 6, 12, 12, 9, 7, 16, 17, 7, 13, 11, 11, 6, 9, 10, 9, 11, 7, 12, 9, 14, 12, 12, 11, 14, 9, 9 }, { 16, 26, 21, 21, 22, 16, 24, 19, 18, 15, 16, 24, 26, 9, 13, 17, 16, 17, 16, 14, 15, 13, 17, 18, 15, 12, 19, 15, 17, 14, 18, 18, 15, 16, 15, 20, 16, 15, 15, 16, 21, 11, 15, 10, 19, 20, 18, 13, 18, 13, 12 }, { 10, 8, 11, 10, 6, 11, 10, 11, 9, 10, 7, 13, 8, 8, 7, 5, 13, 12, 13, 12, 10, 7, 7, 7, 3, 8, 9, 8, 5, 9, 10, 9, 6, 8, 13, 6, 9, 6, 10, 11, 9, 7, 10, 11, 11, 12, 14, 9, 10, 11, 10 }, { 12, 16, 13, 16, 8, 14, 12, 18, 14, 14, 13, 21, 14, 10, 11, 11, 13, 17, 15, 12, 10, 11, 15, 14, 10, 8, 15, 11, 14, 10, 15, 12, 14, 10, 15, 11, 11, 13, 12, 14, 12, 9, 13, 13, 13, 10, 11, 9, 15, 12, 11 }, { 12, 18, 14, 18, 11, 11, 19, 15, 12, 13, 14, 19, 19, 10, 12, 13, 15, 18, 14, 15, 12, 11, 16, 18, 10, 11, 18, 9, 12, 12, 17, 13, 16, 9, 18, 18, 10, 15, 13, 11, 11, 14, 15, 10, 15, 19, 9, 10, 18, 15, 12 }, { 9, 13, 11, 15, 9, 14, 16, 13, 7, 9, 9, 15, 10, 4, 8, 11, 14, 10, 13, 9, 10, 10, 12, 14, 7, 10, 11, 12, 9, 9, 15, 8, 5, 10, 9, 12, 10, 10, 7, 11, 13, 7, 7, 9, 13, 15, 14, 8, 12, 14, 10 }, { 9, 22, 19, 19, 15, 22, 18, 18, 15, 10, 14, 17, 22, 12, 13, 12, 16, 17, 16, 12, 11, 15, 9, 12, 12, 9, 18, 16, 13, 6, 20, 16, 13, 15, 14, 17, 15, 12, 11, 12, 13, 10, 13, 12, 18, 18, 14, 11, 18, 16, 14 }, { 10, 15, 15, 16, 11, 15, 15, 12, 9, 18, 12, 20, 15, 13, 14, 8, 16, 10, 11, 17, 13, 9, 11, 14, 10, 8, 16, 13, 10, 9, 17, 14, 11, 12, 12, 13, 14, 10, 10, 13, 12, 4, 13, 13, 15, 18, 18, 15, 12, 17, 14 }, { 15, 16, 12, 15, 11, 13, 18, 15, 14, 15, 13, 18, 15, 9, 12, 10, 12, 16, 13, 16, 10, 11, 14, 18, 10, 6, 16, 14, 12, 7, 12, 12, 13, 14, 15, 17, 10, 10, 12, 13, 14, 8, 14, 13, 14, 22, 12, 13, 15, 12, 7 }, { 10, 17, 15, 14, 11, 15, 15, 18, 13, 14, 11, 17, 18, 9, 12, 13, 14, 16, 13, 6, 15, 8, 13, 15, 9, 10, 12, 11, 11, 11, 15, 14, 14, 14, 14, 14, 11, 13, 12, 13, 14, 9, 12, 12, 12, 18, 15, 13, 12, 13, 11 }, { 11, 17, 16, 10, 12, 15, 15, 14, 9, 16, 13, 17, 16, 8, 10, 13, 16, 13, 14, 11, 11, 13, 10, 15, 9, 9, 13, 8, 11, 12, 16, 14, 10, 12, 14, 10, 14, 15, 13, 15, 10, 13, 10, 10, 11, 17, 16, 11, 17, 14, 13 }, { 8, 15, 11, 14, 17, 13, 20, 12, 12, 13, 12, 16, 15, 9, 16, 13, 18, 16, 9, 13, 15, 14, 11, 9, 9, 10, 17, 10, 10, 11, 15, 11, 8, 6, 14, 11, 14, 10, 9, 17, 11, 13, 12, 9, 11, 14, 15, 9, 15, 13, 13 }, { 9, 14, 13, 15, 10, 13, 14, 10, 9, 14, 12, 16, 12, 8, 9, 15, 13, 10, 12, 10, 10, 13, 6, 12, 7, 8, 13, 9, 6, 13, 16, 11, 8, 8, 10, 13, 7, 11, 12, 12, 16, 10, 9, 8, 10, 12, 13, 9, 12, 9, 10 }, { 13, 17, 12, 17, 12, 15, 17, 15, 11, 15, 16, 18, 17, 12, 17, 12, 19, 15, 17, 14, 15, 13, 12, 14, 10, 6, 17, 11, 12, 14, 17, 14, 8, 14, 15, 16, 9, 16, 13, 16, 14, 16, 14, 14, 14, 16, 15, 12, 14, 13, 15 }, { 10, 11, 14, 20, 13, 15, 15, 13, 11, 19, 14, 16, 15, 6, 14, 13, 18, 15, 12, 15, 13, 10, 11, 13, 13, 9, 15, 11, 10, 10, 14, 14, 7, 14, 14, 11, 13, 14, 11, 10, 9, 8, 13, 15, 16, 15, 18, 13, 14, 15, 12 } };
+            maxResult = Utils.Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(m5, out bestMatching);
+            Assert.AreEqual(859, maxResult);
+            minResult = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m5, out bestMatching);
+            Assert.AreEqual(407.0, minResult, 1e-6);
+            var m5Transpose = Transpose(m5);
+            minResultTranspose = Utils.Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(m5Transpose, out bestMatching);
+            Assert.AreEqual(407.0, minResultTranspose, 1e-6);
+        }
+
+        private static T[,] Transpose<T>(T[,] m)
+        {
+            int nbRows = m.GetLength(0);
+            int nbCols = m.GetLength(1);
+            var transpose = new T[nbCols, nbRows];
+            for (int row = 0; row < nbRows; ++row)
+                for (int col = 0; col < nbCols; ++col)
+                {
+                    transpose[col, row] = m[row, col];
+                }
+            return transpose;
         }
 
         [Test]
         public void Test_Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph()
         {
-            int[,] m1 = { { 3, 3, 1, 2 }, { 0, 4, -8, 3 }, { 0, 2, 3, 0 }, { -1, 1, 2, -5 } };
-            int[] bestMatching;
-            int minCost = Utils.Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(m1, out bestMatching);
-            Assert.AreEqual(2, minCost);
+            double[,] m1 = { { 3.0, 3, 1, 2 }, { 0, 4, -8, 3 }, { 0, 2, 3, 0 }, { -1, 1, 2, -5 } };
+            var minCost = Utils.Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(m1, out var bestMatching);
+            Assert.AreEqual(2.0, minCost, 1e-6);
             Assert.IsTrue(new[] { 0, 3, 1, 2 }.SequenceEqual(bestMatching));
-            int maxCost = Utils.Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(m1, out bestMatching);
-            Assert.AreEqual(1, maxCost);
+            var maxCost = Utils.Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(m1, out bestMatching);
+            Assert.AreEqual(1.0, maxCost, 1e-6);
             Assert.IsTrue(new[] { 2, 0, 3, 1 }.SequenceEqual(bestMatching));
 
-            int[,] m2 = { { 17, 15, 9, 5, 12 }, { 16, 16, 10, 5, 10 }, { 12, 15, 14, 11, 5 }, { 4, 8, 14, 17, 13 }, { 13, 9, 8, 12, 17 } };
+            double[,] m2 = { { 17.0, 15, 9, 5, 12 }, { 16, 16, 10, 5, 10 }, { 12, 15, 14, 11, 5 }, { 4, 8, 14, 17, 13 }, { 13, 9, 8, 12, 17 } };
             minCost = Utils.Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(m2, out bestMatching);
-            Assert.AreEqual(14, minCost);
+            Assert.AreEqual(14.0, minCost, 1e-6);
             Assert.IsTrue(new[] { 0, 1, 2, 3, 4 }.SequenceEqual(bestMatching));
             maxCost = Utils.Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(m2, out bestMatching);
-            Assert.AreEqual(9, maxCost);
+            Assert.AreEqual(9.0, maxCost, 1e-6);
             Assert.IsTrue(new[] { 2, 3, 4, 0, 1 }.SequenceEqual(bestMatching));
 
             //3 sources, 4 target
-            int[,] m3 = { { 3, 3, 1, 2 }, { 0, 4, -8, 3 }, { 0, 2, 3, 0 } };
+            double[,] m3 = { { 3, 3, 1, 2 }, { 0, 4, -8, 3 }, { 0, 2, 3, 0 } };
             minCost = Utils.Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(m3, out bestMatching);
-            Assert.AreEqual(3, minCost);
+            Assert.AreEqual(3.0, minCost, 1e-6);
             Assert.IsTrue(new[] { 0, 1, 2 }.SequenceEqual(bestMatching));
             maxCost = Utils.Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(m3, out bestMatching);
-            Assert.AreEqual(1, maxCost);
+            Assert.AreEqual(1.0, maxCost, 1e-6);
             Assert.IsTrue(new[] { 2, 0, 3 }.SequenceEqual(bestMatching));
 
             //4 sources, 5 targets
-            int[,] m4 = { { 17, 15, 9, 5, 12 }, { 16, 16, 10, 5, 10 }, { 12, 15, 14, 11, 5 }, { 4, 8, 14, 17, 13 } };
+            double[,] m4 = { { 17, 15, 9, 5, 12 }, { 16, 16, 10, 5, 10 }, { 12, 15, 14, 11, 5 }, { 4, 8, 14, 17, 13 } };
             minCost = Utils.Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(m4, out bestMatching);
-            Assert.AreEqual(14, minCost);
+            Assert.AreEqual(14.0, minCost, 1e-6);
             Assert.IsTrue(new[] { 0, 1, 2, 3 }.SequenceEqual(bestMatching));
             maxCost = Utils.Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(m4, out bestMatching);
-            Assert.AreEqual(9, maxCost);
+            Assert.AreEqual(9.0, maxCost, 1e-6);
             Assert.IsTrue(new[] { 2, 3, 4, 0 }.SequenceEqual(bestMatching));
+
+            //49 sources, 51 destinations
+            double[,] m5 = { { 16.0, 16, 13, 11, 11, 15, 16, 18, 10, 12, 9, 17, 15, 12, 11, 15, 16, 14, 10, 10, 9, 11, 8, 16, 11, 7, 12, 11, 12, 7, 11, 13, 9, 16, 15, 13, 12, 13, 10, 14, 12, 14, 8, 15, 14, 15, 13, 10, 13, 11, 8 }, { 9, 20, 17, 15, 13, 20, 23, 16, 12, 16, 14, 22, 20, 9, 12, 15, 17, 16, 14, 11, 11, 11, 17, 15, 17, 12, 20, 9, 14, 13, 22, 13, 13, 14, 17, 19, 13, 15, 15, 10, 13, 14, 14, 13, 17, 19, 18, 12, 19, 13, 10 }, { 12, 18, 16, 20, 14, 16, 15, 21, 11, 14, 14, 17, 19, 10, 11, 12, 19, 17, 12, 14, 10, 12, 14, 15, 15, 7, 15, 13, 13, 11, 18, 9, 9, 15, 13, 14, 14, 16, 11, 14, 13, 11, 11, 14, 15, 14, 15, 11, 16, 13, 12 }, { 15, 19, 13, 14, 10, 13, 15, 13, 11, 9, 15, 17, 16, 7, 15, 13, 15, 16, 13, 15, 14, 10, 12, 16, 11, 7, 18, 14, 11, 10, 11, 14, 8, 12, 15, 13, 11, 12, 16, 12, 11, 10, 15, 14, 12, 15, 13, 14, 15, 10, 10 }, { 11, 19, 14, 13, 9, 8, 13, 16, 12, 14, 12, 15, 11, 8, 11, 13, 14, 15, 15, 14, 11, 8, 11, 14, 12, 7, 15, 13, 12, 12, 16, 12, 13, 12, 14, 13, 9, 8, 12, 7, 10, 10, 11, 11, 15, 17, 10, 12, 16, 9, 8 }, { 8, 17, 15, 18, 14, 18, 21, 21, 13, 19, 17, 14, 23, 13, 13, 15, 17, 16, 12, 14, 15, 12, 14, 13, 14, 12, 14, 14, 12, 7, 21, 11, 13, 14, 19, 16, 11, 14, 15, 9, 12, 11, 9, 12, 17, 21, 11, 14, 16, 14, 17 }, { 10, 19, 16, 16, 11, 17, 16, 16, 12, 20, 11, 16, 20, 10, 13, 17, 16, 17, 15, 14, 12, 11, 15, 14, 13, 9, 19, 12, 12, 12, 15, 14, 12, 13, 16, 18, 12, 13, 13, 12, 10, 13, 13, 10, 17, 22, 16, 12, 12, 10, 13 }, { 9, 14, 15, 16, 13, 16, 18, 15, 12, 12, 16, 16, 12, 8, 7, 8, 14, 14, 17, 13, 11, 11, 18, 9, 11, 6, 13, 12, 13, 9, 15, 10, 13, 12, 12, 12, 10, 10, 11, 10, 10, 6, 9, 12, 14, 13, 14, 10, 11, 8, 6 }, { 10, 20, 14, 19, 10, 17, 16, 14, 14, 13, 16, 18, 17, 12, 13, 12, 15, 15, 15, 14, 12, 10, 12, 12, 13, 9, 18, 14, 14, 10, 18, 14, 10, 13, 17, 11, 14, 12, 13, 9, 13, 9, 14, 14, 16, 14, 14, 13, 20, 12, 11 }, { 16, 18, 21, 19, 15, 19, 20, 21, 10, 16, 19, 22, 22, 10, 9, 14, 18, 20, 18, 12, 11, 11, 14, 16, 16, 12, 15, 14, 16, 13, 20, 14, 14, 18, 20, 18, 17, 13, 15, 16, 13, 15, 19, 18, 17, 16, 20, 10, 17, 13, 13 }, { 10, 15, 12, 12, 10, 14, 19, 13, 14, 13, 17, 16, 16, 6, 12, 11, 14, 12, 10, 11, 7, 11, 15, 18, 11, 7, 12, 10, 12, 10, 18, 9, 13, 13, 10, 16, 10, 13, 8, 12, 7, 10, 13, 10, 11, 14, 13, 9, 15, 9, 8 }, { 8, 11, 15, 11, 12, 12, 11, 11, 8, 14, 14, 11, 9, 6, 6, 10, 12, 11, 12, 10, 8, 10, 10, 11, 10, 4, 10, 8, 9, 10, 13, 10, 8, 10, 11, 9, 9, 8, 11, 11, 9, 8, 12, 9, 10, 14, 12, 5, 13, 6, 7 }, { 9, 16, 17, 13, 11, 17, 11, 13, 17, 13, 12, 20, 11, 9, 10, 10, 11, 13, 9, 12, 9, 13, 13, 13, 7, 7, 11, 8, 14, 12, 14, 14, 10, 10, 17, 12, 12, 13, 12, 13, 9, 8, 12, 14, 12, 19, 14, 11, 18, 11, 9 }, { 13, 21, 17, 15, 12, 17, 16, 14, 18, 20, 13, 18, 18, 9, 12, 12, 13, 16, 21, 15, 11, 15, 11, 18, 12, 10, 13, 10, 14, 7, 17, 14, 12, 12, 19, 15, 13, 12, 15, 11, 13, 12, 15, 12, 15, 21, 12, 12, 20, 14, 11 }, { 10, 17, 12, 10, 12, 15, 13, 11, 11, 13, 10, 15, 16, 6, 13, 12, 17, 15, 15, 11, 8, 10, 10, 8, 11, 10, 16, 9, 14, 8, 12, 13, 8, 11, 10, 11, 11, 11, 12, 13, 6, 9, 11, 8, 13, 12, 14, 10, 13, 9, 9 }, { 10, 13, 18, 20, 15, 16, 17, 20, 10, 17, 15, 17, 16, 10, 14, 14, 22, 17, 12, 12, 10, 15, 9, 16, 14, 9, 16, 14, 12, 12, 18, 15, 11, 12, 15, 15, 11, 16, 15, 13, 11, 15, 13, 14, 14, 19, 14, 19, 20, 14, 14 }, { 9, 13, 14, 15, 9, 15, 15, 12, 12, 11, 17, 10, 13, 7, 13, 12, 15, 11, 9, 14, 9, 9, 11, 9, 14, 6, 15, 12, 7, 13, 13, 9, 11, 13, 15, 14, 10, 14, 12, 12, 6, 6, 11, 13, 10, 14, 13, 9, 19, 9, 10 }, { 8, 15, 14, 13, 13, 13, 17, 13, 12, 12, 15, 14, 16, 7, 13, 13, 12, 13, 12, 14, 12, 12, 11, 9, 13, 10, 13, 12, 11, 9, 16, 15, 12, 11, 15, 15, 10, 15, 11, 12, 9, 9, 7, 12, 16, 15, 14, 4, 13, 11, 8 }, { 10, 13, 14, 19, 10, 12, 13, 16, 11, 11, 7, 16, 17, 11, 7, 11, 11, 13, 13, 11, 8, 10, 11, 12, 11, 8, 13, 13, 9, 9, 12, 11, 9, 17, 11, 14, 11, 10, 8, 14, 13, 13, 10, 12, 14, 15, 11, 8, 11, 14, 12 }, { 17, 22, 17, 19, 14, 18, 20, 22, 10, 15, 20, 21, 22, 12, 11, 15, 14, 19, 14, 16, 16, 15, 14, 15, 16, 11, 14, 11, 9, 17, 21, 13, 10, 15, 19, 18, 11, 13, 13, 13, 14, 14, 15, 11, 14, 17, 16, 12, 17, 11, 16 }, { 7, 15, 15, 12, 11, 14, 15, 13, 9, 8, 7, 15, 14, 11, 8, 11, 13, 15, 13, 14, 6, 11, 11, 16, 8, 6, 12, 9, 5, 8, 15, 12, 6, 13, 10, 9, 9, 10, 12, 12, 7, 10, 10, 9, 10, 14, 11, 8, 15, 11, 8 }, { 15, 18, 14, 16, 7, 11, 15, 16, 9, 7, 10, 17, 15, 11, 11, 9, 13, 17, 14, 14, 14, 9, 6, 14, 5, 7, 14, 10, 12, 5, 10, 11, 11, 13, 14, 11, 10, 10, 12, 9, 10, 11, 11, 13, 13, 18, 13, 12, 12, 15, 13 }, { 12, 21, 16, 16, 12, 15, 20, 16, 14, 13, 13, 19, 22, 13, 13, 14, 13, 15, 18, 16, 10, 13, 11, 13, 12, 8, 17, 8, 13, 12, 16, 15, 9, 11, 18, 17, 14, 14, 10, 12, 11, 14, 15, 12, 18, 14, 16, 10, 16, 13, 9 }, { 13, 19, 12, 15, 9, 12, 16, 12, 10, 16, 15, 16, 16, 9, 9, 10, 14, 16, 19, 12, 11, 10, 14, 17, 12, 9, 14, 14, 11, 9, 14, 14, 11, 15, 14, 14, 11, 10, 11, 11, 8, 9, 16, 12, 15, 15, 13, 11, 16, 12, 8 }, { 15, 15, 15, 17, 13, 15, 12, 12, 10, 15, 15, 17, 16, 10, 11, 13, 16, 16, 12, 15, 10, 13, 8, 12, 15, 7, 16, 12, 11, 9, 13, 15, 13, 12, 14, 12, 10, 14, 12, 12, 10, 11, 13, 11, 15, 20, 16, 15, 17, 12, 11 }, { 14, 14, 16, 17, 12, 15, 10, 16, 11, 15, 10, 16, 16, 11, 11, 12, 14, 15, 14, 13, 13, 11, 12, 13, 9, 6, 14, 10, 10, 11, 13, 10, 10, 11, 11, 14, 9, 17, 7, 15, 12, 10, 9, 13, 14, 14, 16, 13, 13, 15, 11 }, { 12, 13, 9, 9, 15, 12, 16, 10, 11, 13, 12, 18, 16, 4, 13, 13, 12, 12, 10, 10, 11, 10, 13, 13, 10, 12, 11, 7, 12, 14, 12, 14, 12, 6, 15, 11, 12, 14, 10, 12, 10, 11, 8, 11, 10, 15, 13, 8, 18, 8, 9 }, { 8, 12, 12, 14, 10, 10, 14, 14, 10, 12, 11, 17, 16, 7, 9, 13, 13, 17, 12, 11, 7, 9, 11, 14, 10, 7, 15, 12, 7, 9, 12, 14, 7, 17, 13, 13, 11, 13, 13, 14, 8, 13, 12, 10, 13, 12, 12, 9, 11, 12, 8 }, { 16, 14, 14, 20, 13, 18, 16, 18, 13, 19, 10, 17, 14, 10, 8, 12, 14, 19, 13, 12, 11, 12, 14, 10, 11, 12, 19, 12, 13, 12, 14, 9, 10, 10, 17, 14, 12, 11, 14, 17, 14, 12, 12, 10, 12, 20, 15, 11, 13, 13, 14 }, { 16, 17, 12, 18, 11, 12, 19, 17, 11, 13, 10, 15, 17, 7, 9, 11, 15, 15, 10, 12, 13, 13, 14, 15, 14, 14, 15, 12, 15, 13, 17, 13, 12, 12, 15, 14, 15, 13, 11, 14, 7, 13, 12, 16, 13, 16, 16, 12, 16, 12, 8 }, { 8, 16, 11, 14, 7, 14, 14, 11, 10, 12, 9, 15, 15, 7, 7, 9, 14, 13, 14, 8, 4, 8, 9, 8, 10, 7, 14, 6, 8, 5, 9, 11, 8, 9, 9, 11, 7, 13, 10, 7, 9, 10, 5, 8, 11, 14, 13, 9, 12, 14, 10 }, { 14, 16, 11, 20, 15, 12, 20, 17, 15, 11, 16, 17, 16, 10, 9, 9, 14, 14, 14, 9, 9, 14, 14, 12, 12, 9, 12, 13, 14, 13, 14, 14, 15, 10, 14, 13, 17, 12, 12, 17, 10, 13, 12, 11, 14, 18, 15, 13, 14, 13, 12 }, { 11, 13, 17, 17, 18, 22, 24, 20, 12, 15, 13, 17, 23, 12, 12, 13, 13, 21, 11, 11, 15, 14, 14, 16, 14, 12, 15, 8, 10, 12, 18, 14, 11, 15, 17, 14, 14, 15, 11, 11, 14, 8, 16, 11, 16, 15, 15, 13, 15, 13, 16 }, { 13, 15, 15, 16, 15, 17, 16, 17, 11, 16, 15, 17, 18, 9, 9, 10, 15, 15, 9, 14, 9, 13, 13, 12, 15, 8, 14, 11, 9, 11, 20, 14, 16, 11, 15, 13, 13, 14, 11, 14, 13, 10, 8, 11, 13, 19, 15, 13, 13, 18, 9 }, { 10, 19, 11, 11, 13, 13, 12, 15, 10, 10, 10, 16, 18, 10, 13, 14, 16, 17, 15, 11, 12, 11, 8, 12, 13, 6, 12, 12, 9, 7, 16, 17, 7, 13, 11, 11, 6, 9, 10, 9, 11, 7, 12, 9, 14, 12, 12, 11, 14, 9, 9 }, { 16, 26, 21, 21, 22, 16, 24, 19, 18, 15, 16, 24, 26, 9, 13, 17, 16, 17, 16, 14, 15, 13, 17, 18, 15, 12, 19, 15, 17, 14, 18, 18, 15, 16, 15, 20, 16, 15, 15, 16, 21, 11, 15, 10, 19, 20, 18, 13, 18, 13, 12 }, { 10, 8, 11, 10, 6, 11, 10, 11, 9, 10, 7, 13, 8, 8, 7, 5, 13, 12, 13, 12, 10, 7, 7, 7, 3, 8, 9, 8, 5, 9, 10, 9, 6, 8, 13, 6, 9, 6, 10, 11, 9, 7, 10, 11, 11, 12, 14, 9, 10, 11, 10 }, { 12, 16, 13, 16, 8, 14, 12, 18, 14, 14, 13, 21, 14, 10, 11, 11, 13, 17, 15, 12, 10, 11, 15, 14, 10, 8, 15, 11, 14, 10, 15, 12, 14, 10, 15, 11, 11, 13, 12, 14, 12, 9, 13, 13, 13, 10, 11, 9, 15, 12, 11 }, { 12, 18, 14, 18, 11, 11, 19, 15, 12, 13, 14, 19, 19, 10, 12, 13, 15, 18, 14, 15, 12, 11, 16, 18, 10, 11, 18, 9, 12, 12, 17, 13, 16, 9, 18, 18, 10, 15, 13, 11, 11, 14, 15, 10, 15, 19, 9, 10, 18, 15, 12 }, { 9, 13, 11, 15, 9, 14, 16, 13, 7, 9, 9, 15, 10, 4, 8, 11, 14, 10, 13, 9, 10, 10, 12, 14, 7, 10, 11, 12, 9, 9, 15, 8, 5, 10, 9, 12, 10, 10, 7, 11, 13, 7, 7, 9, 13, 15, 14, 8, 12, 14, 10 }, { 9, 22, 19, 19, 15, 22, 18, 18, 15, 10, 14, 17, 22, 12, 13, 12, 16, 17, 16, 12, 11, 15, 9, 12, 12, 9, 18, 16, 13, 6, 20, 16, 13, 15, 14, 17, 15, 12, 11, 12, 13, 10, 13, 12, 18, 18, 14, 11, 18, 16, 14 }, { 10, 15, 15, 16, 11, 15, 15, 12, 9, 18, 12, 20, 15, 13, 14, 8, 16, 10, 11, 17, 13, 9, 11, 14, 10, 8, 16, 13, 10, 9, 17, 14, 11, 12, 12, 13, 14, 10, 10, 13, 12, 4, 13, 13, 15, 18, 18, 15, 12, 17, 14 }, { 15, 16, 12, 15, 11, 13, 18, 15, 14, 15, 13, 18, 15, 9, 12, 10, 12, 16, 13, 16, 10, 11, 14, 18, 10, 6, 16, 14, 12, 7, 12, 12, 13, 14, 15, 17, 10, 10, 12, 13, 14, 8, 14, 13, 14, 22, 12, 13, 15, 12, 7 }, { 10, 17, 15, 14, 11, 15, 15, 18, 13, 14, 11, 17, 18, 9, 12, 13, 14, 16, 13, 6, 15, 8, 13, 15, 9, 10, 12, 11, 11, 11, 15, 14, 14, 14, 14, 14, 11, 13, 12, 13, 14, 9, 12, 12, 12, 18, 15, 13, 12, 13, 11 }, { 11, 17, 16, 10, 12, 15, 15, 14, 9, 16, 13, 17, 16, 8, 10, 13, 16, 13, 14, 11, 11, 13, 10, 15, 9, 9, 13, 8, 11, 12, 16, 14, 10, 12, 14, 10, 14, 15, 13, 15, 10, 13, 10, 10, 11, 17, 16, 11, 17, 14, 13 }, { 8, 15, 11, 14, 17, 13, 20, 12, 12, 13, 12, 16, 15, 9, 16, 13, 18, 16, 9, 13, 15, 14, 11, 9, 9, 10, 17, 10, 10, 11, 15, 11, 8, 6, 14, 11, 14, 10, 9, 17, 11, 13, 12, 9, 11, 14, 15, 9, 15, 13, 13 }, { 9, 14, 13, 15, 10, 13, 14, 10, 9, 14, 12, 16, 12, 8, 9, 15, 13, 10, 12, 10, 10, 13, 6, 12, 7, 8, 13, 9, 6, 13, 16, 11, 8, 8, 10, 13, 7, 11, 12, 12, 16, 10, 9, 8, 10, 12, 13, 9, 12, 9, 10 }, { 13, 17, 12, 17, 12, 15, 17, 15, 11, 15, 16, 18, 17, 12, 17, 12, 19, 15, 17, 14, 15, 13, 12, 14, 10, 6, 17, 11, 12, 14, 17, 14, 8, 14, 15, 16, 9, 16, 13, 16, 14, 16, 14, 14, 14, 16, 15, 12, 14, 13, 15 }, { 10, 11, 14, 20, 13, 15, 15, 13, 11, 19, 14, 16, 15, 6, 14, 13, 18, 15, 12, 15, 13, 10, 11, 13, 13, 9, 15, 11, 10, 10, 14, 14, 7, 14, 14, 11, 13, 14, 11, 10, 9, 8, 13, 15, 16, 15, 18, 13, 14, 15, 12 } };
+            minCost = Utils.Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(m5, out bestMatching);
+            Assert.AreEqual(14.0, minCost, 1e-6);
+            maxCost = Utils.Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(m5, out bestMatching);
+            Assert.AreEqual(10.0, maxCost, 1e-6);
         }
 
         [Test]
@@ -1408,7 +1448,7 @@ namespace SharpAlgosTests
             //looking for simple shortest path
             var result = g.ShortestPath_DFS("3", "3");
             Assert.IsTrue(result != null);
-            Assert.IsTrue(result.SequenceEqual(new[] { "3"}));
+            Assert.IsTrue(result.SequenceEqual(new[] { "3" }));
             result = g.ShortestPath_DFS("3", "2");
             Assert.IsTrue(result != null);
             Assert.IsTrue(result.SequenceEqual(new[] { "3", "1", "0", "2" }));

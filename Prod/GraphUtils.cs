@@ -1737,11 +1737,17 @@ namespace SharpAlgos
     public static partial class Utils
     {
         #region Couplage et flots
-        //we have a bipartite graph with 'U' sources, 'V' destinations and 'E' edges
-        //we would like to maximize the number of edges connecting (distinct) sources to (distinct) destination
-        //(each edge can NOT share a same source or a same destination)
-        //It is not needed to have all sources and target connected
-        //Time complexity is o( |V| |E| ) 
+        /// <summary>
+        /// We have a bipartite graph with 'U' sources, 'V' destinations and 'E' edges
+        /// we would like to maximize the number of edges connecting (distinct) sources to (distinct) destination
+        /// (each edge can NOT share a same source or a same destination)
+        /// It is not needed to have all sources and target connected
+        /// Time complexity is o( |V| |E| ) 
+        /// </summary>
+        /// <typeparam name="TU"></typeparam>
+        /// <typeparam name="TV"></typeparam>
+        /// <param name="bipartiteGraph"></param>
+        /// <returns></returns>
         public static IDictionary<TU, TV> MaxMatchingInBipartiteGraph<TU, TV>(IDictionary<TU, IEnumerable<TV>> bipartiteGraph)
         {
             var matchDestinationToSource = new Dictionary<TV, TU>();
@@ -1767,42 +1773,91 @@ namespace SharpAlgos
             return false;
         }
 
-        //We have a bipartite graph 'V sources' and 'U destinations' (so with V*U edges)
-        //each edge has an associated cost
-        //we would like to find the perfect matching (connecting each source to a single distinct destination, so using 'V' edges)
-        //maximizing the total value of the 'V' selected edges
-        // time complexity is in o(V^3) 
-        public static int Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(int[,] bipartiteGraph, out int[] bestMatching)
+        /// <summary>
+        /// We have a bipartite graph 'V sources' and 'U destinations' (so with V*U edges)
+        /// each edge has an associated cost
+        /// we would like to find the perfect matching (connecting each source to a single distinct destination, so using 'V' edges)
+        /// maximizing the total value of the 'V' selected edges
+        /// time complexity is in o(V^3) 
+        /// </summary>
+        /// <param name="bipartiteGraph"></param>
+        /// <param name="bestMatching"></param>
+        /// <returns></returns>
+        public static double Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(double[,] bipartiteGraph, out int[] bestMatching)
         {
+            var initialNbRows = bipartiteGraph.GetLength(0);
+            var initialNbCols = bipartiteGraph.GetLength(1);
             var completeBipartiteGraph = bipartiteGraph;
-            if (bipartiteGraph.GetLength(0) < bipartiteGraph.GetLength(1))
+            //We check if we need to resize the bipartite graph to make it a complete bipartite graph.
+            if (initialNbRows < initialNbCols)
             {
-                completeBipartiteGraph = bipartiteGraph.Resize(bipartiteGraph.GetLength(1), bipartiteGraph.GetLength(1), 0);
+                //We have more destinations then sources : we'll only use a sub part of those destinations.
+                //   1/ we'll add 'initialNbCols-initialNbRows' new sources (each with 0 score) to make the graph 'complete'
+                //   2/ we'll apply the perfect matching algo in the complete graph
+                //   3/ we'll remove all added sources
+                //     (the have no impact on the result because all their associated costs are 0)
+                completeBipartiteGraph = bipartiteGraph.Resize(initialNbCols, initialNbCols, 0.0);
             }
-            var result = Maximize_SumCost_ForPerfectMatchingsIn_CompleteBipartiteGraph(completeBipartiteGraph, out bestMatching);
-            if (bipartiteGraph.GetLength(0) < completeBipartiteGraph.GetLength(0))
+            else if (initialNbRows > initialNbCols)
             {
-                bestMatching = bestMatching.Take(bipartiteGraph.GetLength(0)).ToArray();
+                //We have more sources then destinations: we'll only use a sub part of those sources.
+                //   1/ we'll add 'initialNbRows-initialNbCols' new destinations (each with -infinite score ) to make the graph 'complete'
+                //   2/ we'll apply the perfect matching algo in the complete graph
+                //   3/ we'll discard all sources that happen to be connected with those new destination
+                completeBipartiteGraph = bipartiteGraph.Resize(initialNbRows, initialNbRows, -1e9);
             }
+            Maximize_SumCost_ForPerfectMatchingsIn_CompleteBipartiteGraph(completeBipartiteGraph, out bestMatching);
+            if (initialNbRows < initialNbCols)
+            {
+                bestMatching = bestMatching.Take(initialNbRows).ToArray();
+            }
+            else if (initialNbRows > initialNbCols)
+            {
+                bestMatching = bestMatching.Select(y => y >= initialNbCols ? -1 : y).ToArray();
+            }
+
+            //we compute the cost of the matching
+            double result = 0.0;
+            for (int sourceId = 0; sourceId < bestMatching.Length; ++sourceId)
+            {
+                var destinationId = bestMatching[sourceId];
+                if (destinationId != -1)
+                {
+                    result += completeBipartiteGraph[sourceId, destinationId];
+                }
+            }
+
+            Debug.Assert(bestMatching.Length == initialNbRows);
+            Debug.Assert(bestMatching.Max() < initialNbCols);
             return result;
         }
-        //Same as above but trying to minimize the total value of the 'V' selected edges
-        public static int Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(int[,] bipartiteGraph, out int[] bestMatching)
+
+        /// <summary>
+        /// Same as above but trying to minimize the total value of the 'V' selected edges
+        /// </summary>
+        /// <param name="bipartiteGraph"></param>
+        /// <param name="bestMatching"></param>
+        /// <returns></returns>
+        public static double Minimize_SumCost_ForPerfectMatching_InBipartiteGraph(double[,] bipartiteGraph, out int[] bestMatching)
         {
             return -Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(bipartiteGraph.Select(x => -x), out bestMatching);
         }
 
-        //We have a bipartite graph 'V sources' x 'U destinations' (so with V*U edges)
-        //we would like to find the perfect matching (connecting each source to a single distinct destination, so using 'V' edges)
-        //maximizing the minimum value of the 'V' selected edges
-        //returns this minimum value of the 'V' selected edges
-        // time complexity is in o(V^3) 
-        public static int Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(int[,] bipartiteGraph, out int[] bestMatching)
+        /// <summary>
+        /// We have a bipartite graph 'V sources' x 'U destinations' (so with V*U edges)
+        /// we would like to find the perfect matching (connecting each source to a single distinct destination, so using 'V' edges)
+        /// maximizing the minimum value of the 'V' selected edges
+        /// Time complexity is in o(V^3) 
+        /// </summary>
+        /// <param name="bipartiteGraph"></param>
+        /// <param name="bestMatching"></param>
+        /// <returns>the minimum value of the 'V' selected edges</returns>
+        public static double Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(double[,] bipartiteGraph, out int[] bestMatching)
         {
-            var orderedDistinctCost = new HashSet<int>(bipartiteGraph.ToArray()).ToList();
+            var orderedDistinctCost = new HashSet<double>(bipartiteGraph.ToArray()).ToList();
             orderedDistinctCost.Sort();
-            var min = orderedDistinctCost.First();
-            var max = orderedDistinctCost.Last();
+            var min = (int)orderedDistinctCost.First();
+            var max = (int)orderedDistinctCost.Last();
             const int invalidValue = -1000000;
             while (min < max)
             {
@@ -1830,38 +1885,50 @@ namespace SharpAlgos
             Maximize_SumCost_ForPerfectMatching_InBipartiteGraph(bipartiteGraph.Select(x => x < min ? invalidValue : x), out bestMatching);
             return min;
         }
-        //same as above but trying to minimize the maximum value of the 'V' selected edges
-        //returns this maximum value of the 'V' selected edges
-        public static int Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(int[,] bipartiteGraph,out int[] bestMatching)
+        /// <summary>
+        /// same as above but trying to minimize the maximum value of the 'V' selected edges
+        /// </summary>
+        /// <param name="bipartiteGraph"></param>
+        /// <param name="bestMatching"></param>
+        /// <returns>the maximum value of the 'V' selected edges</returns>
+        public static double Minimize_MaximumCost_ForPerfectMatching_InBipartiteGraph(double[,] bipartiteGraph, out int[] bestMatching)
         {
-            return -Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(bipartiteGraph.Select(x=>-x), out bestMatching);
+            return -Maximize_MinimumCost_ForPerfectMatching_InBipartiteGraph(bipartiteGraph.Select(x => -x), out bestMatching);
         }
 
-        //we have a complete bipartite graph 'V sources' x 'V destination' (so with V^2 edges)
-        //each edge has an associated cost
-        //we would like to find the perfect matching (connecting each source to a single distinct destination, so using 'V' edges)
-        //maximizing the total value of the 'V' selected edges
-        // time complexity is in o(V^3) 
-        private static int Maximize_SumCost_ForPerfectMatchingsIn_CompleteBipartiteGraph(int[,] completeBipartiteGraph, out int[] bestMatching)
+
+        /// <summary>
+        /// We have a complete bipartite graph 'V sources' x 'V destination' (so with V^2 edges)
+        /// each edge has an associated cost
+        /// we would like to find the perfect matching (connecting each source to a single distinct destination, so using 'V' edges)
+        /// maximizing the total value of the 'V' selected edges
+        /// time complexity is in o(V^3) 
+        /// </summary>
+        /// <param name="completeBipartiteGraph"></param>
+        /// <param name="bestMatching"></param>
+        /// <returns></returns>
+        private static double Maximize_SumCost_ForPerfectMatchingsIn_CompleteBipartiteGraph(double[,] completeBipartiteGraph, out int[] bestMatching)
         {
             int n = completeBipartiteGraph.GetLength(0);
+            Debug.Assert(completeBipartiteGraph.GetLength(1) == n);
+
             var U = Enumerable.Range(0, n).ToList();
             var V = Enumerable.Range(0, n).ToList();
             bestMatching = Enumerable.Repeat(-1, n).ToArray();
             var mv = Enumerable.Repeat(-1, n).ToList();
-            var lu = new List<int>();
-            for(int row =0;row<completeBipartiteGraph.GetLength(0);++row)
+            var lu = new List<double>();
+            for (int row = 0; row < completeBipartiteGraph.GetLength(0); ++row)
             {
                 lu.Add(completeBipartiteGraph.MaxInRow(row));
             }
-            var lv = Enumerable.Repeat(0, n).ToList();
+            var lv = Enumerable.Repeat(0.0, n).ToList();
             foreach (var root in U)
             {
                 var au = new bool[n];
                 au[root] = true;
                 var Av = Enumerable.Repeat(-1, n).ToList();
-                var marge = new List<KeyValuePair<int, int>>();
-                V.ForEach(vTmp => marge.Add(new KeyValuePair<int, int>(lu[root] + lv[vTmp] - completeBipartiteGraph[root,vTmp], root)));
+                var marge = new List<KeyValuePair<double, int>>();
+                V.ForEach(vTmp => marge.Add(new KeyValuePair<double, int>(lu[root] + lv[vTmp] - completeBipartiteGraph[root, vTmp], root)));
                 int v;
                 for (; ; )
                 {
@@ -1873,8 +1940,8 @@ namespace SharpAlgos
                             v = vTmp;
                         }
                     }
-                    int delta = marge[v].Key;
-                    int u = marge[v].Value;
+                    var delta = marge[v].Key;
+                    var u = marge[v].Value;
                     if (delta > 0)
                     {
                         foreach (var uTmp in U.Where(uTmp => au[uTmp]))
@@ -1889,7 +1956,7 @@ namespace SharpAlgos
                             }
                             else
                             {
-                                marge[vTmp] = new KeyValuePair<int, int>(marge[vTmp].Key - delta, marge[vTmp].Value);
+                                marge[vTmp] = new KeyValuePair<double, int>(marge[vTmp].Key - delta, marge[vTmp].Value);
                             }
                         }
                     }
@@ -1904,10 +1971,10 @@ namespace SharpAlgos
                     {
                         if (Av[v1] == -1)
                         {
-                            var alt = lu[u1] + lv[v1] - completeBipartiteGraph[u1,v1];
+                            var alt = lu[u1] + lv[v1] - completeBipartiteGraph[u1, v1];
                             if (marge[v1].Key > alt)
                             {
-                                marge[v1] = new KeyValuePair<int, int>(alt, u1);
+                                marge[v1] = new KeyValuePair<double, int>(alt, u1);
                             }
                         }
                     }
@@ -1921,7 +1988,7 @@ namespace SharpAlgos
                     v = prev;
                 }
             }
-            return lu.Sum() + lv.Sum();
+            return (int)(lu.Sum() + lv.Sum());
         }
         #endregion
     }

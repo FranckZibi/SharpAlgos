@@ -687,6 +687,16 @@ namespace SharpAlgos
             }
             return result;
         }
+        public static double MaxInRow(this double[,] data, int row)
+        {
+            double result = double.MinValue;
+            for (int col = 0; col < data.GetLength(1); ++col)
+            {
+                result = Math.Max(result, data[row, col]);
+            }
+            return result;
+        }
+      
         public static int MaxInCol(this int[,] data, int col)
         {
             int result = int.MinValue;
