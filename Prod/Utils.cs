@@ -15,6 +15,38 @@ namespace SharpAlgos
         }
 
         /// <summary>
+        /// Extract all integers in string 'str' and returns them in a List
+        /// </summary>
+        public static List<int> ReadInts(string str)
+        {
+            var result = new List<int>();
+            int currentInt = 0;
+            bool isNegativeInteger = false;
+            for (int idx = 0; idx < str.Length; ++idx)
+            {
+                if (char.IsDigit(str[idx]))
+                {
+                    currentInt = 10 * currentInt + (str[idx] - '0');
+                    isNegativeInteger |= (idx != 0 && str[idx - 1] == '-');
+                    if (idx == str.Length - 1)
+                    {
+                        result.Add(isNegativeInteger ? (-currentInt) : currentInt);
+                    }
+                }
+                else
+                {
+                    if (idx!=0&&char.IsDigit(str[idx-1]))
+                    {
+                        result.Add(isNegativeInteger ? (-currentInt) : currentInt);
+                        currentInt = 0;
+                        isNegativeInteger = false;
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// compute all combinations of 'allItems' containing exactly one element of each sub list
         /// </summary>
         /// <typeparam name="T"></typeparam>

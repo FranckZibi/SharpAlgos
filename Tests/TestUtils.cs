@@ -23,6 +23,18 @@ namespace SharpAlgosTests
         }
 
         [Test]
+        public void TestReadInts()
+        {
+            Assert.IsTrue(new int[]{}.SequenceEqual(Utils.ReadInts("")));
+            Assert.IsTrue(new []{1}.SequenceEqual(Utils.ReadInts("1")));
+            Assert.IsTrue(new []{1}.SequenceEqual(Utils.ReadInts(" 1")));
+            Assert.IsTrue(new []{1}.SequenceEqual(Utils.ReadInts(" 1 ")));
+            Assert.IsTrue(new []{-1}.SequenceEqual(Utils.ReadInts("-1")));
+            Assert.IsTrue(new[] { -1, 9, 578, -1, -11 }.SequenceEqual(Utils.ReadInts("# -1 ç __ - 9 578 -1 -11")));
+            Assert.IsTrue(new[] { -5, -1, -11 }.SequenceEqual(Utils.ReadInts("-5-1 -11#")));
+        }
+
+        [Test]
         public void TestStableMariageMatching()
         {
             var menPreference = CreatePreferences("abe abi eve cath ivy jan dee fay bea hope gay" + Environment.NewLine +
