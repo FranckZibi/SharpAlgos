@@ -1,16 +1,13 @@
 
 ## DESCRITPION 
 
-SharpAlgos is an collection of Algorithms and Data Structures written in C# 7
+SharpAlgos is an collection of Algorithms and Data Structures written in C# 11
 
 Your contribution is welcome.
  
 #### Requirements:
-- [Visual Studio 2017 or 2019](https://visualstudio.microsoft.com/downloads/)
-- .Net Framework 4.5
-
-
-
+- [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/)
+- .Net Core 7
 ## DATA STRUCTURES
 
 #### Priority Queues:
