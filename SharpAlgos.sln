@@ -1,13 +1,12 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28917.181
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlgos", "Prod\SharpAlgos.csproj", "{3C2B357E-32BF-46BC-9ECB-A26917ED0242}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlgos", "Prod\SharpAlgos.csproj", "{3C2B357E-32BF-46BC-9ECB-A26917ED0242}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpAlgosTests", "Tests\SharpAlgosTests.csproj", "{3294C9CF-679A-48DB-97F3-1481F81FE06E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAlgosTests", "Tests\SharpAlgosTests.csproj", "{3294C9CF-679A-48DB-97F3-1481F81FE06E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpContestProject", "CSharpContestProject\CSharpContestProject.csproj", "{5C6C0429-ECDC-4A3E-9DE0-0746764EA6D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpContestProject", "CSharpContestProject\CSharpContestProject.csproj", "{5C6C0429-ECDC-4A3E-9DE0-0746764EA6D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
